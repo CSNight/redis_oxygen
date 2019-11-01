@@ -1,13 +1,35 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Index from '@/layout/Index'
 
 Vue.use(Router);
 export const constantRoutes = [
     {
         path: '/',
         name: 'Home',
-        component: () => import('@/layout/Index'),
-        meta: {title: 'Dashboard', icon: 'dashboard'}
+        component: Index,
+        children: [{
+            path: 'dashboard',
+            component: () => import('@/components/HelloWorld'),
+            name: 'dashboard',
+            meta: {title: 'Dashboard', icon: 'orange', affix: true}
+        }]
+    }, {
+        path: '/hello',
+        name: 'Hello',
+        component: Index,
+        alwaysShow: true,
+        redirect:'/hello/dashboard',
+        meta: {title: 'Hello1', icon: 'orange'},
+        children: [
+            {
+                path: 'dashboard',
+                component: () => import('@/components/HelloWorld'),
+                name: 'helloss',
+                meta: {title: 'Hello2', icon: 'none', affix: true}
+
+            }
+        ]
     },
     // 404 page must be placed at the end !!!
     {path: '*', redirect: '/404', hidden: true}
@@ -22,7 +44,7 @@ const createRouter = () => new Router({
 const router = createRouter();
 router.beforeEach(async (to, from, next) => {
     // eslint-disable-next-line no-console
-    console.log([to, from, next])
+    console.log([to, from, next]);
     next();
 });
 
