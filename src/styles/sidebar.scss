@@ -56,6 +56,9 @@
     .svg-icon {
       margin-right: 16px;
     }
+    .el-icon {
+       margin-right: 16px;
+     }
 
     .el-menu {
       border: none;
@@ -109,6 +112,10 @@
         .svg-icon {
           margin-left: 20px;
         }
+
+        .el-icon {
+          margin-left: 20px;
+        }
       }
     }
 
@@ -118,8 +125,12 @@
       & > .el-submenu__title {
         padding: 0 !important;
 
-        .svg-icon {
+        .el-icon {
           margin-left: 15px;
+        }
+
+        .svg-icon {
+          margin-left: 18px;
         }
 
         .el-submenu__icon-arrow {

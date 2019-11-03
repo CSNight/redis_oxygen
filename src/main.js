@@ -9,7 +9,10 @@ import router from "@/router/router";
 import store from "@/store";
 import '@/styles/index.scss'
 import '@/icons'
+import Axios from 'axios'
 
+Vue.prototype.$axios = Axios
+Axios.defaults.withCredentials = true;
 Vue.config.productionTip = false;
 Vue.use(ElementUI, {locale});
 new Vue({

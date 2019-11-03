@@ -1,10 +1,12 @@
 <template>
     <div v-if="isExternal" :style="styleExternalIcon" class="svg-external-icon svg-icon" v-on="$listeners"></div>
-    <i v-else :class="iconName+' svg-icon'"></i>
+    <svg v-else :class="svgClass" aria-hidden="true" v-on="$listeners">
+        <use :href="iconName"/>
+    </svg>
 </template>
 
 <script>
-    import {isExternal} from '../linkVal'
+    import {isExternal} from '../layout/linkVal'
 
     export default {
         name: 'SvgIcon',
@@ -23,8 +25,14 @@
                 return isExternal(this.iconClass)
             },
             iconName() {
-
-                return `el-icon-${this.iconClass}`
+                return `#icon-${this.iconClass}`
+            },
+            svgClass() {
+                if (this.className) {
+                    return 'svg-icon ' + this.className
+                } else {
+                    return 'svg-icon'
+                }
             },
             styleExternalIcon() {
                 return {
@@ -40,7 +48,7 @@
     .svg-icon {
         width: 1em;
         height: 1em;
-        vertical-align: middle;
+        vertical-align: -0.15em;
         fill: currentColor;
         overflow: hidden;
     }

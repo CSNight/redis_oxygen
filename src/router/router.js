@@ -12,21 +12,21 @@ export const constantRoutes = [
             path: 'dashboard',
             component: () => import('@/components/HelloWorld'),
             name: 'dashboard',
-            meta: {title: 'Dashboard', icon: 'orange', affix: true}
+            meta: {title: 'Dashboard', icon: 'orange', affix: true, id: 'sss'}
         }]
     }, {
         path: '/hello',
         name: 'Hello',
         component: Index,
         alwaysShow: true,
-        redirect:'/hello/dashboard',
-        meta: {title: 'Hello1', icon: 'orange'},
+        redirect: '/hello/dashboard',
+        meta: {title: 'Hello1', icon: 'orange', id: 'aaa'},
         children: [
             {
                 path: 'dashboard',
-                component: () => import('@/components/HelloWorld'),
+                component: () => import('@/views/user/Org'),
                 name: 'helloss',
-                meta: {title: 'Hello2', icon: 'none', affix: true}
+                meta: {title: 'Hello2', icon: 'none', affix: true, id: 'bbb'}
 
             }
         ]
@@ -44,9 +44,10 @@ const createRouter = () => new Router({
 const router = createRouter();
 router.beforeEach(async (to, from, next) => {
     // eslint-disable-next-line no-console
-    console.log([to, from, next]);
+    //console.log([to, from, next]);
     next();
 });
+
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {

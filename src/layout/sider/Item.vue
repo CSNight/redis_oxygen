@@ -10,6 +10,10 @@
             title: {
                 type: String,
                 default: ''
+            },
+            id: {
+                type: String,
+                default: ''
             }
         },
         render(h, context) {
@@ -17,12 +21,12 @@
             const vnodes = [];
 
             if (icon) {
-                vnodes.push(<svg-icon icon-class={icon}/>)
+                vnodes.push(<el-icon icon-class={icon}/>);
             }
             if (title) {
-                vnodes.push(<span><slot name='title'>{(title)}</slot></span>)
+                vnodes.push(<span><slot name='title'>{(title)}</slot></span>);
             }
-            return vnodes
+            return vnodes;
         }
     }
 </script>
