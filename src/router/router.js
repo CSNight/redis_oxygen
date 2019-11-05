@@ -24,7 +24,7 @@ export const constantRoutes = [
         children: [
             {
                 path: 'dashboard',
-                component: () => import('@/views/user/Org'),
+                component: () => import('@/views/user/OrgTable'),
                 name: 'helloss',
                 meta: {title: 'Hello2', icon: 'none', affix: true, id: 'bbb'}
 
