@@ -10,7 +10,6 @@ import store from "@/store";
 import '@/styles/index.scss'
 import '@/icons'
 import axios from 'axios'
-import 'fontawesome'
 
 Vue.prototype.$axios = axios;
 axios.defaults.withCredentials = true;

@@ -1,5 +1,25 @@
 <template>
     <div>
+        <!--工具栏-->
+        <div class="head-container">
+            <!-- 搜索 -->
+            <el-input  clearable placeholder="输入部门名称搜索" style="width: 200px;line-height:30px" class="filter-item" />
+            <el-select clearable placeholder="状态" class="filter-item" style="width: 90px" >
+                <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+            </el-select>
+            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索</el-button>
+            <!-- 新增 -->
+            <div style="display: inline-block;margin: 0px 2px;">
+                <el-button
+                        class="filter-item"
+                        size="mini"
+                        type="primary"
+                        icon="el-icon-plus"
+                        @click="add">新增</el-button>
+            </div>
+
+        </div>
+        <el-divider content-position="left"></el-divider>
         <el-table
                 :data="tableData"
                 style="width: 100%;margin-bottom: 20px;"
@@ -64,7 +84,7 @@
                     </el-button>
                     <el-button
                             v-if="getShow(scope.$index)"
-                            @click.native.prevent="editRow(scope.row)"
+                            @click.native.prevent="lockToggle(scope.row)"
                             :type="lockBtnType(scope.row)"
                             :icon="lockBtnIcon(scope.row)"
                             size="small">
@@ -76,13 +96,17 @@
 </template>
 
 <script>
-    import {get_org_tree, delete_org} from '../../api/user/org_api'
+    import {get_org_tree, delete_org, modify_org} from '../../api/user/org_api'
 
     export default {
         data() {
             return {
                 tableData: [],
                 loading: true,
+                enabledTypeOptions: [
+                    { key: 'true', display_name: '正常' },
+                    { key: 'false', display_name: '禁用' }
+                ],
             }
         },
         created() {
@@ -107,6 +131,8 @@
                 get_org_tree().then((resp) => {
                     this.tableData.push(resp.data.message);
                     this.loading = false;
+                }).catch(() => {
+                    this.loading = false;
                 })
             },
             // eslint-disable-next-line no-unused-vars
@@ -116,6 +142,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
+                    this.lockLoading();
                     delete_org(row.id).then((resp) => {
                         if (resp.data.status === 200 && resp.data.message === "success") {
                             this.$message({
@@ -125,8 +152,11 @@
                         } else {
                             this.$message.error('删除失败!');
                         }
-                    });
-
+                        this.loadData();
+                        this.unlockLoading();
+                    }).catch(() => {
+                        this.unlockLoading();
+                    })
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -135,8 +165,48 @@
                 });
             },
             // eslint-disable-next-line no-unused-vars
-            editRow(row, data) {
+            editRow(row) {
 
+            },
+            lockToggle(row) {
+                let row_status = !row.enabled;
+                let org_ent = {
+                    id: row.id,
+                    name: row.name,
+                    enabled: row_status,
+                    pid: row.pid,
+                    create_user: row.create_user,
+                    create_time: row.create_time
+                };
+                let msg_prefix = row.enabled ? '锁定' : '解锁';
+                let tit = '此操作将该部门及子部门将一起' + msg_prefix + ', 是否继续?';
+                this.$confirm(tit, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.lockLoading();
+
+                    modify_org(org_ent).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.hasOwnProperty('message')) {
+                            this.$message({
+                                type: 'success',
+                                message: msg_prefix + '成功!'
+                            });
+                        } else {
+                            this.$message.error(msg_prefix + '失败!');
+                        }
+                        this.loadData();
+                        this.unlockLoading();
+                    }).catch(() => {
+                        this.unlockLoading();
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });
+                })
             },
             lockLoading() {
                 this.loadBg = this.$loading({
