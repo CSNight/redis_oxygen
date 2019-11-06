@@ -4,7 +4,7 @@ import {Message} from 'element-ui'
 const service = axios.create({
     baseURL: 'http://localhost:8020', // url = base url + request url
     // withCredentials: true, // send cookies when cross-domain requests
-    timeout: 5000, // request timeout
+    timeout: 50000, // request timeout
 });
 
 // request interceptor

@@ -3,21 +3,25 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input  clearable placeholder="输入部门名称搜索" style="width: 200px;line-height:30px" class="filter-item" />
-            <el-select clearable placeholder="状态" class="filter-item" style="width: 90px" >
-                <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+            <el-input clearable v-model="query.name" placeholder="输入部门名称搜索" style="width: 200px;" size="mini"
+                      class="filter-item"/>
+            <el-select v-model="query.enabled" clearable placeholder="状态" class="filter-item" style="width: 90px"
+                       size="mini" value="">
+                <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name"
+                           :value="item.key"/>
             </el-select>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索</el-button>
+            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery">搜索
+            </el-button>
             <!-- 新增 -->
-            <div style="display: inline-block;margin: 0px 2px;">
+            <div style="display: inline-block;margin: 0 2px;">
                 <el-button
                         class="filter-item"
                         size="mini"
                         type="primary"
                         icon="el-icon-plus"
-                        @click="add">新增</el-button>
+                        @click="new_org">新增
+                </el-button>
             </div>
-
         </div>
         <el-divider content-position="left"></el-divider>
         <el-table
@@ -31,8 +35,7 @@
                 :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
             <el-table-column
                     prop="name"
-                    label="名称"
-                    align="center">
+                    label="名称">
             </el-table-column>
             <el-table-column
                     prop="id"
@@ -69,21 +72,21 @@
                     label="操作">
                 <template slot-scope="scope">
                     <el-button
-                            v-if="getShow(scope.$index)"
+                            v-if="getShow(scope.row)"
                             @click.native.prevent="editRow(scope.row)"
                             type="primary"
                             icon="el-icon-edit"
                             size="small">
                     </el-button>
                     <el-button
-                            v-if="getShow(scope.$index)"
+                            v-if="getShow(scope.row)"
                             @click.native.prevent="deleteRow(scope.row)"
                             type="danger"
                             icon="el-icon-delete"
                             size="small">
                     </el-button>
                     <el-button
-                            v-if="getShow(scope.$index)"
+                            v-if="getShow(scope.row)"
                             @click.native.prevent="lockToggle(scope.row)"
                             :type="lockBtnType(scope.row)"
                             :icon="lockBtnIcon(scope.row)"
@@ -96,7 +99,7 @@
 </template>
 
 <script>
-    import {get_org_tree, delete_org, modify_org} from '../../api/user/org_api'
+    import {get_org_tree, delete_org, modify_org, query_by} from '../../api/user/org_api'
 
     export default {
         data() {
@@ -104,20 +107,23 @@
                 tableData: [],
                 loading: true,
                 enabledTypeOptions: [
-                    { key: 'true', display_name: '正常' },
-                    { key: 'false', display_name: '禁用' }
-                ],
+                    {key: 'true', display_name: '正常'},
+                    {key: 'false', display_name: '禁用'}
+                ], query: {
+                    name: '',
+                    enabled: ''
+                }
             }
         },
         created() {
             this.$nextTick(() => {
                 this.loadData();
-            })
+            });
         },
         computed: {},
         methods: {
-            getShow: (index) => {
-                return index !== 0
+            getShow: (row) => {
+                return row.name !== 'Top'
             },
             lockBtnIcon(row) {
                 return row.enabled ? 'el-icon-lock' : 'el-icon-unlock'
@@ -134,6 +140,28 @@
                 }).catch(() => {
                     this.loading = false;
                 })
+            },
+            loadQuery() {
+                // eslint-disable-next-line no-console
+                console.log(this.query);
+                if (this.query.name === '' && this.query.enabled === '') {
+                    this.loadData();
+                    return;
+                }
+                let params = {name:this.query.name};
+                if (this.query.enabled !== '') {
+                    params['enabled'] = this.query.enabled === 'true';
+                }
+                this.tableData = [];
+                query_by(this.query).then((resp) => {
+                    this.tableData = resp.data.message;
+                    this.loading = false;
+                }).catch(() => {
+                    this.loading = false;
+                })
+            },
+            new_org() {
+
             },
             // eslint-disable-next-line no-unused-vars
             deleteRow(row) {
@@ -222,3 +250,14 @@
         }
     }
 </script>
+<style lang="scss" scoped>
+    .head-container {
+        height: 30px;
+    }
+
+    .filter-item {
+        margin: 10px 7px;
+    }
+
+
+</style>
