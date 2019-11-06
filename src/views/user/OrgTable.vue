@@ -21,9 +21,16 @@
                         icon="el-icon-plus"
                         @click="new_org">新增
                 </el-button>
+                <el-button
+                        @click.native.prevent="loadData"
+                        type="success"
+                        icon="el-icon-refresh"
+                        size="mini">
+                </el-button>
             </div>
         </div>
         <el-divider content-position="left"></el-divider>
+        <OrgForm ref="form" :status="enabledTypeOptions" :is-add="isAdd"/>
         <el-table
                 :data="tableData"
                 style="width: 100%;margin-bottom: 20px;"
@@ -99,13 +106,17 @@
 </template>
 
 <script>
-    import {get_org_tree, delete_org, modify_org, query_by} from '../../api/user/org_api'
+    import {get_org_tree, delete_org, modify_org, query_by, get_org_by} from '../../api/user/org_api'
+    import OrgForm from './OrgForm'
 
     export default {
+        components: {OrgForm},
         data() {
             return {
                 tableData: [],
+                org_tree_select: [],
                 loading: true,
+                isAdd: true,
                 enabledTypeOptions: [
                     {key: 'true', display_name: '正常'},
                     {key: 'false', display_name: '禁用'}
@@ -139,16 +150,24 @@
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;
+                });
+                this.loadSelectTree();
+            },
+            loadSelectTree() {
+                this.org_tree_select = [];
+                get_org_by({id: 1, enabled: true}).then((resp) => {
+                    this.org_tree_select.push(resp.data.message);
                 })
             },
-            loadQuery() {
-                // eslint-disable-next-line no-console
-                console.log(this.query);
+            loadQuery(cond) {
+                if (cond) {
+                    this.query = cond;
+                }
                 if (this.query.name === '' && this.query.enabled === '') {
                     this.loadData();
                     return;
                 }
-                let params = {name:this.query.name};
+                let params = {name: this.query.name};
                 if (this.query.enabled !== '') {
                     params['enabled'] = this.query.enabled === 'true';
                 }
@@ -161,7 +180,10 @@
                 })
             },
             new_org() {
-
+                this.isAdd = true;
+                const _this = this.$refs.form;
+                _this.org_tree_select = this.org_tree_select;
+                _this.dialog = true
             },
             // eslint-disable-next-line no-unused-vars
             deleteRow(row) {

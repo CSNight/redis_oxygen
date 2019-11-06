@@ -17,3 +17,8 @@ export function query_by(cond) {
         params: cond
     });
 }
+export function get_org_by(cond) {
+    return REQ.get('/org/get_org_by', {
+        params: cond
+    });
+}
