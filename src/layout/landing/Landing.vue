@@ -177,6 +177,7 @@
                     {key: 'true', display_name: '正常'},
                     {key: 'false', display_name: '禁用'}
                 ],
+                // eslint-disable-next-line
                 src: require('../../assets/white.png'),
                 org_tree_select: []
             }

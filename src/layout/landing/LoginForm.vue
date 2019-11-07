@@ -18,7 +18,8 @@
                           style="width: 360px;height: 46px"/>
             </el-form-item>
             <el-form-item label="" prop="password">
-                <el-input v-model="form.password" name="password" prefix-icon="fa fa-key" placeholder="Password"
+                <el-input type="password" v-model="form.password" name="password" prefix-icon="fa fa-key"
+                          placeholder="Password"
                           style="width: 360px;height: 46px"/>
             </el-form-item>
             <el-form-item v-if="!isLogin" label="" prop="match_password">
@@ -34,11 +35,15 @@
                      :src="src"
                      alt="">
             </el-form-item>
+            <p v-if="error_show"
+               v-text="error_msg"
+               style="color: red">
+            </p>
             <el-form-item v-if="isLogin" prop="remember_me">
                 <el-checkbox v-model="form.remember_me" name="remember-me">Remember Me</el-checkbox>
             </el-form-item>
             <el-form-item style="text-align: center">
-                <el-button v-if="isLogin" :loading="loading" type="primary">登录</el-button>
+                <el-button v-if="isLogin" :loading="loading" type="primary" @click="login">登录</el-button>
                 <el-button v-if="!isLogin" :loading="loading" type="primary">注册</el-button>
             </el-form-item>
         </el-form>
@@ -47,6 +52,8 @@
 </template>
 
 <script>
+    import {login_req} from '../../api/user/login_api';
+
     export default {
         name: "LoginForm",
         props: {
@@ -60,7 +67,7 @@
             }
         }, data() {
             return {
-                loading: false, dialog: false, src: "http://localhost:8020/auth/code",
+                loading: false, dialog: false, src: "http://localhost:8020/auth/code", error_msg: '',
                 form: {
                     username: '',
                     password: '',
@@ -68,8 +75,10 @@
                     email: '',
                     phone: '',
                     match_password: '',
-                    remember_me: false
+                    remember_me: false,
+                    "remember-me": false
                 },
+                error_show: this.error_msg !== '',
                 rules: {
                     name: [
                         {required: true, message: '请输入名称', trigger: 'blur'}
@@ -78,8 +87,9 @@
             }
         }, methods: {
             resetForm() {
-                this.dialog = false
-                this.$refs['form'].resetFields()
+                this.$refs['form'].resetFields();
+                this.error_msg = '';
+                this.code();
                 this.form = {
                     username: '',
                     password: '',
@@ -87,12 +97,28 @@
                     email: '',
                     phone: '',
                     match_password: '',
-                    remember_me: false
+                    remember_me: false,
+                    "remember-me": false
                 }
             }, cancel() {
+                this.dialog = false;
                 this.resetForm()
             }, code() {
                 this.src = "http://localhost:8020/auth/code?d=" + new Date().getTime();
+            }, login() {
+                this.form["remember-me"] = this.form.remember_me;
+                login_req(this.form).then((resp) => {
+                    if (resp.data.status === 200) {
+                        this.dialog = false;
+// eslint-disable-next-line no-console
+                        console.log(resp.data.message);
+                    } else {
+// eslint-disable-next-line no-console
+                        this.resetForm();
+                        this.error_msg = resp.data.message;
+
+                    }
+                });
             }
         }
     }
