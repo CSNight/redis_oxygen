@@ -21,12 +21,13 @@
                     </el-menu-item>
                 </el-menu>
                 <div style="margin: auto">
-                    <el-button style="text-transform: uppercase" v-if="name!==''" @click="logout"
-                               v-text="name+' logout'"></el-button>
-                    <el-button type="primary" icon="el-icon-user" v-if="name===''" @click="login"
-                               v-text="sign_in"></el-button>
-                    <el-button type="primary" v-if="name===''" @click="register"
-                               v-text="sign_up"></el-button>
+                    <el-button type="warning" size="medium" style="text-transform: uppercase" v-if="name!==''"
+                               @click="logout"
+                               v-html='"<i class=\"fa fa-sign-out\"></i> "+name+" logout"'></el-button>
+                    <el-button type="primary" size="medium" icon="el-icon-user" v-if="name===''" @click="login"
+                               v-html='"<i class=\"fa fa-sign-in\"></i> "+sign_in'></el-button>
+                    <el-button type="primary" size="medium" v-if="name===''" @click="register"
+                               v-html='"<i class=\"fa fa-user-plus\"></i> "+sign_up'></el-button>
                 </div>
             </div>
         </header>
@@ -229,7 +230,7 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
     .fa {
         font-weight: bold;
     }

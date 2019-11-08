@@ -1,6 +1,6 @@
 <template>
-    <el-dialog :append-to-body="true" :close-on-click-modal="false" :before-close="cancel" :visible.sync="dialog"
-               :title="isAdd ? '新增部门' : '编辑部门'" width="500px">
+    <el-dialog :append-to-body="false" :close-on-click-modal="false" :before-close="cancel" :visible.sync="dialog"
+               :title="isAdd ? '新增部门' : '编辑部门'" width="500px" @close="resetForm">
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="80px">
             <el-form-item label="名称" prop="name">
                 <el-input v-model="form.name" style="width: 370px;"/>
@@ -25,6 +25,7 @@
 <script>
     import tree_select from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+    import {modify_org, new_org} from '../../api/user/org_api'
 
     export default {
         components: {tree_select: tree_select},
@@ -72,10 +73,10 @@
                 this.$refs['form'].validate((valid) => {
                     if (valid) {
                         if (this.form.pid !== undefined) {
-                            this.loading = true
+                            this.loading = true;
                             if (this.isAdd) {
-                                this.doAdd()
-                            } else this.doEdit()
+                                this.doAdd();
+                            } else this.doEdit();
                         } else {
                             this.$message({
                                 message: '上级部门不能为空',
@@ -86,10 +87,55 @@
                 })
             },
             doAdd() {
+                new_org(this.form).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.$message({
+                            type: 'success',
+                            message: '添加成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: resp.data.message
+                        });
+                    }
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                }).catch(() => {
+                    this.$message.error({
+                        message: "添加失败!"
+                    });
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                });
 
             },
             doEdit() {
-
+                modify_org(this.form).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: resp.data.message
+                        });
+                    }
+                    this.$parent.loadData();
+                    this.loading = false;
+                    this.dialog = false;
+                }).catch(() => {
+                    this.$message.error({
+                        message: "修改错误!"
+                    });
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                })
             },
             resetForm() {
                 this.dialog = false;
@@ -100,9 +146,6 @@
                     pid: 1,
                     enabled: true
                 }
-            },
-            getDepts() {
-
             }
         }
     }

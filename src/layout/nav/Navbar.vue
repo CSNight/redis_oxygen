@@ -127,6 +127,7 @@
                         width: 40px;
                         height: 40px;
                         border-radius: 10px;
+                        border: 1px solid #5a5e66;
                     }
 
                     .el-icon-caret-bottom {
