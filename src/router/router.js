@@ -2,7 +2,12 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Index from '../layout/Index'
 import Landing from "../layout/landing/Landing";
+import NProgress from 'nprogress' // progress bar
+import 'nprogress/nprogress.css' // progress bar style
+import {getToken} from "../utils/token";
 
+const whiteList = ['/'];
+NProgress.configure({showSpinner: false});
 Vue.use(Router);
 export const constantRoutes = [
     {
@@ -49,9 +54,33 @@ const createRouter = () => new Router({
 
 const router = createRouter();
 router.beforeEach(async (to, from, next) => {
-    // eslint-disable-next-line no-console
-    //console.log([to, from, next]);
-    next();
+    // start progress bar
+    NProgress.start();
+    const hasToken = getToken();
+
+    if (hasToken && router.app.$store) {
+        next();
+        let name = router.app.$store.getters.name;
+        if (!name || name === '') {
+            router.app.$store.dispatch('user/user_info');
+        }
+
+    } else {
+        /* has no token*/
+        if (whiteList.indexOf(to.path) !== -1) {
+            // in the free login whitelist, go directly
+            next()
+        } else {
+            // other pages that do not have permission to access are redirected to the login page.
+            next(`/?redirect=${to.path}`);
+            NProgress.done()
+        }
+    }
+});
+
+router.afterEach(() => {
+    // finish progress bar
+    NProgress.done()
 });
 
 
