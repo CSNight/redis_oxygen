@@ -6,8 +6,8 @@
                 <el-input v-model="form.name" style="width: 370px;"/>
             </el-form-item>
             <el-form-item v-if="form.pid !== 0" label="状态" prop="enabled">
-                <el-radio v-for="item in status" :key="item.key" v-model="form.enabled" :label="item.display_name">{{
-                    item.display_name }}
+                <el-radio v-for="item in status" :key="item.id" v-model="form.enabled" :label="item.value">{{
+                    item.label }}
                 </el-radio>
             </el-form-item>
             <el-form-item v-if="form.pid !== 0" style="margin-bottom: 0;" label="上级部门">
@@ -92,13 +92,13 @@
 
             },
             resetForm() {
-                this.dialog = false
-                this.$refs['form'].resetFields()
+                this.dialog = false;
+                this.$refs['form'].resetFields();
                 this.form = {
                     id: '',
                     name: '',
                     pid: 1,
-                    enabled: 'true'
+                    enabled: true
                 }
             },
             getDepts() {

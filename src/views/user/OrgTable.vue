@@ -6,7 +6,7 @@
             <el-input clearable v-model="query.name" placeholder="输入部门名称搜索" style="width: 200px;" size="mini"
                       class="filter-item"/>
             <el-select v-model="query.enabled" clearable placeholder="状态" class="filter-item" style="width: 90px"
-                       size="mini" value="">
+                       size="mini" value="" @change="loadQuery">
                 <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name"
                            :value="item.key"/>
             </el-select>
@@ -30,7 +30,7 @@
             </div>
         </div>
         <el-divider content-position="left"></el-divider>
-        <OrgForm ref="form" :status="enabledTypeOptions" :is-add="isAdd"/>
+        <OrgForm ref="form" :status="status" :is-add="isAdd"/>
         <el-table
                 :data="tableData"
                 style="width: 100%;margin-bottom: 20px;"
@@ -106,7 +106,7 @@
 </template>
 
 <script>
-    import {get_org_tree, delete_org, modify_org, query_by, get_org_by} from '../../api/user/org_api'
+    import {delete_org, get_org_by, get_org_tree, modify_org, query_by} from '../../api/user/org_api'
     import OrgForm from './OrgForm'
 
     export default {
@@ -115,6 +115,7 @@
             return {
                 tableData: [],
                 org_tree_select: [],
+                status: [{id: 1, value: true, label: '启用'}, {id: 2, value: false, label: '禁用'}],
                 loading: true,
                 isAdd: true,
                 enabledTypeOptions: [
@@ -159,10 +160,7 @@
                     this.org_tree_select.push(resp.data.message);
                 })
             },
-            loadQuery(cond) {
-                if (cond) {
-                    this.query = cond;
-                }
+            loadQuery() {
                 if (this.query.name === '' && this.query.enabled === '') {
                     this.loadData();
                     return;
@@ -172,7 +170,7 @@
                     params['enabled'] = this.query.enabled === 'true';
                 }
                 this.tableData = [];
-                query_by(this.query).then((resp) => {
+                query_by(params).then((resp) => {
                     this.tableData = resp.data.message;
                     this.loading = false;
                 }).catch(() => {
@@ -216,7 +214,18 @@
             },
             // eslint-disable-next-line no-unused-vars
             editRow(row) {
-
+                this.isAdd = false;
+                const _this = this.$refs.form;
+                _this.org_tree_select = this.tableData;
+                _this.form = {
+                    id: row.id,
+                    name: row.name,
+                    pid: row.pid,
+                    create_time: row.create_time,
+                    create_user: row.create_user,
+                    enabled: row.enabled
+                };
+                _this.dialog = true;
             },
             lockToggle(row) {
                 let row_status = !row.enabled;

@@ -1,6 +1,6 @@
 <template>
     <div class="landing">
-        <LoginForm ref="form" :status="enabledTypeOptions" :is-login="isLogin" />
+        <LoginForm ref="form" :is-login="isLogin"/>
         <header class="container" style="position: relative">
             <div style="position:absolute;z-index: 100;display:flex;width: 100%;margin: 20px 0">
                 <el-image
@@ -21,8 +21,12 @@
                     </el-menu-item>
                 </el-menu>
                 <div style="margin: auto">
-                    <el-button @click="login">SIGNIN</el-button>
-                    <el-button @click="register">SIGNUP</el-button>
+                    <el-button style="text-transform: uppercase" v-if="name!==''" @click="logout"
+                               v-text="name+' logout'"></el-button>
+                    <el-button type="primary" icon="el-icon-user" v-if="name===''" @click="login"
+                               v-text="sign_in"></el-button>
+                    <el-button type="primary" v-if="name===''" @click="register"
+                               v-text="sign_up"></el-button>
                 </div>
             </div>
         </header>
@@ -133,7 +137,7 @@
                         <h4 class="mb-0 font-weight-light">Let's get in touch on any of these platforms.</h4>
                     </div>
                     <div class="col-lg-6 text-lg-center btn-wrapper">
-                        <a target="_blank" href="https://github.com/creativetimofficial"
+                        <a target="_blank" href="https://github.com/CSNight/RedisMonitorServices"
                            class="btn btn-neutral btn-icon-only btn-github btn-round btn-lg" data-toggle="tooltip"
                            data-original-title="Star on Github">
                             <i class="fa fa-github"></i>
@@ -144,16 +148,16 @@
                 <div class="row align-items-center justify-content-md-between">
                     <div class="col-md-6">
                         <div class="copyright">
-                            &copy; 2019 <a href="https://www.creative-tim.com" target="_blank">CSNight</a>.
+                            &copy; 2019 <a href="https://github.com/CSNight" target="_blank">CSNight</a>.
                         </div>
                     </div>
                     <div class="col-md-6">
                         <ul class="nav nav-footer justify-content-end">
                             <li class="nav-item">
-                                <a href="https://www.creative-tim.com" class="nav-link" target="_blank">CSNight</a>
+                                <a href="https://github.com/CSNight" class="nav-link" target="_blank">CSNight</a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/creativetimofficial/argon-design-system/blob/master/LICENSE.md"
+                                <a href="https://github.com/CSNight/RedisMonitorServices/blob/master/LICENSE"
                                    class="nav-link" target="_blank">MIT License</a>
                             </li>
                         </ul>
@@ -166,6 +170,7 @@
 
 <script>
     import LoginForm from "./LoginForm";
+    import {mapGetters} from 'vuex'
 
     export default {
         name: "Landing",
@@ -177,21 +182,48 @@
                     {key: 'true', display_name: '正常'},
                     {key: 'false', display_name: '禁用'}
                 ],
+                // eslint-disable-next-line
                 src: require('../../assets/white.png'),
-                org_tree_select: []
+                sign_in: 'SIGN IN',
+                sign_up: 'SIGN UP'
             }
+        }, computed: {
+            ...mapGetters([
+                'name',
+                'token'
+            ])
+        }, created() {
+            this.$nextTick(() => {
+                this.recover_login();
+            });
         }, methods: {
+            recover_login() {
+                if (this.token) {
+                    this.$store.dispatch('user/user_info', '').then((resp) => {
+                        if (resp.status !== 200) {
+                            this.login();
+                        }
+                    })
+                } else {
+                    this.login();
+                }
+            },
             login() {
                 this.isLogin = true;
                 const _this = this.$refs.form;
-                _this.org_tree_select = this.org_tree_select;
                 _this.dialog = true
             },
             register() {
                 this.isLogin = false;
                 const _this = this.$refs.form;
-                _this.org_tree_select = this.org_tree_select;
                 _this.dialog = true
+            }, logout() {
+                this.$store.dispatch('user/logout').then((data) => {
+                    this.$message({
+                        type: 'info',
+                        message: data.message.username + " logout!"
+                    })
+                });
             }
         }
     }

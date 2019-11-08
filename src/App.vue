@@ -1,5 +1,5 @@
 <template>
-    <div id="app" class="app" >
+    <div id="app" class="app">
         <router-view/>
     </div>
 </template>
@@ -9,7 +9,10 @@
         name: 'app'
     }
 </script>
-<style scoped>
+<style>
+    @import "/styles/mixin.scss";
+    @import "/styles/variables.scss";
+
     .app {
         /*50 = navbar  */
         min-height: calc(100vh - 50px);
