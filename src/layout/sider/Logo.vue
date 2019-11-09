@@ -25,6 +25,7 @@
         data() {
             return {
                 title: 'Oxygen',
+                // eslint-disable-next-line no-undef
                 logo: require('../../assets/logo.png')
             }
         }

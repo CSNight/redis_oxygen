@@ -19,9 +19,8 @@
         render(h, context) {
             const {icon, title} = context.props;
             const vnodes = [];
-
             if (icon) {
-                vnodes.push(<el-icon icon-class={icon}/>);
+                vnodes.push(<fa-icon icon-class={icon}/>);
             }
             if (title) {
                 vnodes.push(<span><slot name='title'>{(title)}</slot></span>);

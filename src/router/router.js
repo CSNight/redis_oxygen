@@ -23,7 +23,7 @@ export const constantRoutes = [
             path: 'dashboard',
             component: () => import('../components/HelloWorld'),
             name: 'dashboard',
-            meta: {title: 'Dashboard', icon: 'orange', affix: true, id: 'sss'}
+            meta: {title: 'Dashboard', icon: 'fa-cog', affix: true, id: 'sss'}
         }]
     }, {
         path: '/system',
@@ -31,13 +31,19 @@ export const constantRoutes = [
         component: Index,
         alwaysShow: true,
         redirect: '/system/org',
-        meta: {title: '系统管理', icon: 'orange', id: 'aaa'},
+        meta: {title: '系统管理', icon: 'fa-cog', id: 'aaa'},
         children: [
             {
                 path: 'org',
-                component: () => import('../views/user/OrgTable'),
+                component: () => import('../views/system/OrgTable'),
                 name: 'org',
-                meta: {title: '部门管理', icon: 'none', affix: true, id: 'bbb'}
+                meta: {title: '部门管理', icon: 'none', affix: true, id: 'org_com'}
+
+            }, {
+                path: 'menu',
+                component: () => import('../views/system/MenuTable'),
+                name: 'menu',
+                meta: {title: '菜单管理', icon: 'none', affix: true, id: 'menu_com'}
 
             }
         ]

@@ -10,7 +10,7 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
     config => {
-        config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        //config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         return config
     },
     error => {

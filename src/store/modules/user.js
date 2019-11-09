@@ -1,6 +1,6 @@
 import {getToken, removeToken} from "../../utils/token";
 import {resetRouter} from "../../router/router";
-import {logout_req, user_avatar, user_info} from "../../api/user/login_api";
+import {logout_req, user_avatar, user_info} from "../../api/system/login_api";
 
 
 const state = {
@@ -40,7 +40,7 @@ const actions = {
                 reject(error)
             })
         })
-    },// get user info
+    },
     user_info({commit, state}) {
         return new Promise((resolve, reject) => {
             user_info({username: state.name}).then(response => {

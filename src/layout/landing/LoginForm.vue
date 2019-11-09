@@ -70,7 +70,7 @@
 </template>
 
 <script>
-    import {login_req, register_req} from "../../api/user/login_api";
+    import {login_req, register_req} from "../../api/system/login_api";
 
     export default {
         name: "LoginForm",

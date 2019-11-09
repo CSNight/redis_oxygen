@@ -53,12 +53,18 @@
       overflow: hidden;
     }
 
+    .fa-icon {
+      margin-right: 16px;
+      padding-top: 4px;
+    }
+
     .svg-icon {
       margin-right: 16px;
     }
+
     .el-icon {
-       margin-right: 16px;
-     }
+      margin-right: 16px;
+    }
 
     .el-menu {
       border: none;
@@ -113,6 +119,11 @@
           margin-left: 20px;
         }
 
+        .fa-icon {
+          margin-left: 20px;
+          padding-top: 4px;
+        }
+
         .el-icon {
           margin-left: 20px;
         }
@@ -127,6 +138,11 @@
 
         .el-icon {
           margin-left: 15px;
+        }
+
+        .fa-icon {
+          margin-left: 15px;
+          padding-top: 4px;
         }
 
         .svg-icon {

@@ -3,23 +3,24 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input clearable v-model="query.name" placeholder="输入部门名称搜索" style="width: 200px;" size="mini"
+            <el-input clearable v-model="query.name" placeholder="输入菜单名称搜索" style="width: 200px;" size="mini"
                       class="filter-item"/>
             <el-select v-model="query.enabled" clearable placeholder="状态" class="filter-item" style="width: 90px"
-                       size="mini" value="" @change="loadQuery">
+                       size="mini" value="">
                 <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name"
                            :value="item.key"/>
             </el-select>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery">搜索
+            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
                 <el-button
+                        @click.native.prevent="new_menu"
                         class="filter-item"
                         size="mini"
                         type="primary"
                         icon="el-icon-plus"
-                        @click="new_org">新增
+                >新增
                 </el-button>
                 <el-button
                         @click.native.prevent="loadData"
@@ -29,10 +30,10 @@
                 </el-button>
             </div>
         </div>
+        <MenuForm ref="form" :status="status" :is-add="isAdd"/>
         <el-divider content-position="left"></el-divider>
-        <OrgForm ref="form" :status="status" :is-add="isAdd"/>
         <el-table
-                :data="tableData"
+                :data="MenuTree"
                 style="width: 100%;margin-bottom: 20px;"
                 row-key="name"
                 v-loading="loading"
@@ -44,20 +45,48 @@
                     prop="name"
                     label="名称">
             </el-table-column>
-            <el-table-column
-                    prop="id"
-                    label="编号"
-                    align="center"
-                    width="100px">
+            <el-table-column prop="icon" label="图标" align="center" width="100px">
+                <template slot-scope="scope">
+                    <fa-icon :icon-class="scope.row.icon" :class-name="className"></fa-icon>
+                </template>
+            </el-table-column>
+            <el-table-column prop="sort" label="排序" align="center" width="100px">
+                <template slot-scope="scope">
+                    <el-tag type="primary">{{scope.row.sort}}</el-tag>
+                </template>
             </el-table-column>
             <el-table-column
                     prop="enabled"
                     align="center"
                     label="状态"
-                    width="120px">
+                    width="100px">
                 <template slot-scope="scope">
-                    <el-tag :type="scope.row.enabled ? 'success' : 'danger'">{{scope.row.enabled?'启用':'禁用'}}</el-tag>
+                    <el-tag :type="scope.row.hidden ? 'danger' : 'success'">{{scope.row.hidden?'隐藏':'显示'}}</el-tag>
                 </template>
+            </el-table-column>
+            <el-table-column
+                    prop="path"
+                    align="center"
+                    label="链接"
+                    width="100px">
+                <template slot-scope="scope">
+                    <el-tag type="primary">{{scope.row.iframe?'是':'否'}}</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="component"
+                    align="center"
+                    label="组件">
+            </el-table-column>
+            <el-table-column
+                    prop="component_name"
+                    align="center"
+                    label="组件编码">
+            </el-table-column>
+            <el-table-column
+                    prop="path"
+                    align="center"
+                    label="路由">
             </el-table-column>
             <el-table-column
                     prop="create_time"
@@ -69,34 +98,26 @@
                 </template>
             </el-table-column>
             <el-table-column
-                    prop="create_user"
-                    align="center"
-                    label="创建人">
-            </el-table-column>
-            <el-table-column
                     fixed="right"
                     align="center"
                     label="操作">
                 <template slot-scope="scope">
                     <el-button
-                            v-if="getShow(scope.row)"
-                            @click.native.prevent="editRow(scope.row)"
+                            @click.native.prevent=""
                             type="primary"
                             icon="el-icon-edit"
                             size="small">
                     </el-button>
                     <el-button
-                            v-if="getShow(scope.row)"
-                            @click.native.prevent="deleteRow(scope.row)"
+                            @click.native.prevent="deleteRow(scope.row) "
                             type="danger"
                             icon="el-icon-delete"
                             size="small">
                     </el-button>
                     <el-button
-                            v-if="getShow(scope.row)"
-                            @click.native.prevent="lockToggle(scope.row)"
-                            :type="lockBtnType(scope.row)"
-                            :icon="lockBtnIcon(scope.row)"
+                            @click.native.prevent="viewToggle(scope.row)"
+                            :type="visBtnType(scope.row)"
+                            :icon="visBtnIcon(scope.row)"
                             size="small">
                     </el-button>
                 </template>
@@ -106,92 +127,61 @@
 </template>
 
 <script>
-    import {delete_org, get_org_by, get_org_tree, modify_org, query_by} from '../../api/user/org_api'
-    import OrgForm from './OrgForm'
+    import {delete_menu, get_menu_tree, modify_menu} from "@/api/system/menu_api";
+    import MenuForm from './MenuForm'
 
     export default {
-        components: {OrgForm},
+        name: "MenuTable",
+        components: {MenuForm},
         data() {
             return {
-                tableData: [],
-                org_tree_select: [],
-                status: [{id: 1, value: true, label: '启用'}, {id: 2, value: false, label: '禁用'}],
-                loading: true,
-                isAdd: true,
                 enabledTypeOptions: [
-                    {key: 'true', display_name: '正常'},
-                    {key: 'false', display_name: '禁用'}
-                ], query: {
+                    {key: 'true', display_name: '显示'},
+                    {key: 'false', display_name: '隐藏'}
+                ],
+                query: {
                     name: '',
                     enabled: ''
-                }
+                },
+                MenuTree: [],
+                loading: false,
+                isAdd: true,
+                className: 'fa-1x',
+                status: [{id: 1, value: true, label: '隐藏'}, {id: 2, value: false, label: '显示'}],
             }
-        },
-        created() {
+        }, created() {
             this.$nextTick(() => {
                 this.loadData();
             });
-        },
-        computed: {},
-        methods: {
-            getShow: (row) => {
-                return row.name !== 'Top'
+        }, methods: {
+            visBtnIcon(row) {
+                return row.hidden ? 'fa fa-eye' : 'fa fa-eye-slash'
             },
-            lockBtnIcon(row) {
-                return row.enabled ? 'el-icon-lock' : 'el-icon-unlock'
-            },
-            lockBtnType(row) {
-                return row.enabled ? 'success' : 'warning'
+            visBtnType(row) {
+                return row.hidden ? 'success' : 'warning'
             },
             loadData() {
                 this.loading = true;
-                this.tableData = [];
-                get_org_tree().then((resp) => {
-                    this.tableData.push(resp.data.message);
+                this.MenuTree = [];
+                get_menu_tree().then((resp) => {
+                    this.MenuTree = resp.data.message;
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;
                 });
-                this.loadSelectTree();
-            },
-            loadSelectTree() {
-                this.org_tree_select = [];
-                get_org_by({id: 1, enabled: true}).then((resp) => {
-                    this.org_tree_select.push(resp.data.message);
-                })
-            },
-            loadQuery() {
-                if (this.query.name === '' && this.query.enabled === '') {
-                    this.loadData();
-                    return;
-                }
-                let params = {name: this.query.name};
-                if (this.query.enabled !== '') {
-                    params['enabled'] = this.query.enabled === 'true';
-                }
-                this.tableData = [];
-                query_by(params).then((resp) => {
-                    this.tableData = resp.data.message;
-                    this.loading = false;
-                }).catch(() => {
-                    this.loading = false;
-                })
-            },
-            new_org() {
+            }, new_menu() {
                 this.isAdd = true;
                 const _this = this.$refs.form;
-                _this.org_tree_select = this.org_tree_select;
+                _this.MenuTree = this.MenuTree;
                 _this.dialog = true
-            },
-            // eslint-disable-next-line no-unused-vars
-            deleteRow(row) {
-                this.$confirm('此操作将该部门及子部门将一起删除, 是否继续?', '提示', {
+            }, deleteRow(row) {
+                this.$confirm('此操作将该菜单及子菜单将一起删除, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     this.lockLoading();
-                    delete_org(row.id).then((resp) => {
+                    delete_menu(row.id).then((resp) => {
                         if (resp.data.status === 200 && resp.data.message === "success") {
                             this.$message({
                                 type: 'success',
@@ -211,49 +201,25 @@
                         message: '已取消删除'
                     });
                 });
-            },
-            // eslint-disable-next-line no-unused-vars
-            editRow(row) {
-                this.isAdd = false;
-                const _this = this.$refs.form;
-                _this.org_tree_select = this.tableData;
-                _this.form = {
-                    id: row.id,
-                    name: row.name,
-                    pid: row.pid,
-                    create_time: row.create_time,
-                    create_user: row.create_user,
-                    enabled: row.enabled
-                };
-                _this.dialog = true;
-            },
-            lockToggle(row) {
-                let row_status = !row.enabled;
-                let org_ent = {
-                    id: row.id,
-                    name: row.name,
-                    enabled: row_status,
-                    pid: row.pid,
-                    create_user: row.create_user,
-                    create_time: row.create_time
-                };
-                let msg_prefix = row.enabled ? '锁定' : '解锁';
-                let tit = '此操作将该部门及子部门将一起' + msg_prefix + ', 是否继续?';
+            }, viewToggle(row) {
+                let menu_ins = Object.assign({}, row);
+                let msg_prefix = row.hidden ? '显示' : '隐藏';
+                menu_ins.hidden = !row.hidden;
+                let tit = '此操作将该菜单及子菜单将一起' + msg_prefix + ', 是否继续?';
                 this.$confirm(tit, '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     this.lockLoading();
-
-                    modify_org(org_ent).then((resp) => {
+                    modify_menu(menu_ins).then((resp) => {
                         if (resp.data.status === 200 && resp.data.hasOwnProperty('message')) {
                             this.$message({
                                 type: 'success',
-                                message: msg_prefix + '成功!'
+                                message: '状态切换成功!'
                             });
                         } else {
-                            this.$message.error(msg_prefix + '失败!');
+                            this.$message.error('状态切换失败!');
                         }
                         this.loadData();
                         this.unlockLoading();
@@ -281,7 +247,8 @@
         }
     }
 </script>
-<style lang="scss" scoped>
+
+<style scoped>
     .head-container {
         height: 30px;
     }
@@ -289,6 +256,4 @@
     .filter-item {
         margin: 10px 7px;
     }
-
-
 </style>
