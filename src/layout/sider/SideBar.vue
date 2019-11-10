@@ -3,7 +3,7 @@
         <logo v-if="showLogo" :collapse="isCollapse"/>
         <el-scrollbar wrap-class="scrollbar-wrapper">
             <el-menu
-                    class="el-menu-vertical-demo"
+                    class="el-menu-vertical"
                     :default-active="activeMenu"
                     :collapse="isCollapse"
                     :background-color="variables.menuBg"

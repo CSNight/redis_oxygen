@@ -17,7 +17,7 @@ axios.defaults.withCredentials = true;
 Vue.config.productionTip = false;
 Vue.use(ElementUI, {locale});
 new Vue({
-    router,
     store,
+    router,
     render: h => h(App),
 }).$mount('#app');

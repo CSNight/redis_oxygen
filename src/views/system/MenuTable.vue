@@ -30,7 +30,7 @@
                 </el-button>
             </div>
         </div>
-        <MenuForm ref="form" :status="status" :is-add="isAdd"/>
+        <MenuForm ref="form" :status="status" :is-add="isAdd" :icons="icons"/>
         <el-divider content-position="left"></el-divider>
         <el-table
                 :data="MenuTree"
@@ -103,7 +103,7 @@
                     label="操作">
                 <template slot-scope="scope">
                     <el-button
-                            @click.native.prevent=""
+                            @click.native.prevent="editRow(scope.row)"
                             type="primary"
                             icon="el-icon-edit"
                             size="small">
@@ -127,7 +127,7 @@
 </template>
 
 <script>
-    import {delete_menu, get_menu_tree, modify_menu} from "@/api/system/menu_api";
+    import {delete_menu, get_menu_tree, modify_menu, get_icons} from "@/api/system/menu_api";
     import MenuForm from './MenuForm'
 
     export default {
@@ -143,6 +143,7 @@
                     name: '',
                     enabled: ''
                 },
+                icons: [],
                 MenuTree: [],
                 loading: false,
                 isAdd: true,
@@ -169,11 +170,42 @@
                 }).catch(() => {
                     this.loading = false;
                 });
+                get_icons().then((resp) => {
+                    this.icons = resp.data.message;
+                })
             }, new_menu() {
                 this.isAdd = true;
                 const _this = this.$refs.form;
-                _this.MenuTree = this.MenuTree;
+                let tmpTree = JSON.parse(JSON.stringify(this.MenuTree));
+                _this.MenuTree = [{
+                    id: 0,
+                    pid: -1,
+                    name: '顶级菜单',
+                    component: '',
+                    component_name: '',
+                    path: '/',
+                    sort: 0,
+                    hidden: true,
+                    children: tmpTree
+                }];
                 _this.dialog = true
+            }, editRow(row) {
+                this.isAdd = false;
+                const _this = this.$refs.form;
+                let tmpTree = JSON.parse(JSON.stringify(this.MenuTree));
+                _this.MenuTree = [{
+                    id: 0,
+                    pid: -1,
+                    name: '顶级菜单',
+                    component: '',
+                    component_name: '',
+                    path: '/',
+                    sort: 0,
+                    hidden: true,
+                    children: tmpTree
+                }];
+                _this.form = JSON.parse(JSON.stringify(row));
+                _this.dialog = true;
             }, deleteRow(row) {
                 this.$confirm('此操作将该菜单及子菜单将一起删除, 是否继续?', '提示', {
                     confirmButtonText: '确定',

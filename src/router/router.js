@@ -37,13 +37,13 @@ export const constantRoutes = [
                 path: 'org',
                 component: () => import('../views/system/OrgTable'),
                 name: 'org',
-                meta: {title: '部门管理', icon: 'none', affix: true, id: 'org_com'}
+                meta: {title: '部门管理', icon: 'fa-sitemap', affix: true, id: 'org_com'}
 
             }, {
                 path: 'menu',
                 component: () => import('../views/system/MenuTable'),
                 name: 'menu',
-                meta: {title: '菜单管理', icon: 'none', affix: true, id: 'menu_com'}
+                meta: {title: '菜单管理', icon: 'fa-list-ul', affix: true, id: 'menu_com'}
 
             }
         ]
@@ -65,12 +65,16 @@ router.beforeEach(async (to, from, next) => {
     const hasToken = getToken();
 
     if (hasToken && router.app.$store) {
-        next();
         let name = router.app.$store.getters.name;
         if (!name || name === '') {
-            router.app.$store.dispatch('user/user_info');
+            await router.app.$store.dispatch('user/user_info').then(() => {
+                next();
+            }).catch(() => {
+                next(`/?redirect=${to.path}`);
+            });
+        } else {
+            next();
         }
-
     } else {
         /* has no token*/
         if (whiteList.indexOf(to.path) !== -1) {
@@ -85,6 +89,8 @@ router.beforeEach(async (to, from, next) => {
 });
 
 router.afterEach(() => {
+    // eslint-disable-next-line no-console
+    console.log(router);
     // finish progress bar
     NProgress.done()
 });

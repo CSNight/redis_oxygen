@@ -179,7 +179,7 @@
             new_org() {
                 this.isAdd = true;
                 const _this = this.$refs.form;
-                _this.org_tree_select = this.org_tree_select;
+                _this.org_tree_select = JSON.parse(JSON.stringify(this.org_tree_select));
                 _this.dialog = true
             },
             deleteRow(row) {
@@ -213,7 +213,7 @@
             editRow(row) {
                 this.isAdd = false;
                 const _this = this.$refs.form;
-                _this.org_tree_select = this.tableData;
+                _this.org_tree_select = JSON.parse(JSON.stringify(this.tableData));
                 _this.form = {
                     id: row.id,
                     name: row.name,

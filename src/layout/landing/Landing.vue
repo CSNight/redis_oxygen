@@ -205,8 +205,6 @@
                             this.login();
                         }
                     })
-                } else {
-                    this.login();
                 }
             },
             login() {
