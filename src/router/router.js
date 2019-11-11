@@ -24,7 +24,7 @@ export const constantRoutes = [
             path: 'dashboard',
             component: () => import('../components/HelloWorld'),
             name: 'dashboard',
-            meta: {title: 'Dashboard', icon: 'fa-cog', affix: true, ref: 'sss'}
+            meta: {title: 'Dashboard', icon: 'fa-cog', ref: 'sss'}
         }]
     }, {
         path: '/system',
@@ -38,14 +38,13 @@ export const constantRoutes = [
                 path: '/system/org',
                 component: () => import('../views/system/OrgTable'),
                 name: 'org',
-                meta: {title: '部门管理', icon: 'fa-sitemap', affix: true, ref: 'org_com'}
+                meta: {title: '部门管理', icon: 'fa-sitemap', ref: 'org_com'}
 
             }, {
                 path: '/system/menu',
                 component: () => import('../views/system/MenuTable'),
                 name: 'menu',
-                meta: {title: '菜单管理', icon: 'fa-list-ul', affix: true, ref: 'menu_com'}
-
+                meta: {title: '菜单管理', icon: 'fa-list-ul', ref: 'menu_com'}
             }
         ]
     },
