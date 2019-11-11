@@ -5,28 +5,20 @@
             <!-- 搜索 -->
             <el-input clearable v-model="query.name" placeholder="输入菜单名称搜索" style="width: 200px;" size="mini"
                       class="filter-item"/>
-            <el-select v-model="query.enabled" clearable placeholder="状态" class="filter-item" style="width: 90px"
-                       size="mini" value="">
+            <el-select v-model="query.hidden" clearable placeholder="状态" class="filter-item" style="width: 90px"
+                       size="mini" value="" @change="loadQuery">
                 <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name"
                            :value="item.key"/>
             </el-select>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索
+            <el-button class="filter-item" size="mini" type="success" @click="loadQuery" icon="el-icon-search">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
-                <el-button
-                        @click.native.prevent="new_menu"
-                        class="filter-item"
-                        size="mini"
-                        type="primary"
-                        icon="el-icon-plus"
-                >新增
+                <el-button @click.native.prevent="new_menu" class="filter-item" size="mini" type="primary"
+                           icon="el-icon-plus">新增
                 </el-button>
                 <el-button
-                        @click.native.prevent="loadData"
-                        type="success"
-                        icon="el-icon-refresh"
-                        size="mini">
+                        @click.native.prevent="loadData" type="success" icon="el-icon-refresh" size="mini">
                 </el-button>
             </div>
         </div>
@@ -127,7 +119,7 @@
 </template>
 
 <script>
-    import {delete_menu, get_menu_tree, modify_menu, get_icons} from "@/api/system/menu_api";
+    import {delete_menu, get_icons, get_menu_tree, modify_menu, query_by} from "../../api/system/menu_api";
     import MenuForm from './MenuForm'
 
     export default {
@@ -136,12 +128,12 @@
         data() {
             return {
                 enabledTypeOptions: [
-                    {key: 'true', display_name: '显示'},
-                    {key: 'false', display_name: '隐藏'}
+                    {key: 'true', display_name: '隐藏'},
+                    {key: 'false', display_name: '显示'}
                 ],
                 query: {
                     name: '',
-                    enabled: ''
+                    hidden: ''
                 },
                 icons: [],
                 MenuTree: [],
@@ -172,6 +164,22 @@
                 });
                 get_icons().then((resp) => {
                     this.icons = resp.data.message;
+                })
+            }, loadQuery() {
+                if (this.query.name === '' && this.query.hidden === '') {
+                    this.loadData();
+                    return;
+                }
+                let params = {name: this.query.name};
+                if (this.query.hidden !== '') {
+                    params['hidden'] = this.query.hidden === 'true';
+                }
+                this.MenuTree = [];
+                query_by(params).then((resp) => {
+                    this.MenuTree = resp.data.message;
+                    this.loading = false;
+                }).catch(() => {
+                    this.loading = false;
                 })
             }, new_menu() {
                 this.isAdd = true;

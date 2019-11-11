@@ -66,8 +66,8 @@
 <script>
     import tree_select from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-    import IconSelect from "@/components/IconSelect";
-    import {new_menu} from "../../api/system/menu_api";
+    import IconSelect from "../../components/IconSelect";
+    import {modify_menu, new_menu} from "../../api/system/menu_api";
 
     export default {
         name: "MenuForm",
@@ -177,8 +177,29 @@
                     this.$parent.loadData();
                 });
             }, doEdit() {
-                this.loading = false;
-                this.dialog = false;
+                modify_menu(this.form).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: resp.data.message
+                        });
+                    }
+                    this.$parent.loadData();
+                    this.loading = false;
+                    this.dialog = false;
+                }).catch(() => {
+                    this.$message.error({
+                        message: "修改错误!"
+                    });
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                })
             }
         }
     }
