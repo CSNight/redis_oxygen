@@ -17,7 +17,7 @@
                         <router-link to="/home">Dashboard</router-link>
                     </el-menu-item>
                     <el-menu-item index="3">
-                        <a>SeverAPI</a>
+                        <a href="http://localhost:8020/swagger-ui.html">SeverAPI</a>
                     </el-menu-item>
                 </el-menu>
                 <div style="margin: auto">

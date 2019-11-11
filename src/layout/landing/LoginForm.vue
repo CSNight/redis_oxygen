@@ -32,7 +32,7 @@
             <el-form-item label="" prop="password">
                 <el-input type="password" v-model="form.password" name="password" prefix-icon="fa fa-key"
                           placeholder="Password"
-                          style="width: 360px;height: 46px"/>
+                          style="width: 360px;height: 46px" show-password/>
             </el-form-item>
             <div v-if="error_reg_show">
                 <p class="error_text" v-for="error in error_reg['password']" :key="error"
@@ -41,7 +41,7 @@
             <el-form-item v-if="!isLogin" label="" prop="match_password">
                 <el-input type="password" v-model="form.match_password" name="match_password" prefix-icon="fa fa-key"
                           placeholder="Password Again"
-                          style="width: 360px;height: 46px"/>
+                          style="width: 360px;height: 46px" show-password/>
             </el-form-item>
             <div v-if="error_reg_show">
                 <p class="error_text" v-for="error in error_reg['match_password']" :key="error"

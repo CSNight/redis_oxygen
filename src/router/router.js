@@ -4,7 +4,8 @@ import Index from '../layout/Index'
 import Landing from "../layout/landing/Landing";
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import {getToken} from "../utils/token";
+import {getToken, removeToken} from "../utils/token";
+import store from '@/store'
 
 const whiteList = ['/'];
 NProgress.configure({showSpinner: false});
@@ -23,7 +24,7 @@ export const constantRoutes = [
             path: 'dashboard',
             component: () => import('../components/HelloWorld'),
             name: 'dashboard',
-            meta: {title: 'Dashboard', icon: 'fa-cog', affix: true, id: 'sss'}
+            meta: {title: 'Dashboard', icon: 'fa-cog', affix: true, ref: 'sss'}
         }]
     }, {
         path: '/system',
@@ -31,19 +32,19 @@ export const constantRoutes = [
         component: Index,
         alwaysShow: true,
         redirect: '/system/org',
-        meta: {title: '系统管理', icon: 'fa-cog', id: 'aaa'},
+        meta: {title: '系统管理', icon: 'fa-cog', ref: 'aaa'},
         children: [
             {
-                path: 'org',
+                path: '/system/org',
                 component: () => import('../views/system/OrgTable'),
                 name: 'org',
-                meta: {title: '部门管理', icon: 'fa-sitemap', affix: true, id: 'org_com'}
+                meta: {title: '部门管理', icon: 'fa-sitemap', affix: true, ref: 'org_com'}
 
             }, {
-                path: 'menu',
+                path: '/system/menu',
                 component: () => import('../views/system/MenuTable'),
                 name: 'menu',
-                meta: {title: '菜单管理', icon: 'fa-list-ul', affix: true, id: 'menu_com'}
+                meta: {title: '菜单管理', icon: 'fa-list-ul', affix: true, ref: 'menu_com'}
 
             }
         ]
@@ -64,13 +65,14 @@ router.beforeEach(async (to, from, next) => {
     NProgress.start();
     const hasToken = getToken();
 
-    if (hasToken && router.app.$store) {
-        let name = router.app.$store.getters.name;
+    if (hasToken && store) {
+        let name = store.getters.name;
         if (!name || name === '') {
-            await router.app.$store.dispatch('user/user_info').then(() => {
+            await store.dispatch('user/user_info').then(() => {
                 next();
             }).catch(() => {
-                next(`/?redirect=${to.path}`);
+                removeToken();
+                next(`/?redirect=${to.path}`)
             });
         } else {
             next();

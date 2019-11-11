@@ -44,7 +44,10 @@
             <el-form-item label="组件名称" prop="component">
                 <el-input v-model="form.component"/>
             </el-form-item>
-            <el-form-item label="菜单路由" prop="path">
+            <el-form-item label="组件编码" prop="component_name">
+                <el-input v-model="form.component_name"/>
+            </el-form-item>
+            <el-form-item v-if="form.iframe" label="菜单路由" prop="path">
                 <el-input v-model="form.path"/>
             </el-form-item>
             <el-form-item style="margin-bottom: 0;" label="上级菜单" prop="pid">
@@ -55,7 +58,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button type="text" @click="cancel">取消</el-button>
-            <el-button :loading="loading" type="primary">确认</el-button>
+            <el-button :loading="loading" type="primary" @click="doSubmit">确认</el-button>
         </div>
     </el-dialog>
 </template>
@@ -64,6 +67,7 @@
     import tree_select from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
     import IconSelect from "@/components/IconSelect";
+    import {new_menu} from "../../api/system/menu_api";
 
     export default {
         name: "MenuForm",
@@ -94,6 +98,7 @@
                     sort: 0,
                     component: '',
                     component_name: '',
+                    path: ''
                 },
                 rules: {
                     name: [
@@ -127,10 +132,54 @@
                     sort: 0,
                     component: '',
                     component_name: '',
+                    path: ''
                 }
             }, selected(name) {
                 this.form.icon = name
-            },
+            }, doSubmit() {
+                this.$refs['form'].validate((valid) => {
+                    if (valid) {
+                        if (this.form.pid !== undefined) {
+                            this.loading = true;
+                            if (this.isAdd) {
+                                this.doAdd();
+                            } else this.doEdit();
+                        } else {
+                            this.$message({
+                                message: '上级菜单不能为空',
+                                type: 'warning'
+                            })
+                        }
+                    }
+                })
+            }, doAdd() {
+                new_menu(this.form).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.$message({
+                            type: 'success',
+                            message: '添加成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: resp.data.message
+                        });
+                    }
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                }).catch(() => {
+                    this.$message.error({
+                        message: "添加失败!"
+                    });
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                });
+            }, doEdit() {
+                this.loading = false;
+                this.dialog = false;
+            }
         }
     }
 </script>

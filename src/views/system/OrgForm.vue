@@ -110,7 +110,6 @@
                     this.dialog = false;
                     this.$parent.loadData();
                 });
-
             },
             doEdit() {
                 modify_org(this.form).then((resp) => {
