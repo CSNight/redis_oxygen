@@ -101,9 +101,10 @@
                     path: ''
                 },
                 rules: {
-                    name: [
-                        {required: true, message: '请输入名称', trigger: 'blur'}
-                    ], pid: [{required: true, message: '请选择上级菜单', trigger: 'blur'}]
+                    name: [{required: true, message: '请输入名称', trigger: 'blur'}],
+                    pid: [{required: true, message: '请选择上级菜单', trigger: 'blur'}],
+                    component: [{required: true, message: '请填写组件', trigger: 'blur'}],
+                    component_name: [{required: true, message: '请填写组件编码', trigger: 'blur'}]
                 }
             }
         }, methods: {
