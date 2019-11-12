@@ -66,8 +66,8 @@
 <script>
     import tree_select from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-    import IconSelect from "../../components/IconSelect";
-    import {modify_menu, new_menu} from "../../api/system/menu_api";
+    import IconSelect from "../../../components/IconSelect";
+    import {modify_menu, new_menu} from "../../../api/system/menu_api";
 
     export default {
         name: "MenuForm",

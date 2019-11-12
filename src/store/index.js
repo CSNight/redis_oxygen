@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 Vue.use(Vuex);
-// https://webpack.js.org/guides/dependency-management/#requirecontext
+// eslint-disable-next-line
 const modulesFiles = require.context('./modules', true, /\.js$/);
 
 // you do not need `import app from './modules/app'`
@@ -20,6 +20,9 @@ const getters = {
     name: state => state.user.name,
     token: state => state.user.token,
     avatar: state => state.user.avatar,
+    loadMenus: state => state.dynamic.loadMenus,
+    dynamic_routers: state => state.dynamic.routers,
+    addRouters: state => state.dynamic.addRouters,
 };
 const store = new Vuex.Store({
     modules,

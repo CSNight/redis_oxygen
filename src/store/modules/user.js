@@ -36,8 +36,10 @@ const actions = {
                 if (response.data.status === 200) {
                     resolve(response.data)
                 }
+                location.reload();
             }).catch(error => {
-                reject(error)
+                reject(error);
+                location.reload();
             })
         })
     },

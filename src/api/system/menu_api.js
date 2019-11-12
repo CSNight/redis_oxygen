@@ -14,6 +14,10 @@ export function query_by(cond) {
     });
 }
 
+export function menu_routers() {
+    return REQ.get('/menus/menu_routers');
+}
+
 export function new_menu(menu_ins) {
     return REQ.post('/menus/new_menu', menu_ins);
 }

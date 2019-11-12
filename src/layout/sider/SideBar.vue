@@ -24,6 +24,7 @@
     import Logo from './Logo'
     import SidebarItem from './SidebarItem'
     import variables from '@/styles/variables.scss'
+
     export default {
         components: {Logo, SidebarItem},
         computed: {
@@ -31,7 +32,7 @@
                 'sidebar'
             ]),
             routes() {
-                return this.$router.options.routes
+                return this.$store.getters.dynamic_routers;
             },
             activeMenu() {
                 const route = this.$route;

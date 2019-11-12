@@ -25,7 +25,7 @@
 <script>
     import tree_select from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-    import {modify_org, new_org} from '../../api/system/org_api'
+    import {modify_org, new_org} from '../../../api/system/org_api'
 
     export default {
         components: {tree_select: tree_select},

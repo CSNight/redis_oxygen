@@ -1,11 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '../layout/Index'
 import Landing from "../layout/landing/Landing";
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import {getToken, removeToken} from "../utils/token";
 import store from '@/store'
+import {menu_routers} from "../api/system/menu_api";
+import {filterAsyncRouter} from "../store/modules/dynamic";
+import Index from "../layout/Index";
+import HelloWorld from "../views/dashboard/HelloWorld";
 
 const whiteList = ['/'];
 NProgress.configure({showSpinner: false});
@@ -22,34 +25,13 @@ export const constantRoutes = [
         component: Index,
         children: [{
             path: 'dashboard',
-            component: () => import('../components/HelloWorld'),
             name: 'dashboard',
-            meta: {title: 'Dashboard', icon: 'fa-cog', ref: 'sss'}
+            component: HelloWorld,
+            meta: {title: 'Dashboard', icon: 'fa-dashboard', ref: 'dashboard'}
         }]
-    }, {
-        path: '/system',
-        name: 'system',
-        component: Index,
-        alwaysShow: true,
-        redirect: '/system/org',
-        meta: {title: '系统管理', icon: 'fa-cog', ref: 'aaa'},
-        children: [
-            {
-                path: '/system/org',
-                component: () => import('../views/system/OrgTable'),
-                name: 'org',
-                meta: {title: '部门管理', icon: 'fa-sitemap', ref: 'org_com'}
-
-            }, {
-                path: '/system/menu',
-                component: () => import('../views/system/MenuTable'),
-                name: 'menu',
-                meta: {title: '菜单管理', icon: 'fa-list-ul', ref: 'menu_com'}
-            }
-        ]
-    },
-    // 404 page must be placed at the end !!!
-    {path: '*', redirect: '/404', hidden: true}
+    }
+// // 404 page must be placed at the end !!!
+// {path: '*', redirect: '/404', hidden: true}
 ];
 
 const createRouter = () => new Router({
@@ -63,16 +45,25 @@ router.beforeEach(async (to, from, next) => {
     // start progress bar
     NProgress.start();
     const hasToken = getToken();
-
     if (hasToken && store) {
         let name = store.getters.name;
         if (!name || name === '') {
             await store.dispatch('user/user_info').then(() => {
+                store.dispatch('updateLoadMenus').then(() => {
+                });
+                loadMenus(next, to);
                 next();
             }).catch(() => {
                 removeToken();
-                next(`/?redirect=${to.path}`)
+                this.$store.dispatch('user/logout').then(() => {
+                    next(`/?redirect=${to.path}`)
+                });
             });
+        } else if (!store.getters.loadMenus) {
+            store.dispatch('updateLoadMenus').then(() => {
+            });
+            loadMenus(next, to);
+            next();
         } else {
             next();
         }
@@ -82,7 +73,7 @@ router.beforeEach(async (to, from, next) => {
             // in the free login whitelist, go directly
             next()
         } else {
-            // other pages that do not have permission to access are redirected to the login page.
+            // other pages that do not have dynamic to access are redirected to the login page.
             next(`/?redirect=${to.path}`);
             NProgress.done()
         }
@@ -90,12 +81,19 @@ router.beforeEach(async (to, from, next) => {
 });
 
 router.afterEach(() => {
-    // eslint-disable-next-line no-console
-    console.log(router);
     // finish progress bar
     NProgress.done()
 });
-
+export const loadMenus = (next, to) => {
+    menu_routers().then(res => {
+        const asyncRouter = filterAsyncRouter(res.data.message);
+        asyncRouter.push({path: '*', redirect: '/404', hidden: true});
+        store.dispatch('GenerateRoutes', asyncRouter).then(() => { // 存储路由
+            router.addRoutes(asyncRouter); // 动态添加可访问路由表
+            next({...to, replace: true})
+        })
+    })
+};
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
