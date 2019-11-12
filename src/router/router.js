@@ -55,7 +55,7 @@ router.beforeEach(async (to, from, next) => {
                 next();
             }).catch(() => {
                 removeToken();
-                this.$store.dispatch('user/logout').then(() => {
+                store.dispatch('user/logout').then(() => {
                     next(`/?redirect=${to.path}`)
                 });
             });

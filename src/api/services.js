@@ -1,13 +1,15 @@
 import axios from 'axios'
 import {Message} from 'element-ui'
+
+const baseUrl = 'http://localhost:8020';
 // create an axios instance
 const service = axios.create({
-    baseURL: 'http://localhost:8020', // url = base url + request url
+    baseURL: baseUrl, // url = base url + request url
     // withCredentials: true, // send cookies when cross-domain requests
     timeout: 50000, // request timeout
 });
 
-// request interceptor
+// request interceptor//
 service.interceptors.request.use(
     config => {
         //config.headers['Content-Type'] = 'application/x-www-form-urlencoded';

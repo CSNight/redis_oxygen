@@ -71,6 +71,7 @@
 
 <script>
     import {login_req, register_req} from "../../api/system/login_api";
+    import {setToken} from "../../utils/token";
 
     export default {
         name: "LoginForm",
@@ -133,6 +134,7 @@
                     if (resp.data.status === 200) {
                         this.dialog = false;
                         await this.$store.dispatch('user/login', resp.data.message.username);
+                        setToken(resp.data.message['LoginTK']);
                         await this.$store.dispatch('user/user_info');
                         this.$message({
                             type: 'success',
