@@ -60,7 +60,7 @@
                 </template>
             </el-table-column>
             <el-table-column
-                    prop="path"
+                    prop="iframe"
                     align="center"
                     label="链接"
                     width="100px">
@@ -159,6 +159,7 @@
             loadData() {
                 this.loading = true;
                 this.MenuTree = [];
+                this.icons = [];
                 get_menu_tree().then((resp) => {
                     this.MenuTree = resp.data.message;
                     this.loading = false;

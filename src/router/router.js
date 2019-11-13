@@ -9,6 +9,7 @@ import {menu_routers} from "../api/system/menu_api";
 import {filterAsyncRouter} from "../store/modules/dynamic";
 import Index from "../layout/Index";
 import HelloWorld from "../views/dashboard/HelloWorld";
+import {MessageBox} from 'element-ui'
 
 const whiteList = ['/'];
 NProgress.configure({showSpinner: false});
@@ -23,6 +24,7 @@ export const constantRoutes = [
         path: '/home',
         name: 'Home',
         component: Index,
+        redirect: '/home/dashboard',
         children: [{
             path: 'dashboard',
             name: 'dashboard',
@@ -47,7 +49,7 @@ router.beforeEach(async (to, from, next) => {
     const hasToken = getToken();
     if (hasToken && store) {
         let name = store.getters.name;
-        if (!name || name === '') {
+        if (!name || name.toString() === '') {
             await store.dispatch('user/user_info').then(() => {
                 store.dispatch('updateLoadMenus').then(() => {
                 });
@@ -73,6 +75,15 @@ router.beforeEach(async (to, from, next) => {
             // in the free login whitelist, go directly
             next()
         } else {
+            if (store.getters.name.toString() !== '' && !hasToken) {
+                MessageBox.confirm('登录过期请重新登录?', '提示', {
+                    confirmButtonText: '确定',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    store.dispatch("user/logout");
+                });
+            }
             // other pages that do not have dynamic to access are redirected to the login page.
             next(`/?redirect=${to.path}`);
             NProgress.done()

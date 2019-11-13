@@ -16,7 +16,7 @@
                     <el-menu-item index="2">
                         <router-link to="/home">Dashboard</router-link>
                     </el-menu-item>
-                    <el-menu-item index="3">
+                    <el-menu-item index="3" v-if="name!==''">
                         <a href="http://localhost:8020/swagger-ui.html">SeverAPI</a>
                     </el-menu-item>
                 </el-menu>

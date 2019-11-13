@@ -1,5 +1,6 @@
 import axios from 'axios'
-import {Message} from 'element-ui'
+import {Message, MessageBox} from 'element-ui'
+import store from '@/store'
 
 const baseUrl = 'http://localhost:8020';
 // create an axios instance
@@ -23,7 +24,19 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
     response => {
-        return response
+        if (response.request.responseURL && response.request.responseURL === baseUrl + '/login') {
+            MessageBox.confirm('登录过期请重新登录?', '提示', {
+                confirmButtonText: '确定',
+                type: 'warning',
+                center: true
+            }).then(() => {
+                store.dispatch("user/logout");
+            });
+            return Promise.reject("登录过期");
+        } else {
+            return response
+        }
+
     },
     error => {
         Message({

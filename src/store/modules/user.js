@@ -1,6 +1,7 @@
 import {getToken, removeToken} from "../../utils/token";
 import {resetRouter} from "../../router/router";
 import {logout_req, user_avatar, user_info} from "../../api/system/login_api";
+import {MessageBox} from "element-ui";
 
 
 const state = {
@@ -64,10 +65,19 @@ const actions = {
                 commit('SET_TOKEN', getToken());
                 resolve(data)
             }).catch(error => {
-                reject(error)
-            })
+                removeToken();
+                reject(error);
+                MessageBox.confirm('登录过期请重新登录?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+
+                });
+            });
         })
-    },
+    }
 };
 export default {
     namespaced: true,
