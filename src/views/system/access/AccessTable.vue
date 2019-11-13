@@ -82,7 +82,7 @@
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="currentPage"
-                :page-sizes="[5, 10,15]"
+                :page-sizes="[5,10]"
                 :page-size="pg_size"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="tableData.length"
