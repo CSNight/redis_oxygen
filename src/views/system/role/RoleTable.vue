@@ -26,7 +26,7 @@
                     style="width: 100%;margin-bottom: 20px;font-size: 12px"
                     row-key="name"
                     v-loading="loading"
-                    :stripe="true">
+                    highlight-current-row>
                 <el-table-column
                         prop="name"
                         align="center"
@@ -57,12 +57,14 @@
                         label="操作">
                     <template slot-scope="scope">
                         <el-button
+                                v-if="getShow(scope.row.level)"
                                 @click.native.prevent="editRow(scope.row)"
                                 type="primary"
                                 icon="el-icon-edit"
                                 size="small">
                         </el-button>
                         <el-button
+                                v-if="getShow(scope.row.level)"
                                 @click.native.prevent="deleteRow(scope.row)"
                                 type="danger"
                                 icon="el-icon-delete"
@@ -72,51 +74,81 @@
                 </el-table-column>
             </el-table>
         </el-card>
-        <el-card style="width: 30%;min-width: 100px;height: 85vh">
+        <el-card style="width: 30%;min-width: 100px;height: 85vh;overflow: auto">
             <div slot="header" class="">
                 <span>权限列表</span>
                 <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
             </div>
-            <el-tree
-                    :data="[]"
-                    show-checkbox
-                    node-key="id"
-                    :default-expanded-keys="[2, 3]"
-                    :default-checked-keys="[5]"
-                    :props="defaultProps">
-            </el-tree>
-
+            <el-collapse v-model="activePanels" style="height: 100%">
+                <el-collapse-item title="菜单目录" name="1">
+                    <el-tree
+                            :props="menuProps"
+                            :data="MenuTree"
+                            accordion
+                            node-key="id"
+                            show-checkbox>
+                    </el-tree>
+                </el-collapse-item>
+                <el-collapse-item title="权限列表" name="2">
+                    <el-tree
+                            :props="accessProps"
+                            :data="PermitTree"
+                            accordion
+                            node-key="id"
+                            show-checkbox>
+                    </el-tree>
+                </el-collapse-item>
+            </el-collapse>
         </el-card>
     </div>
 
 </template>
 
 <script>
-    import {get_roles} from "@/api/system/role_api";
+    import {get_roles} from "../../../api/system/role_api";
+    import {get_menu_tree} from "../../../api/system/menu_api";
+    import {get_permits} from "../../../api/system/access_api";
 
     export default {
         name: "RoleTable",
         data() {
             return {
-                loading: false,
+                loading: false, activePanels: ["1", "2"],
                 query: {
                     name: ''
-                }, defaultProps: {
+                }, menuProps: {
                     children: 'children',
-                    label: 'label'
-                }, RoleList: []
+                    label: 'name'
+                }, accessProps: {
+                    children: 'children',
+                    label: 'description'
+                }, RoleList: [], MenuTree: [], PermitTree: []
             }
         }, created() {
             this.$nextTick(() => {
                 this.loadData();
             });
         }, methods: {
+            getShow(level) {
+                return level >= 2;
+            },
             loadData() {
                 this.loading = true;
                 this.RoleList = [];
+                this.MenuTree = [];
                 get_roles().then((resp) => {
                     this.RoleList = resp.data.message;
-                    this.loading = false;
+                    get_menu_tree().then((resp) => {
+                        this.MenuTree = resp.data.message;
+                        get_permits().then((resp) => {
+                            this.PermitTree = resp.data.message;
+                            this.loading = false;
+                        }).catch(() => {
+                            this.loading = false;
+                        });
+                    }).catch(() => {
+                        this.loading = false;
+                    });
                 }).catch(() => {
                     this.loading = false;
                 });
