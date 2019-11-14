@@ -17,7 +17,7 @@
                 </el-button>
             </div>
         </div>
-        <el-card style="width: 66%;float:left;margin-right: 20px;min-width: 500px;height: 85vh">
+        <el-card style="width: 62%;float:left;margin-right: 20px;min-width: 500px;height: 85vh">
             <div slot="header" class="">
                 <span>角色列表</span>
             </div>
@@ -74,10 +74,10 @@
                 </el-table-column>
             </el-table>
         </el-card>
-        <el-card style="width: 30%;min-width: 100px;height: 85vh;overflow: auto">
+        <el-card style="width: 35%;min-width: 100px;height: 85vh;overflow: auto">
             <div slot="header" class="">
                 <span>权限列表</span>
-                <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+                <el-button style="float: right; padding: 3px 0" type="text" @click="getChkNode">操作按钮</el-button>
             </div>
             <el-collapse v-model="activePanels" style="height: 100%">
                 <el-collapse-item title="菜单目录" name="1">
@@ -85,6 +85,7 @@
                             :props="menuProps"
                             :data="MenuTree"
                             accordion
+                            ref="menus"
                             node-key="id"
                             show-checkbox>
                     </el-tree>
@@ -95,6 +96,7 @@
                             :data="PermitTree"
                             accordion
                             node-key="id"
+                            ref="permits"
                             show-checkbox>
                     </el-tree>
                 </el-collapse-item>
@@ -136,27 +138,46 @@
                 this.loading = true;
                 this.RoleList = [];
                 this.MenuTree = [];
-                get_roles().then((resp) => {
-                    this.RoleList = resp.data.message;
-                    get_menu_tree().then((resp) => {
-                        this.MenuTree = resp.data.message;
-                        get_permits().then((resp) => {
-                            this.PermitTree = resp.data.message;
-                            this.loading = false;
-                        }).catch(() => {
-                            this.loading = false;
-                        });
-                    }).catch(() => {
+                this.PermitTree = [];
+                Promise.all([get_roles(), get_menu_tree(), get_permits()])
+                    .then(([roles, menus, permits]) => {
+                        this.RoleList = roles.data.message;
+                        this.MenuTree = menus.data.message;
+                        let permit_list = permits.data.message;
+                        let ids = [];
+                        for (let i = 0; i < permit_list.length; i++) {
+                            let pid = permit_list[i]['menu'].id;
+                            if (ids.indexOf(pid) === -1) {
+                                ids.push(pid);
+                                this.PermitTree.push({
+                                    id: pid,
+                                    description: permit_list[i]['menu'].name,
+                                    disabled: true,
+                                    children: []
+                                })
+                            }
+                        }
+                        for (let i = 0; i < ids.length; i++) {
+                            let menu_id = this.PermitTree[i].id;
+                            this.PermitTree[i].children = permit_list.filter((v) => {
+                                return v['menu'].id === menu_id
+                            });
+                            for (let j = 0; j < this.PermitTree[i].children.length; j++) {
+                                this.PermitTree[i].children[j]['disabled'] = false
+                            }
+                        }
                         this.loading = false;
-                    });
-                }).catch(() => {
-                    this.loading = false;
+                    }).catch(() => {
+                    this.loading = false
                 });
             },
             editRow(row) {
                 return row;
             }, deleteRow(row) {
                 return row;
+            }, getChkNode() {
+                // eslint-disable-next-line no-console
+                console.log(this.$refs.permits.getCheckedKeys(false, true));
             }
         }
     }
