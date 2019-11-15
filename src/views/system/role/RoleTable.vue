@@ -3,15 +3,18 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input clearable v-model="query.name" placeholder="输入角色名称搜索" style="width: 200px;" size="mini"
+            <el-input clearable v-model="query.blurry" placeholder="输入角色名称搜索" style="width: 200px;" size="mini"
                       class="filter-item"/>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索
+            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
                 <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="addRow">新增
                 </el-button>
                 <el-button type="danger" icon="el-icon-refresh" size="mini" @click="loadData"></el-button>
+                <el-button v-if="true" type="warning" icon="el-icon-delete" size="mini"
+                           @click="resetChecked">清空选中
+                </el-button>
             </div>
         </div>
         <RoleForm ref="form" :is-add="isAdd"></RoleForm>
@@ -110,7 +113,13 @@
 </template>
 
 <script>
-    import {delete_role, get_roles, update_role_menus, update_role_permits} from "../../../api/system/role_api";
+    import {
+        delete_role,
+        get_roles,
+        query_roles,
+        update_role_menus,
+        update_role_permits
+    } from "../../../api/system/role_api";
     import {get_menu_tree} from "../../../api/system/menu_api";
     import {get_permits} from "../../../api/system/access_api";
     import RoleForm from "./RoleForm";
@@ -123,7 +132,7 @@
                 loading: false, isAdd: true, select_key: '',
                 activePanels: ["1", "2"],
                 query: {
-                    name: ''
+                    blurry: ''
                 }, menuProps: {
                     children: 'children',
                     label: 'name'
@@ -142,6 +151,23 @@
         }, methods: {
             getShow(level) {
                 return level >= 2;
+            }, loadQuery() {
+                if (this.query.blurry === '') {
+                    this.loadData();
+                    return;
+                }
+                this.RoleList = [];
+                this.resetChecked();
+                this.select_key = '';
+                query_roles(this.query).then((resp) => {
+                    this.RoleList = resp.data.message;
+                    this.loading = false;
+                }).catch(() => {
+                    this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!"
+                    });
+                })
             },
             loadData() {
                 this.loading = true;
@@ -306,9 +332,13 @@
                 this.loadBg.close();
             }, clearData() {
                 this.select_key = '';
+                this.resetChecked();
                 this.RoleList = [];
                 this.MenuTree = [];
                 this.PermitTree = [];
+            }, resetChecked() {
+                this.$refs.menus.setCheckedKeys([]);
+                this.$refs.permits.setCheckedKeys([]);
             }
         }
     }

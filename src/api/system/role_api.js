@@ -3,7 +3,11 @@ import REQ from '../../api/services'
 export function get_roles() {
     return REQ.get('/roles/get_roles');
 }
-
+export function query_roles(cond) {
+    return REQ.get('/roles/query_roles', {
+        params: cond
+    });
+}
 export function edit_role(param) {
     return REQ.put('/roles/modify_role', param);
 }
