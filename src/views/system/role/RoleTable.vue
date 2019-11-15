@@ -9,14 +9,12 @@
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
-                <el-button class="filter-item" size="mini" type="primary"
-                           icon="el-icon-plus">新增
+                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="addRow">新增
                 </el-button>
-                <el-button
-                        type="danger" icon="el-icon-refresh" size="mini" @click="loadData">
-                </el-button>
+                <el-button type="danger" icon="el-icon-refresh" size="mini" @click="loadData"></el-button>
             </div>
         </div>
+        <RoleForm ref="form" :is-add="isAdd"></RoleForm>
         <el-card style="width: 62%;float:left;margin-right: 20px;min-width: 500px;height: 85vh">
             <div slot="header" class="">
                 <span>角色列表</span>
@@ -26,6 +24,7 @@
                     style="width: 100%;margin-bottom: 20px;font-size: 12px"
                     row-key="name"
                     v-loading="loading"
+                    @row-click="rowClick"
                     highlight-current-row>
                 <el-table-column
                         prop="name"
@@ -77,7 +76,7 @@
         <el-card style="width: 35%;min-width: 100px;height: 85vh;overflow: auto">
             <div slot="header" class="">
                 <span>权限列表</span>
-                <el-button style="float: right; padding: 3px 0" type="text" @click="getChkNode">操作按钮</el-button>
+                <el-button style="float: right;" size="small" type="primary" @click="getChkNode">保存修改</el-button>
             </div>
             <el-collapse v-model="activePanels" style="height: 100%">
                 <el-collapse-item title="菜单目录" name="1">
@@ -87,6 +86,8 @@
                             accordion
                             ref="menus"
                             node-key="id"
+                            @check-change="checkSetPermitChk"
+                            check-on-click-node
                             show-checkbox>
                     </el-tree>
                 </el-collapse-item>
@@ -95,8 +96,10 @@
                             :props="accessProps"
                             :data="PermitTree"
                             accordion
+                            check-on-click-node
                             node-key="id"
                             ref="permits"
+                            @check-change="checkPermitChk"
                             show-checkbox>
                     </el-tree>
                 </el-collapse-item>
@@ -107,15 +110,18 @@
 </template>
 
 <script>
-    import {get_roles} from "../../../api/system/role_api";
+    import {delete_role, get_roles, update_role_menus, update_role_permits} from "../../../api/system/role_api";
     import {get_menu_tree} from "../../../api/system/menu_api";
     import {get_permits} from "../../../api/system/access_api";
+    import RoleForm from "./RoleForm";
 
     export default {
         name: "RoleTable",
+        components: {RoleForm},
         data() {
             return {
-                loading: false, activePanels: ["1", "2"],
+                loading: false, isAdd: true, select_key: '',
+                activePanels: ["1", "2"],
                 query: {
                     name: ''
                 }, menuProps: {
@@ -124,7 +130,10 @@
                 }, accessProps: {
                     children: 'children',
                     label: 'description'
-                }, RoleList: [], MenuTree: [], PermitTree: []
+                },
+                RoleList: [],
+                MenuTree: [],
+                PermitTree: []
             }
         }, created() {
             this.$nextTick(() => {
@@ -136,9 +145,7 @@
             },
             loadData() {
                 this.loading = true;
-                this.RoleList = [];
-                this.MenuTree = [];
-                this.PermitTree = [];
+                this.clearData();
                 Promise.all([get_roles(), get_menu_tree(), get_permits()])
                     .then(([roles, menus, permits]) => {
                         this.RoleList = roles.data.message;
@@ -152,7 +159,6 @@
                                 this.PermitTree.push({
                                     id: pid,
                                     description: permit_list[i]['menu'].name,
-                                    disabled: true,
                                     children: []
                                 })
                             }
@@ -168,16 +174,141 @@
                         }
                         this.loading = false;
                     }).catch(() => {
-                    this.loading = false
+                    this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!"
+                    });
                 });
-            },
-            editRow(row) {
-                return row;
+            }, rowClick(row) {
+                this.select_key = row.id;
+                this.setRolePermit(row, this.setRoleMenu(row));
+            }, setRoleMenu(row) {
+                let defaultMenu = [];
+                let tmp = this.RoleList.filter((role) => {
+                    return role.id === row.id
+                });
+                if (tmp.length > 0) {
+                    let menus = tmp[0].menus;
+                    for (let i = 0; i < menus.length; i++) {
+                        if (menus[i].pid !== 0) {
+                            defaultMenu.push(menus[i].id)
+                        }
+                    }
+                }
+                this.$refs.menus.setCheckedKeys(defaultMenu);
+                return defaultMenu;
+            }, setRolePermit(row, menus) {
+                let defaultPermit = [];
+                let tmp = this.RoleList.filter((role) => {
+                    return role.id === row.id
+                });
+                if (tmp.length > 0) {
+                    let permits = tmp[0].permission;
+                    for (let i = 0; i < permits.length; i++) {
+                        if (menus.indexOf(permits[i].menu.id) !== -1) {
+                            defaultPermit.push(permits[i].id)
+                        }
+                    }
+                }
+                this.$refs.permits.setCheckedKeys(defaultPermit, true);
+            }, addRow() {
+                this.isAdd = true;
+                const _this = this.$refs.form;
+                _this.dialog = true
+            }, editRow(row) {
+                this.isAdd = false;
+                const _this = this.$refs.form;
+                _this.form = JSON.parse(JSON.stringify(row));
+                _this.dialog = true;
             }, deleteRow(row) {
-                return row;
+                this.$confirm('将删除此角色, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.lockLoading();
+                    delete_role(row.id).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.message === "success") {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                        } else {
+                            this.$message.error('删除失败!');
+                        }
+                        this.loadData();
+                        this.unlockLoading();
+                    }).catch(() => {
+                        this.unlockLoading();
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            }, checkSetPermitChk(data, chk) {
+                let id = data.id;
+                let chkPermitKey = this.$refs.permits.getCheckedKeys().concat(this.$refs.permits.getHalfCheckedKeys());
+                if (!chk && chkPermitKey.indexOf(id) !== -1) {
+                    this.$refs.permits.setChecked(id, false, true)
+                }
+            }, checkPermitChk(data, chk) {
+                let menus_chk = this.$refs.menus.getCheckedKeys();
+                if (data.hasOwnProperty('menu') && chk && menus_chk.indexOf(data.menu.id) === -1) {
+                    this.$refs.permits.setChecked(data, false)
+                }
             }, getChkNode() {
-                // eslint-disable-next-line no-console
-                console.log(this.$refs.permits.getCheckedKeys(false, true));
+                if (this.select_key === '') {
+                    this.$message({
+                        type: 'warning',
+                        message: '请先选择角色!'
+                    });
+                    return;
+                }
+                let permits_chk = this.$refs.permits.getCheckedKeys(true);
+                let menus_chk = this.$refs.menus.getCheckedKeys();
+                menus_chk = menus_chk.concat(this.$refs.menus.getHalfCheckedKeys());
+                let menus = [];
+                let permits = [];
+                menus_chk.forEach(mid => {
+                    menus.push({id: mid})
+                });
+                permits_chk.forEach(mid => {
+                    permits.push({id: mid})
+                });
+                let form = {
+                    id: this.select_key,
+                    name: 'update',
+                    code: 'update',
+                    menuSet: menus,
+                    permissionSet: permits
+                };
+                this.loading = true;
+                Promise.all([update_role_menus(form), update_role_permits(form)]).then(() => {
+                    this.loadData();
+                }).catch((resp) => {
+                    this.$message({
+                        type: 'warning',
+                        message: resp.data.message
+                    });
+                    this.loadData();
+                });
+
+            }, lockLoading() {
+                this.loadBg = this.$loading({
+                    lock: true,
+                    text: 'Loading',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+            }, unlockLoading() {
+                this.loadBg.close();
+            }, clearData() {
+                this.select_key = '';
+                this.RoleList = [];
+                this.MenuTree = [];
+                this.PermitTree = [];
             }
         }
     }
