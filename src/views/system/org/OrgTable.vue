@@ -14,18 +14,9 @@
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
-                <el-button
-                        class="filter-item"
-                        size="mini"
-                        type="primary"
-                        icon="el-icon-plus"
-                        @click="new_org">新增
+                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="new_org">新增
                 </el-button>
-                <el-button
-                        @click.native.prevent="loadData"
-                        type="success"
-                        icon="el-icon-refresh"
-                        size="mini">
+                <el-button @click.native.prevent="loadData" type="danger" icon="el-icon-refresh" size="mini">
                 </el-button>
             </div>
         </div>
@@ -33,15 +24,9 @@
         <OrgForm ref="form" :status="status" :is-add="isAdd"/>
         <div style="height: 90vh">
             <el-scrollbar style="height: 100%">
-                <el-table
-                        :data="tableData"
-                        style="width: 100%;margin-bottom:20px;"
-                        fixed
-                        row-key="name"
-                        v-loading="loading"
-                        :stripe="true"
-                        default-expand-all
-                        :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                <el-table :data="tableData" style="width: 100%;margin-bottom:20px;" fixed row-key="name"
+                          v-loading="loading" :stripe="true"
+                          default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
                     <el-table-column
                             prop="name"
                             label="名称">
@@ -156,6 +141,9 @@
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!"
+                    });
                 });
                 this.loadSelectTree();
             },

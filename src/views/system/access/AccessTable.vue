@@ -126,6 +126,9 @@
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!"
+                    });
                 });
                 get_menu_tree().then((resp) => {
                     this.MenuTree = resp.data.message;
