@@ -12,7 +12,7 @@
                 <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="addRow">新增
                 </el-button>
                 <el-button type="danger" icon="el-icon-refresh" size="mini" @click="loadData"></el-button>
-                <el-button v-if="true" type="warning" icon="el-icon-delete" size="mini"
+                <el-button v-if="show_clear" type="warning" icon="el-icon-delete" size="mini"
                            @click="resetChecked">清空选中
                 </el-button>
             </div>
@@ -23,6 +23,7 @@
                 <span>角色列表</span>
             </div>
             <el-table
+                    ref="roleTable"
                     :data="RoleList"
                     style="width: 100%;margin-bottom: 20px;font-size: 12px"
                     row-key="name"
@@ -143,6 +144,10 @@
                 RoleList: [],
                 MenuTree: [],
                 PermitTree: []
+            }
+        }, computed: {
+            show_clear: function () {
+                return (this.select_key !== '')
             }
         }, created() {
             this.$nextTick(() => {
@@ -339,6 +344,8 @@
             }, resetChecked() {
                 this.$refs.menus.setCheckedKeys([]);
                 this.$refs.permits.setCheckedKeys([]);
+                this.$refs.roleTable.setCurrentRow();
+                this.select_key = '';
             }
         }
     }
