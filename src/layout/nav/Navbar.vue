@@ -5,7 +5,9 @@
         <div class="right-menu">
             <el-dropdown class="avatar-container" trigger="click">
                 <div class="avatar-wrapper">
-                    <img :src="head" class="user-avatar">
+                    <el-tooltip class="item" effect="dark" :content="name" placement="top-start">
+                        <img :src="head" class="user-avatar">
+                    </el-tooltip>
                     <i class="el-icon-caret-bottom"></i>
                 </div>
                 <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -14,10 +16,10 @@
                             Home
                         </el-dropdown-item>
                     </router-link>
-                    <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
+                    <a target="_blank" href="https://github.com/CSNight/oxygen_vue/">
                         <el-dropdown-item>Github</el-dropdown-item>
                     </a>
-                    <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
+                    <a target="_blank" href="https://github.com/CSNight/oxygen_vue">
                         <el-dropdown-item>Docs</el-dropdown-item>
                     </a>
                     <el-dropdown-item divided>
@@ -44,17 +46,28 @@
             ...mapGetters([
                 'sidebar',
                 'avatar',
+                'name'
             ])
         },
         data() {
             return {
-                // eslint-disable-next-line no-undef
-                head: this.$store.getters.avatar.toString() !== '' ? this.$store.getters.avatar : require('../../assets/logo.png')
+                head: ''
             }
+        },
+        created() {
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    // eslint-disable-next-line no-undef
+                    this.head = (this.$store.getters.avatar.toString() === '' ? require('../../assets/logo.png') : this.$store.getters.avatar);
+                }, 100);
+            });
         },
         methods: {
             toggleSideBar() {
                 this.$store.dispatch('app/toggleSideBar')
+            },
+            get_head() {
+
             },
             async logout() {
                 await this.$store.dispatch('user/logout').then((data) => {
