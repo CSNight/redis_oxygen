@@ -2,7 +2,7 @@ import axios from 'axios'
 import {Message, MessageBox} from 'element-ui'
 import store from '@/store'
 
-const baseUrl = 'http://localhost:8020';
+const baseUrl = store.getters.baseUrl;
 // create an axios instance
 const service = axios.create({
     baseURL: baseUrl, // url = base url + request url

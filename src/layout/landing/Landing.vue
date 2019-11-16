@@ -17,7 +17,7 @@
                         <router-link to="/home">Dashboard</router-link>
                     </el-menu-item>
                     <el-menu-item index="3" v-if="name!==''">
-                        <a href="http://localhost:8020/swagger-ui.html">SeverAPI</a>
+                        <a :href="baseUrl+'/swagger-ui.html'">SeverAPI</a>
                     </el-menu-item>
                 </el-menu>
                 <div style="margin: auto">
@@ -191,7 +191,8 @@
         }, computed: {
             ...mapGetters([
                 'name',
-                'token'
+                'token',
+                'baseUrl'
             ])
         }, created() {
             this.$nextTick(() => {

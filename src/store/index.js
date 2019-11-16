@@ -23,6 +23,7 @@ const getters = {
     loadMenus: state => state.dynamic.loadMenus,
     dynamic_routers: state => state.dynamic.routers,
     addRouters: state => state.dynamic.addRouters,
+    baseUrl: state => state.app.BASE_API
 };
 const store = new Vuex.Store({
     modules,

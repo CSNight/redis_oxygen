@@ -6,7 +6,8 @@ const state = {
         withoutAnimation: false
     },
     device: 'desktop',
-    login_show: false
+    login_show: false,
+    BASE_API:'https://localhost'
 };
 
 

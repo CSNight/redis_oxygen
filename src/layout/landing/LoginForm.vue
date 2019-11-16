@@ -72,9 +72,15 @@
 <script>
     import {login_req, register_req} from "../../api/system/login_api";
     import {setToken} from "../../utils/token";
+    import {mapGetters} from 'vuex'
 
     export default {
         name: "LoginForm",
+        computed: {
+            ...mapGetters([
+                'baseUrl',
+            ])
+        },
         props: {
             isLogin: {
                 type: Boolean,
@@ -85,7 +91,7 @@
                 form_type: this.isLogin,
                 loading: false,
                 dialog: false,
-                src: "http://localhost:8020/auth/code",
+                src: this.$store.getters.baseUrl + "/auth/code",
                 error_msg: '',
                 error_reg: '',
                 error_reg_show: this.error_reg !== '',
@@ -127,7 +133,7 @@
                 this.dialog = false;
                 this.resetForm();
             }, code() {
-                this.src = "http://localhost:8020/auth/code?d=" + new Date().getTime();
+                this.src = this.$store.getters.baseUrl + "/auth/code?d=" + new Date().getTime();
             }, login() {
                 this.form["remember-me"] = this.form.remember_me;
                 login_req(this.form).then(async (resp) => {
