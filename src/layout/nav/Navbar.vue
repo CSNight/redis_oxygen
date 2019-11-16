@@ -5,7 +5,7 @@
         <div class="right-menu">
             <el-dropdown class="avatar-container" trigger="click">
                 <div class="avatar-wrapper">
-                    <img :src="avatar" class="user-avatar">
+                    <img :src="head" class="user-avatar">
                     <i class="el-icon-caret-bottom"></i>
                 </div>
                 <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -45,6 +45,12 @@
                 'sidebar',
                 'avatar',
             ])
+        },
+        data() {
+            return {
+                // eslint-disable-next-line no-undef
+                head: this.$store.getters.avatar.toString() !== '' ? this.$store.getters.avatar : require('../../assets/logo.png')
+            }
         },
         methods: {
             toggleSideBar() {

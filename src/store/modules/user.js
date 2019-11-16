@@ -60,7 +60,13 @@ const actions = {
                 commit('SET_ROLES', roles);
                 commit('SET_NAME', username);
                 user_avatar({username: state.name}).then((resp) => {
-                    commit('SET_AVATAR', resp.data.message);
+                    if (resp.data.status === 200) {
+                        commit('SET_AVATAR', resp.data.message);
+                    } else {
+                        commit('SET_AVATAR', '');
+                    }
+                }).catch(() => {
+                    commit('SET_AVATAR', '');
                 });
                 commit('SET_TOKEN', getToken());
                 resolve(data)
