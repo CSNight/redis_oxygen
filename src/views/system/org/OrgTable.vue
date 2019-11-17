@@ -135,8 +135,10 @@
             loadData() {
                 this.loading = true;
                 this.tableData = [];
-                get_org_tree().then((resp) => {
-                    this.tableData.push(resp.data.message);
+                this.org_tree_select = [];
+                Promise.all([get_org_tree(), get_org_by({id: 1, enabled: true})]).then(([tb, tr]) => {
+                    this.org_tree_select.push(tr.data.message);
+                    this.tableData.push(tb.data.message);
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;
@@ -144,13 +146,6 @@
                         message: "查询出错!"
                     });
                 });
-                this.loadSelectTree();
-            },
-            loadSelectTree() {
-                this.org_tree_select = [];
-                get_org_by({id: 1, enabled: true}).then((resp) => {
-                    this.org_tree_select.push(resp.data.message);
-                })
             },
             loadQuery() {
                 if (this.query.name === '' && this.query.enabled === '') {

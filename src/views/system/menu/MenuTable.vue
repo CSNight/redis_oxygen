@@ -164,15 +164,16 @@
                 this.loading = true;
                 this.MenuTree = [];
                 this.icons = [];
-                get_menu_tree().then((resp) => {
-                    this.MenuTree = resp.data.message;
+                Promise.all([get_menu_tree(), get_icons()]).then(([tr, ti]) => {
+                    this.icons = ti.data.message;
+                    this.MenuTree = tr.data.message;
                     this.loading = false;
-                }).catch(() => {
+                }).catch((resp) => {
                     this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!" + resp.data.message
+                    });
                 });
-                get_icons().then((resp) => {
-                    this.icons = resp.data.message;
-                })
             }, loadQuery() {
                 if (this.query.name === '' && this.query.hidden === '') {
                     this.loadData();
