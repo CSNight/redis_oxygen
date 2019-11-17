@@ -250,16 +250,14 @@
                         message: '已取消操作'
                     });
                 })
-            },
-            lockLoading() {
+            }, lockLoading() {
                 this.loadBg = this.$loading({
                     lock: true,
                     text: 'Loading',
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
-            },
-            unlockLoading() {
+            }, unlockLoading() {
                 this.loadBg.close();
             }
         }
