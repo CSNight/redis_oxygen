@@ -5,7 +5,7 @@
         <div class="right-menu">
             <el-dropdown class="avatar-container" trigger="click">
                 <div class="avatar-wrapper">
-                    <el-tooltip class="item" effect="dark" :content="name" placement="top-start">
+                    <el-tooltip class="item" effect="dark" :content="nick" placement="top-start">
                         <img :src="head" class="user-avatar">
                     </el-tooltip>
                     <i class="el-icon-caret-bottom"></i>
@@ -14,6 +14,11 @@
                     <router-link to="/">
                         <el-dropdown-item>
                             Home
+                        </el-dropdown-item>
+                    </router-link>
+                    <router-link to="/">
+                        <el-dropdown-item>
+                            Profile
                         </el-dropdown-item>
                     </router-link>
                     <a target="_blank" href="https://github.com/CSNight/oxygen_vue/">
@@ -46,7 +51,8 @@
             ...mapGetters([
                 'sidebar',
                 'avatar',
-                'name'
+                'name',
+                'nick'
             ])
         },
         data() {

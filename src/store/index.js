@@ -18,6 +18,7 @@ const getters = {
     sidebar: state => state.app.sidebar,
     device: state => state.app.device,
     name: state => state.user.name,
+    nick: state => state.user.nick,
     token: state => state.user.token,
     avatar: state => state.user.avatar,
     loadMenus: state => state.dynamic.loadMenus,

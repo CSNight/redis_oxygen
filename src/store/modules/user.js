@@ -7,12 +7,15 @@ import {MessageBox} from "element-ui";
 const state = {
     token: getToken(),
     name: '',
+    nick: '',
     avatar: '',
     roles: []
 };
 const mutations = {
     SET_NAME: (state, name) => {
         state.name = name
+    }, SET_NICK: (state, nick) => {
+        state.nick = nick
     }, SET_AVATAR: (state, avatar) => {
         state.avatar = avatar
     }, SET_ROLES: (state, roles) => {
@@ -29,6 +32,7 @@ const actions = {
         commit('SET_TOKEN', '');
         commit('SET_ROLES', []);
         commit('SET_NAME', '');
+        commit('SET_NICK', '');
         commit('SET_AVATAR', '');
         removeToken();
         resetRouter();
@@ -52,11 +56,12 @@ const actions = {
                 if (!data) {
                     reject('Verification failed, please Login again.')
                 }
-                const {roles, username} = data.message;
+                const {roles, username, nick_name} = data.message;
                 //roles must be a non-empty array
                 if (!roles || roles.length <= 0) {
                     reject('getInfo: roles must be a non-null array!')
                 }
+                commit('SET_NICK', nick_name);
                 commit('SET_ROLES', roles);
                 commit('SET_NAME', username);
                 user_avatar({username: state.name}).then((resp) => {
