@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Landing from "../layout/landing/Landing";
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import {getToken, removeToken} from "../utils/token";
+import {getToken} from "../utils/token";
 import store from '@/store'
 import {menu_routers} from "../api/system/menu_api";
 import {filterAsyncRouter} from "../store/modules/dynamic";
@@ -56,7 +56,6 @@ router.beforeEach(async (to, from, next) => {
                 loadMenus(next, to);
                 next();
             }).catch(() => {
-                removeToken();
                 store.dispatch('user/logout').then(() => {
                     next(`/?redirect=${to.path}`)
                 });
