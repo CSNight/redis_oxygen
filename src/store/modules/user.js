@@ -9,7 +9,8 @@ const state = {
     name: '',
     nick: '',
     avatar: '',
-    roles: []
+    roles: [],
+    permit: {}
 };
 const mutations = {
     SET_NAME: (state, name) => {
@@ -22,6 +23,8 @@ const mutations = {
         state.roles = roles
     }, SET_TOKEN: (state, token) => {
         state.token = token
+    }, SET_PERMIT: (state, permit) => {
+        state.permit = permit
     },
 };
 const actions = {
@@ -56,14 +59,23 @@ const actions = {
                 if (!data) {
                     reject('Verification failed, please Login again.')
                 }
-                const {roles, username, nick_name} = data.message;
+                const {authorities, roles, username, nick_name} = data.message;
                 //roles must be a non-empty array
                 if (!roles || roles.length <= 0) {
                     reject('getInfo: roles must be a non-null array!')
                 }
+                let role_list = [];
+                for (let i = 0; i < roles.length; i++) {
+                    role_list.push(roles[i].code);
+                }
+                let permits = {};
+                for (let i = 0; i < authorities.length; i++) {
+                    permits[authorities[i].authority] = true;
+                }
                 commit('SET_NICK', nick_name);
-                commit('SET_ROLES', roles);
+                commit('SET_ROLES', role_list);
                 commit('SET_NAME', username);
+                commit('SET_PERMIT', permits);
                 user_avatar({username: state.name}).then((resp) => {
                     if (resp.data.status === 200) {
                         commit('SET_AVATAR', resp.data.message);
