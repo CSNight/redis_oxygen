@@ -3,6 +3,7 @@
         <el-row>
             <el-col :span="4" style="height:auto;">
                 <el-input
+                        v-if="rights('ORG_QUERY')"
                         class="filter-item"
                         style="width:70%;height: 30px"
                         size="mini"
@@ -13,12 +14,18 @@
             <el-col :span="20" style="height:auto">
                 <div class="head-container">
                     <!-- 搜索 -->
-                    <el-input clearable placeholder="输入角色名称搜索" style="width: 200px;" size="mini" class="filter-item"/>
-                    <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索</el-button>
+                    <el-input v-if="rights('USER_QUERY')" clearable placeholder="输入角色名称搜索" style="width: 200px;"
+                              size="mini" class="filter-item"/>
+                    <el-button v-if="rights('USER_QUERY')" class="filter-item" size="mini" type="success"
+                               icon="el-icon-search">搜索
+                    </el-button>
                     <!-- 新增 -->
                     <div style="display: inline-block;margin: 0 2px;">
-                        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus">新增</el-button>
-                        <el-button type="danger" icon="el-icon-refresh" size="mini" @click="loadData"></el-button>
+                        <el-button v-if="rights('USER_ADD')" class="filter-item" size="mini" type="primary"
+                                   icon="el-icon-plus">新增
+                        </el-button>
+                        <el-button v-if="rights('USER_QUERY')" type="danger" icon="el-icon-refresh" size="mini"
+                                   @click="loadData"></el-button>
                     </div>
                 </div>
             </el-col>
@@ -62,10 +69,13 @@
                         <el-table-column prop="login_times" align="center" label="登录次数"></el-table-column>
                         <el-table-column align="center" label="操作">
                             <template slot-scope="scope">
-                                <el-button type="primary" icon="el-icon-edit" size="small"></el-button>
-                                <el-button v-if="getShow(scope.row)" type="danger" icon="el-icon-delete"
+                                <el-button v-if="rights('USER_UPDATE')" type="primary" icon="el-icon-edit"
                                            size="small"></el-button>
-                                <el-button v-if="getShow(scope.row)" :type="lockBtnType(scope.row)"
+                                <el-button v-if="getShow(scope.row)&&rights('USER_DEL')" type="danger"
+                                           icon="el-icon-delete"
+                                           size="small"></el-button>
+                                <el-button v-if="getShow(scope.row)&&rights('USER_UPDATE')"
+                                           :type="lockBtnType(scope.row)"
                                            :icon="lockBtnIcon(scope.row)"
                                            @click.native.prevent="enabledChange(scope.row)" size="small">
                                 </el-button>
@@ -110,11 +120,17 @@
                 this.loadData();
             });
         }, methods: {
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
             getShow(row) {
                 let us = row.roles.filter((role) => {
                     return role.code === 'ROLE_DEV' || role.code === 'ROLE_SUPER'
                 });
-                if (us.indexOf("ROLE_DEV") !== -1) {
+                if (this.$store.getters.roles.indexOf("ROLE_DEV") !== -1) {
                     return true;
                 }
                 return us.length === 0;
@@ -140,6 +156,12 @@
                 if (!value) return true;
                 return data.name.indexOf(value) !== -1;
             }, loadData() {
+                if (!this.rights("USER_QUERY") || !this.rights("ORG_QUERY")) {
+                    this.$message.error({
+                        message: "禁止查询!"
+                    });
+                    return;
+                }
                 this.org_tree = [];
                 this.users = [];
                 this.loading = true;
