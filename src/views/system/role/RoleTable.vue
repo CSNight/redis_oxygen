@@ -166,6 +166,9 @@
                 return false
             },
             getShow(level) {
+                if (this.$store.getters.roles.indexOf("ROLE_DEV") !== -1) {
+                    return true;
+                }
                 return level >= 2;
             }, loadQuery() {
                 if (this.query.blurry === '') {
@@ -306,7 +309,10 @@
             }, checkPermitChk(data, chk) {
                 let menus_chk = this.$refs.menus.getCheckedKeys();
                 if (data.hasOwnProperty('menu') && chk && menus_chk.indexOf(data.menu.id) === -1) {
-                    this.$refs.permits.setChecked(data, false)
+                    this.$refs.permits.setChecked(data, false, true)
+                }
+                if (!data.hasOwnProperty("menu") && chk && menus_chk.indexOf(data.id) === -1) {
+                    this.$refs.permits.setChecked(data, false, true)
                 }
             }, getChkNode() {
                 if (this.select_key === '') {
