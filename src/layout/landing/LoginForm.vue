@@ -161,8 +161,11 @@
                             message: resp.data.message.username + ', register success!'
                         });
                     } else {
-                        this.resetForm();
-                        this.error_reg = resp.data.message;
+                        if (resp.data.message instanceof Array) {
+                            this.error_reg = resp.data.message;
+                        } else {
+                            this.error_msg = resp.data.message;
+                        }
                     }
                 })
             }
