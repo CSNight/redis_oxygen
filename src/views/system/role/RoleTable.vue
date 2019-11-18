@@ -3,15 +3,19 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input clearable v-model="query.blurry" placeholder="输入角色名称搜索" style="width: 200px;" size="mini"
+            <el-input v-if="rights('ROLE_QUERY')" clearable v-model="query.blurry" placeholder="输入角色名称搜索"
+                      style="width: 200px;" size="mini"
                       class="filter-item"/>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery">搜索
+            <el-button class="filter-item" v-if="rights('ROLE_QUERY')" size="mini" type="success" icon="el-icon-search"
+                       @click="loadQuery">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
-                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="addRow">新增
+                <el-button class="filter-item" v-if="rights('ROLE_ADD')" size="mini" type="primary" icon="el-icon-plus"
+                           @click="addRow">新增
                 </el-button>
-                <el-button type="danger" icon="el-icon-refresh" size="mini" @click="loadData"></el-button>
+                <el-button type="danger" v-if="rights('ROLE_QUERY')" icon="el-icon-refresh" size="mini"
+                           @click="loadData"></el-button>
                 <el-button v-if="show_clear" type="warning" icon="el-icon-delete" size="mini"
                            @click="resetChecked">清空选中
                 </el-button>
@@ -59,14 +63,14 @@
                         label="操作">
                     <template slot-scope="scope">
                         <el-button
-                                v-if="getShow(scope.row.level)"
+                                v-if="getShow(scope.row.level)&&rights('ROLE_UPDATE')"
                                 @click.native.prevent="editRow(scope.row)"
                                 type="primary"
                                 icon="el-icon-edit"
                                 size="small">
                         </el-button>
                         <el-button
-                                v-if="getShow(scope.row.level)"
+                                v-if="getShow(scope.row.level)&&rights('ROLE_DEL')"
                                 @click.native.prevent="deleteRow(scope.row)"
                                 type="danger"
                                 icon="el-icon-delete"
@@ -79,7 +83,9 @@
         <el-card style="width: 35%;min-width: 100px;height: 85vh;overflow: auto">
             <div slot="header" class="">
                 <span>权限列表</span>
-                <el-button style="float: right;" size="small" type="primary" @click="getChkNode">保存修改</el-button>
+                <el-button style="float: right;" size="small" type="primary" @click="getChkNode"
+                           v-if="rights('ROLE_ACCESS')">保存修改
+                </el-button>
             </div>
             <el-collapse v-model="activePanels" style="height: 100%">
                 <el-collapse-item title="菜单目录" name="1">
@@ -153,6 +159,12 @@
                 this.loadData();
             });
         }, methods: {
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
             getShow(level) {
                 return level >= 2;
             }, loadQuery() {
@@ -174,6 +186,12 @@
                 })
             },
             loadData() {
+                if (!this.rights("ROLE_QUERY")) {
+                    this.$message.error({
+                        message: "禁止查询!"
+                    });
+                    return;
+                }
                 this.loading = true;
                 this.clearData();
                 Promise.all([get_roles(), get_menu_tree(), get_permits()])
@@ -222,6 +240,8 @@
                     for (let i = 0; i < menus.length; i++) {
                         if (menus[i].pid !== 0) {
                             defaultMenu.push(menus[i].id)
+                        } else if (menus[i].pid === 0 && menus[i].component !== 'Index') {
+                            defaultMenu.push(menus[i].id);
                         }
                     }
                 }

@@ -85,9 +85,9 @@
 </template>
 
 <script>
-    import {get_org_tree} from "@/api/system/org_api";
-    import {edit_user, get_org_user, get_users} from "@/api/system/user_api";
-    import {dateFormat} from "@/utils/utils";
+    import {get_org_tree} from "../../../api/system/org_api";
+    import {edit_user, get_org_user, get_users} from "../../../api/system/user_api";
+    import {dateFormat} from "../../../utils/utils";
 
     export default {
         name: "UserMain",
@@ -114,6 +114,9 @@
                 let us = row.roles.filter((role) => {
                     return role.code === 'ROLE_DEV' || role.code === 'ROLE_SUPER'
                 });
+                if (us.indexOf("ROLE_DEV") !== -1) {
+                    return true;
+                }
                 return us.length === 0;
             }, handleSizeChange: function (size) {
                 this.pg_size = size;

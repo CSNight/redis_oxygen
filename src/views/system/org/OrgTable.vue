@@ -3,20 +3,25 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input clearable v-model="query.name" placeholder="输入部门名称搜索" style="width: 200px;" size="mini"
+            <el-input v-if="rights('ORG_QUERY')" clearable v-model="query.name" placeholder="输入部门名称搜索"
+                      style="width: 200px;" size="mini"
                       class="filter-item"/>
-            <el-select v-model="query.enabled" clearable placeholder="状态" class="filter-item" style="width: 90px"
+            <el-select v-if="rights('ORG_QUERY')" v-model="query.enabled" clearable placeholder="状态" class="filter-item"
+                       style="width: 90px"
                        size="mini" value="" @change="loadQuery">
                 <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name"
                            :value="item.key"/>
             </el-select>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery">搜索
+            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery"
+                       v-if="rights('ORG_QUERY')">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
-                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="new_org">新增
+                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus" @click="new_org"
+                           v-if="rights('ORG_ADD')">新增
                 </el-button>
-                <el-button @click.native.prevent="loadData" type="danger" icon="el-icon-refresh" size="mini">
+                <el-button @click.native.prevent="loadData" type="danger" icon="el-icon-refresh" size="mini"
+                           v-if="rights('ORG_QUERY')">
                 </el-button>
             </div>
         </div>
@@ -66,21 +71,21 @@
                             label="操作">
                         <template slot-scope="scope">
                             <el-button
-                                    v-if="getShow(scope.row)"
+                                    v-if="getShow(scope.row)&&rights('ORG_UPDATE')"
                                     @click.native.prevent="editRow(scope.row)"
                                     type="primary"
                                     icon="el-icon-edit"
                                     size="small">
                             </el-button>
                             <el-button
-                                    v-if="getShow(scope.row)"
+                                    v-if="getShow(scope.row)&&rights('ORG_DEL')"
                                     @click.native.prevent="deleteRow(scope.row)"
                                     type="danger"
                                     icon="el-icon-delete"
                                     size="small">
                             </el-button>
                             <el-button
-                                    v-if="getShow(scope.row)"
+                                    v-if="getShow(scope.row)&&rights('ORG_UPDATE')"
                                     @click.native.prevent="lockToggle(scope.row)"
                                     :type="lockBtnType(scope.row)"
                                     :icon="lockBtnIcon(scope.row)"
@@ -105,7 +110,7 @@
                 tableData: [],
                 org_tree_select: [],
                 status: [{id: 1, value: true, label: '启用'}, {id: 2, value: false, label: '禁用'}],
-                loading: true,
+                loading: false,
                 isAdd: true,
                 enabledTypeOptions: [
                     {key: 'true', display_name: '正常'},
@@ -123,6 +128,12 @@
         },
         computed: {},
         methods: {
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
             getShow: (row) => {
                 return row.name !== 'Top'
             },
@@ -133,6 +144,12 @@
                 return row.enabled ? 'success' : 'warning'
             },
             loadData() {
+                if (!this.rights("ORG_QUERY")) {
+                    this.$message.error({
+                        message: "禁止查询!"
+                    });
+                    return;
+                }
                 this.loading = true;
                 this.tableData = [];
                 this.org_tree_select = [];

@@ -3,17 +3,19 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input clearable v-model="query.blurry" placeholder="输入菜单名称搜索" style="width: 200px;" size="mini"
+            <el-input v-if="rights('RIGHTS_QUERY')" clearable v-model="query.blurry" placeholder="输入菜单名称搜索" style="width: 200px;" size="mini"
                       class="filter-item"/>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery">搜索
+            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search"
+                       v-if="rights('RIGHTS_QUERY')" @click="loadQuery">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
                 <el-button class="filter-item" size="mini" type="primary" @click="new_permit"
+                           v-if="rights('RIGHTS_ADD')"
                            icon="el-icon-plus">新增
                 </el-button>
-                <el-button
-                        type="danger" icon="el-icon-refresh" size="mini" @click="loadData">
+                <el-button v-if="rights('RIGHTS_QUERY')"
+                           type="danger" icon="el-icon-refresh" size="mini" @click="loadData">
                 </el-button>
             </div>
         </div>
@@ -63,12 +65,14 @@
                     label="操作">
                 <template slot-scope="scope">
                     <el-button
+                            v-if="rights('RIGHTS_UPDATE')"
                             @click.native.prevent="editRow(scope.row)"
                             type="primary"
                             icon="el-icon-edit"
                             size="small">
                     </el-button>
                     <el-button
+                            v-if="rights('RIGHTS_DEL')"
                             @click.native.prevent="deleteRow(scope.row)"
                             type="danger"
                             icon="el-icon-delete"
@@ -110,6 +114,12 @@
                 this.loadData();
             });
         }, methods: {
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
             handleSizeChange: function (size) {
                 this.pg_size = size;
             },
@@ -117,6 +127,12 @@
                 this.currentPage = currentPage;
             },
             loadData() {
+                if (!this.rights("RIGHTS_QUERY")) {
+                    this.$message.error({
+                        message: "禁止查询!"
+                    });
+                    return;
+                }
                 this.loading = true;
                 this.tableData = [];
                 this.MenuTree = [];

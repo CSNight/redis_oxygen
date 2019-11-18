@@ -3,25 +3,31 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input clearable v-model="query.name" placeholder="输入菜单名称搜索" style="width: 200px;" size="mini"
+            <el-input v-if="rights('MENU_QUERY')" clearable v-model="query.name" placeholder="输入菜单名称搜索"
+                      style="width: 200px;" size="mini"
                       class="filter-item"/>
-            <el-select v-model="query.hidden" clearable placeholder="状态" class="filter-item" style="width: 90px"
+            <el-select v-if="rights('MENU_QUERY')" v-model="query.hidden" clearable placeholder="状态" class="filter-item"
+                       style="width: 90px"
                        size="mini" value="" @change="loadQuery">
                 <el-option v-for="item in enabledTypeOptions" :key="item.key" :label="item.display_name"
                            :value="item.key"/>
             </el-select>
-            <el-button class="filter-item" size="mini" type="success" @click="loadQuery" icon="el-icon-search">搜索
+            <el-button class="filter-item" size="mini" type="success" @click="loadQuery" icon="el-icon-search"
+                       v-if="rights('MENU_QUERY')">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
                 <el-button @click.native.prevent="new_menu" class="filter-item" size="mini" type="primary"
+                           v-if="rights('MENU_ADD')"
                            icon="el-icon-plus">新增
                 </el-button>
                 <el-button
-                        @click.native.prevent="refreshSide" type="warning" icon="fa fa-repeat" size="mini">右侧导航刷新
+                        @click.native.prevent="refreshSide" type="warning" icon="fa fa-repeat" size="mini"
+                        v-if="rights('MENU_ADD')">右侧导航刷新
                 </el-button>
                 <el-button
-                        @click.native.prevent="loadData" type="danger" icon="el-icon-refresh" size="mini">
+                        v-if="rights('MENU_QUERY')" @click.native.prevent="loadData" type="danger"
+                        icon="el-icon-refresh" size="mini">
                 </el-button>
             </div>
         </div>
@@ -100,18 +106,21 @@
                             label="操作">
                         <template slot-scope="scope">
                             <el-button
+                                    v-if="rights('MENU_UPDATE')"
                                     @click.native.prevent="editRow(scope.row)"
                                     type="primary"
                                     icon="el-icon-edit"
                                     size="small">
                             </el-button>
                             <el-button
+                                    v-if="rights('MENU_DEL')"
                                     @click.native.prevent="deleteRow(scope.row) "
                                     type="danger"
                                     icon="el-icon-delete"
                                     size="small">
                             </el-button>
                             <el-button
+                                    v-if="rights('MENU_UPDATE')"
                                     @click.native.prevent="viewToggle(scope.row)"
                                     :type="visBtnType(scope.row)"
                                     :icon="visBtnIcon(scope.row)"
@@ -154,6 +163,12 @@
                 this.loadData();
             });
         }, methods: {
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
             visBtnIcon(row) {
                 return row.hidden ? 'fa fa-eye' : 'fa fa-eye-slash'
             },
@@ -161,6 +176,12 @@
                 return row.hidden ? 'success' : 'warning'
             },
             loadData() {
+                if (!this.rights("MENU_QUERY")) {
+                    this.$message.error({
+                        message: "禁止查询!"
+                    });
+                    return;
+                }
                 this.loading = true;
                 this.MenuTree = [];
                 this.icons = [];
