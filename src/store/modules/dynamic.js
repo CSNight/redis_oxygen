@@ -29,12 +29,25 @@ const dynamic = {
 
 export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由字符串，转换为组件对象
     const accessedRouters = routers.filter(router => {
+        let path_cnt = router.path.split('/').length;
+        if (path_cnt > 2 && router.children && router.children.length === 0 && router.pid === 0) {
+            const component = router.component;
+            router.component = Index;
+            router.redirect = router.path;
+            router.children = [{
+                path: router.path.split('/')[path_cnt - 1],
+                name: router.path.split('/')[path_cnt - 1],
+                component: loadView(router.path + "/" + component),
+                meta: router.meta,
+            }];
+            return true;
+        }
         if (router.component) {
             if (router.component === 'Index') { // Layout组件特殊处理
                 router.component = Index;
                 router.alwaysShow = true;
                 if (router.children.length > 0) {
-                    router.redirect =  `noRedirect`
+                    router.redirect = `noRedirect`
                 }
             } else {
                 const component = router.component;
