@@ -21,8 +21,9 @@
                     </el-button>
                     <!-- 新增 -->
                     <div style="display: inline-block;margin: 0 2px;">
-                        <el-button v-if="rights('USER_ADD')" class="filter-item" size="mini" type="primary"
-                                   icon="el-icon-plus">新增
+                        <el-button v-if="rights('USER_ADD')&&rights('ROLE_QUERY')" class="filter-item" size="mini"
+                                   type="primary"
+                                   @click="addUser" icon="el-icon-plus">新增
                         </el-button>
                         <el-button v-if="rights('USER_QUERY')" type="danger" icon="el-icon-refresh" size="mini"
                                    @click="loadData"></el-button>
@@ -43,6 +44,7 @@
             </el-col>
             <el-col :span="20" style="height: 90vh;overflow: auto">
                 <div>
+                    <UserForm ref="form" :is-add="isAdd" :roles="[]" :dept="org_tree"></UserForm>
                     <el-table :data="users.slice((currentPage-1)*pg_size,currentPage*pg_size)"
                               style="width: auto;margin-top: 20px;" fixed row-key="name"
                               v-loading="loading">
@@ -70,8 +72,10 @@
                         <el-table-column align="center" label="操作">
                             <template slot-scope="scope">
                                 <el-button v-if="rights('USER_UPDATE')" type="primary" icon="el-icon-edit"
+                                           @click.native.prevent="editUser(scope.row)&&rights('ROLE_QUERY')"
                                            size="small"></el-button>
                                 <el-button v-if="getShow(scope.row)&&rights('USER_DEL')" type="danger"
+                                           @click.native.prevent="deleteUser(scope.row)"
                                            icon="el-icon-delete"
                                            size="small"></el-button>
                                 <el-button v-if="getShow(scope.row)&&rights('USER_UPDATE')"
@@ -98,18 +102,21 @@
     import {get_org_tree} from "../../../api/system/org_api";
     import {edit_user, get_org_user, get_users} from "../../../api/system/user_api";
     import {dateFormat} from "../../../utils/utils";
+    import UserForm from "@/views/system/users/UserForm";
+    import {get_roles} from "@/api/system/role_api";
 
     export default {
         name: "UserMain",
+        components: {UserForm},
         data() {
             return {
-                loading: false, expand_click: false, pg_size: 10, currentPage: 1,
+                loading: false, expand_click: false, pg_size: 10, currentPage: 1, isAdd: true, dialog: false,
                 filterText: '',
                 defaultProps: {
                     children: 'children',
                     label: 'name'
                 },
-                users: [], org_tree: []
+                users: [], org_tree: [], role_list: [],
             }
         }, watch: {
             filterText(val) {
@@ -216,6 +223,43 @@
                         message: '已取消操作'
                     });
                 })
+            }, addUser() {
+                this.get_role_list(true, true);
+            }, editUser(row) {
+                const _this = this.$refs.form;
+                _this.form = JSON.parse(JSON.stringify(row));
+                let ro = [];
+                for (let i = 0; i < _this.form.roles.length; i++) {
+                    ro.push(_this.form.roles[i].id);
+                }
+                _this.form.roles = ro;
+                this.get_role_list(false, true);
+            }, deleteUser() {
+
+            }, get_role_list(add, dialog) {
+                const _this = this.$refs.form;
+                if (this.role_list.length === 0) {
+                    get_roles().then((resp) => {
+                        if (resp.data.status === 200 && resp.data.code === 'OK') {
+                            this.role_list = resp.data.message;
+                            _this.role_select = this.role_list;
+                            this.isAdd = add;
+                            _this.dialog = dialog
+                        } else {
+                            this.$message.error({
+                                message: "角色列表查询失败!"
+                            });
+                        }
+                    }).catch(() => {
+                        this.$message.error({
+                            message: "角色列表查询失败!"
+                        });
+                    })
+                } else {
+                    _this.role_select = this.role_list;
+                    this.isAdd = add;
+                    _this.dialog = dialog
+                }
             }, lockLoading() {
                 this.loadBg = this.$loading({
                     lock: true,
