@@ -40,6 +40,8 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
                 component: loadView(router.path + "/" + component),
                 meta: router.meta,
             }];
+            delete router.meta;
+            router.path = "/" + router.path.split('/')[1];
             return true;
         }
         if (router.component) {
