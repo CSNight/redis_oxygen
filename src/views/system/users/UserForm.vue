@@ -1,6 +1,6 @@
 <template>
-    <el-dialog :visible.sync="dialog" :close-on-click-modal="false" :before-close="cancel"
-               :title="isAdd ? '新增用户' : '编辑用户'" append-to-body width="570px">
+    <el-dialog :append-to-body="false" :close-on-click-modal="false" :before-close="cancel" :visible.sync="dialog"
+               :title="isAdd ? '新增权限' : '编辑权限'" width="570px" @close="resetForm">
         <el-form ref="form" :inline="true" :model="form" :rules="rules" size="small" label-width="66px">
             <el-form-item label="用户名" prop="username">
                 <el-input v-model="form.username"/>
@@ -14,7 +14,7 @@
                 </el-switch>
             </el-form-item>
             <el-form-item label="电话" prop="phone">
-                <el-input v-model.number="form.phone"/>
+                <el-input v-model="form.phone"/>
             </el-form-item>
             <el-form-item label="邮箱" prop="email">
                 <el-input v-model="form.email"/>
@@ -27,7 +27,7 @@
                 <el-select v-model="form.roles" style="width: 450px;" multiple placeholder="请选择" value="">
                     <el-option
                             v-for="item in role_select"
-                            :disabled="item.level < 2"
+                            :disabled="item.level < 2&&role.indexOf('ROLE_DEV')===-1"
                             :key="item.id"
                             :label="item.name"
                             :value="item.id"/>
@@ -44,6 +44,7 @@
 <script>
     import tree_select from '@riophae/vue-treeselect'
     import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+    import {edit_user, new_user} from "../../../api/system/user_api";
 
     export default {
         name: "UserForm",
@@ -64,10 +65,11 @@
         },
         data() {
             return {
-                loading: false, dialog: false, role_select: [],
+                loading: false, dialog: false, role_select: [], role: this.$store.getters.roles,
                 form: {
                     id: '',
-                    name: '',
+                    username: '',
+                    nick_name: '',
                     phone: '',
                     email: '',
                     enabled: true,
@@ -75,20 +77,19 @@
                     org_id: 1,
                 },
                 rules: {
-                    username: [
-                        {required: true, message: '请输入用户名', trigger: 'blur'},
-                    ],
-                    email: [
-                        {required: true, message: '请输入邮箱地址', trigger: 'blur'},
-                        {type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur'}
-                    ],
-                    phone: [
-                        {required: true, message: '请输入正确的手机号', trigger: 'blur'},
-                        {min: 11, max: 11, message: '手机长度不正确', trigger: 'blur'}
-                    ],
-                    enabled: [
-                        {required: true, message: '状态不能为空', trigger: 'blur'}
-                    ]
+                    username: [{required: true, message: '请输入用户名', trigger: 'blur'},],
+                    email: [{required: true, message: '请输入邮箱地址', trigger: 'blur'}, {
+                        type: 'email',
+                        message: '请输入正确的邮箱地址',
+                        trigger: 'blur'
+                    }],
+                    phone: [{required: true, message: '请输入正确的手机号', trigger: 'blur'}, {
+                        min: 11,
+                        max: 11,
+                        message: '手机长度不正确',
+                        trigger: 'blur'
+                    }],
+                    enabled: [{required: true, message: '状态不能为空', trigger: 'blur'}]
                 }
             }
         }, methods: {
@@ -103,17 +104,100 @@
                 }
             },
             doSubmit() {
-
+                this.$refs['form'].validate((valid) => {
+                    if (valid) {
+                        if (this.form.roles.length !== 0 && this.form.org_id !== undefined) {
+                            this.loading = true;
+                            if (this.isAdd) {
+                                this.doAdd();
+                            } else this.doEdit();
+                        } else {
+                            this.$message({
+                                message: '角色不能为空',
+                                type: 'warning'
+                            })
+                        }
+                    }
+                })
+            },
+            doAdd() {
+                let paras = this.format_para(true);
+                new_user(paras).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.$message({
+                            type: 'success',
+                            message: '添加成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: resp.data.message
+                        });
+                    }
+                    console.log(this.$parent);
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                }).catch(() => {
+                    this.$message.error({
+                        message: "添加失败!"
+                    });
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                });
+            },
+            doEdit() {
+                let paras = this.format_para(false);
+                edit_user(paras).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.$message({
+                            type: 'success',
+                            message: '修改成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: resp.data.message
+                        });
+                    }
+                    console.log(this.$parent);
+                    this.$parent.loadData();
+                    this.loading = false;
+                    this.dialog = false;
+                }).catch(() => {
+                    this.$message.error({
+                        message: "修改错误!"
+                    });
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                })
             },
             cancel() {
                 this.resetForm()
+            },
+            format_para(isNew) {
+                let ros = [];
+                for (let i = 0; i < this.form.roles.length; i++) {
+                    ros.push({
+                        id: this.form.roles[i]
+                    })
+                }
+                let paras = JSON.parse(JSON.stringify(this.form));
+                paras.roles = ros;
+                if (isNew) {
+                    paras.nick_name = paras.username;
+                }
+                return paras;
             },
             resetForm() {
                 this.dialog = false;
                 this.$refs['form'].resetFields();
                 this.form = {
                     id: '',
-                    name: '',
+                    username: '',
+                    nick_name: '',
                     phone: '',
                     email: '',
                     enabled: true,

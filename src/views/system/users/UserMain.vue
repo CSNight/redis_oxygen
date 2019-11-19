@@ -1,5 +1,6 @@
 <template>
     <div>
+        <UserForm ref="form" :is-add="isAdd" :roles="[]" :dept="org_tree"></UserForm>
         <el-row>
             <el-col :span="4" style="height:auto;">
                 <el-input
@@ -44,7 +45,7 @@
             </el-col>
             <el-col :span="20" style="height: 90vh;overflow: auto">
                 <div>
-                    <UserForm ref="form" :is-add="isAdd" :roles="[]" :dept="org_tree"></UserForm>
+
                     <el-table :data="users.slice((currentPage-1)*pg_size,currentPage*pg_size)"
                               style="width: auto;margin-top: 20px;" fixed row-key="name"
                               v-loading="loading">
@@ -102,8 +103,8 @@
     import {get_org_tree} from "../../../api/system/org_api";
     import {edit_user, get_org_user, get_users} from "../../../api/system/user_api";
     import {dateFormat} from "../../../utils/utils";
-    import UserForm from "@/views/system/users/UserForm";
-    import {get_roles} from "@/api/system/role_api";
+    import UserForm from "./UserForm";
+    import {get_roles} from "../../../api/system/role_api";
 
     export default {
         name: "UserMain",
