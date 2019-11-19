@@ -3,6 +3,22 @@
         <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar"/>
         <breadcrumb class="breadcrumb-container"/>
         <div class="right-menu">
+            <template>
+                <el-tooltip content="源码地址" effect="dark" placement="bottom">
+                    <a href="https://github.com/CSNight/oxygen_vue/">
+                        <fa-icon style="padding: 3px;margin-bottom: 30px; margin-right: 25px;"
+                                 icon-class="fa-github "></fa-icon>
+                    </a>
+                </el-tooltip>
+            </template>
+            <template>
+                <el-tooltip content="全屏" effect="dark" placement="bottom">
+                    <a>
+                        <fa-icon style="padding:3px;margin-bottom: 30px; margin-right:15px;"
+                                 icon-class="fa-arrows-alt"></fa-icon>
+                    </a>
+                </el-tooltip>
+            </template>
             <el-dropdown class="avatar-container" trigger="click">
                 <div class="avatar-wrapper">
                     <el-tooltip class="item" effect="dark" :content="nick" placement="top-start">
@@ -16,7 +32,7 @@
                             Home
                         </el-dropdown-item>
                     </router-link>
-                    <router-link to="/">
+                    <router-link to="/user">
                         <el-dropdown-item>
                             Profile
                         </el-dropdown-item>
