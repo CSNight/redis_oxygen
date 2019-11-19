@@ -113,7 +113,7 @@
                             } else this.doEdit();
                         } else {
                             this.$message({
-                                message: '角色不能为空',
+                                message: '角色,部门不能为空',
                                 type: 'warning'
                             })
                         }
@@ -134,7 +134,6 @@
                             message: resp.data.message
                         });
                     }
-                    console.log(this.$parent);
                     this.loading = false;
                     this.dialog = false;
                     this.$parent.loadData();
@@ -161,7 +160,6 @@
                             message: resp.data.message
                         });
                     }
-                    console.log(this.$parent);
                     this.$parent.loadData();
                     this.loading = false;
                     this.dialog = false;

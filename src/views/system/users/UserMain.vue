@@ -8,17 +8,17 @@
                         class="filter-item"
                         style="width:70%;height: 30px"
                         size="mini"
-                        placeholder="输入关键字进行过滤"
+                        placeholder="输入部门名称进行过滤"
                         v-model="filterText">
                 </el-input>
             </el-col>
             <el-col :span="20" style="height:auto">
                 <div class="head-container">
                     <!-- 搜索 -->
-                    <el-input v-if="rights('USER_QUERY')" clearable placeholder="输入角色名称搜索" style="width: 200px;"
-                              size="mini" class="filter-item"/>
+                    <el-input v-if="rights('USER_QUERY')" clearable placeholder="输入用户名或手机号搜索" style="width: 200px;"
+                              size="mini" class="filter-item" v-model="query.blurry"/>
                     <el-button v-if="rights('USER_QUERY')" class="filter-item" size="mini" type="success"
-                               icon="el-icon-search">搜索
+                               @click="loadQuery" icon="el-icon-search">搜索
                     </el-button>
                     <!-- 新增 -->
                     <div style="display: inline-block;margin: 0 2px;">
@@ -45,34 +45,34 @@
             </el-col>
             <el-col :span="20" style="height: 90vh;overflow: auto">
                 <div>
-
                     <el-table :data="users.slice((currentPage-1)*pg_size,currentPage*pg_size)"
                               style="width: auto;margin-top: 20px;" fixed row-key="name"
                               v-loading="loading">
                         <el-table-column prop="username" align="center" label="名称"></el-table-column>
-                        <el-table-column prop="phone" label="电话" align="center"></el-table-column>
+                        <el-table-column prop="phone" label="电话" width="120px" align="center"></el-table-column>
                         <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
-                        <el-table-column prop="enabled" align="center" label="状态">
+                        <el-table-column prop="enabled" align="center" width="100px" label="状态">
                             <template slot-scope="scope">
                                 <el-tag :type="scope.row.enabled ? 'success' : 'danger'">
                                     {{scope.row.enabled?'启用':'禁用'}}
                                 </el-tag>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="create_time" align="center" label="创建时间">
+                        <el-table-column prop="create_time" width="170px" align="center" label="创建时间">
                             <template slot-scope="scope">
-                                <span style="margin-left: 10px">{{ dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time)) }}</span>
+                                <span>{{ dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time)) }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="roles" align="center" label="角色">
                             <template slot-scope="scope">
-                                <span style="margin-left: 10px">{{ get_role_str(scope.row) }}</span>
+                                <span>{{ get_role_str(scope.row) }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="login_times" align="center" label="登录次数"></el-table-column>
+                        <el-table-column prop="login_times" width="100px" align="center" label="登录次数"></el-table-column>
                         <el-table-column align="center" label="操作">
                             <template slot-scope="scope">
-                                <el-button v-if="rights('USER_UPDATE')" type="primary" icon="el-icon-edit"
+                                <el-button v-if="rights('USER_UPDATE')&&getShow(scope.row)" type="primary"
+                                           icon="el-icon-edit"
                                            @click.native.prevent="editUser(scope.row)&&rights('ROLE_QUERY')"
                                            size="small"></el-button>
                                 <el-button v-if="getShow(scope.row)&&rights('USER_DEL')" type="danger"
@@ -89,10 +89,9 @@
                     </el-table>
                 </div>
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                               :current-page="currentPage"
-                               :page-sizes="[5,10]" :page-size="pg_size"
-                               layout="total, sizes, prev, pager, next, jumper"
-                               :total="users.length" style="float: right">
+                               :current-page="currentPage" :page-sizes="[5,10]" :page-size="pg_size"
+                               layout="total, sizes, prev, pager, next, jumper" :total="users.length"
+                               style="float: right">
                 </el-pagination>
             </el-col>
         </el-row>
@@ -101,7 +100,7 @@
 
 <script>
     import {get_org_tree} from "../../../api/system/org_api";
-    import {edit_user, get_org_user, get_users} from "../../../api/system/user_api";
+    import {query_users, delete_user, edit_user, get_org_user, get_users} from "../../../api/system/user_api";
     import {dateFormat} from "../../../utils/utils";
     import UserForm from "./UserForm";
     import {get_roles} from "../../../api/system/role_api";
@@ -116,6 +115,8 @@
                 defaultProps: {
                     children: 'children',
                     label: 'name'
+                }, query: {
+                    blurry: ''
                 },
                 users: [], org_tree: [], role_list: [],
             }
@@ -163,6 +164,18 @@
             }, filterNode(value, data) {
                 if (!value) return true;
                 return data.name.indexOf(value) !== -1;
+            }, loadQuery() {
+                if (this.query.blurry === '') {
+                    this.loadData();
+                    return;
+                }
+                this.users = [];
+                query_users(this.query).then((resp) => {
+                    this.users = resp.data.message;
+                    this.loading = false;
+                }).catch(() => {
+                    this.loading = false;
+                })
             }, loadData() {
                 if (!this.rights("USER_QUERY") || !this.rights("ORG_QUERY")) {
                     this.$message.error({
@@ -235,8 +248,33 @@
                 }
                 _this.form.roles = ro;
                 this.get_role_list(false, true);
-            }, deleteUser() {
-
+            }, deleteUser(row) {
+                this.$confirm('此操作将删除该用户, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.lockLoading();
+                    delete_user(row.id).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.message === "success") {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                        } else {
+                            this.$message.error('删除失败!');
+                        }
+                        this.loadData();
+                        this.unlockLoading();
+                    }).catch(() => {
+                        this.unlockLoading();
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
             }, get_role_list(add, dialog) {
                 const _this = this.$refs.form;
                 if (this.role_list.length === 0) {
