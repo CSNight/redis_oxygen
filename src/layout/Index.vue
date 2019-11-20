@@ -30,7 +30,7 @@
                 return this.$store.state.app.device
             },
             fixedHeader() {
-                return false
+                return true
             },
             classObj() {
                 return {

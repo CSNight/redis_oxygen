@@ -17,7 +17,7 @@
                         <router-link to="/home">Dashboard</router-link>
                     </el-menu-item>
                     <el-menu-item index="3" v-if="name!==''">
-                        <a :href="baseUrl+'/swagger-ui.html'">SeverAPI</a>
+                        <a target="_blank" :href="baseUrl+'/swagger-ui.html'">SeverAPI</a>
                     </el-menu-item>
                 </el-menu>
                 <div style="margin: auto">
