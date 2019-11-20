@@ -2,7 +2,7 @@ import {getToken, removeToken} from "../../utils/token";
 import {resetRouter} from "../../router/router";
 import {logout_req, user_avatar, user_info} from "../../api/system/login_api";
 import {MessageBox} from "element-ui";
-
+// eslint-disable-next-line no-undef
 const ava = require('../../assets/logo.png');
 const state = {
     token: getToken(),

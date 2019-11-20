@@ -1,5 +1,6 @@
 <template>
     <el-row style="margin-top: 30px">
+        <PassForm ref="form"></PassForm>
         <el-col :span="6">
             <div class="card card-user">
                 <div class="card-body">
@@ -12,14 +13,14 @@
                         <div class="block block-four"></div>
                         <el-upload
                                 class="upload-demo"
+                                :disabled="!rights('USER_INFO_EDIT')"
                                 action="https://jsonplaceholder.typicode.com/posts/"
-
-                                :before-upload="handleAvatarSuccess"
+                                :before-upload="handleAvatarBefore"
                                 :show-file-list="false"
                                 :limit="1">
-                            <el-avatar style="width: 124px;height: 124px" :src="head"></el-avatar>
-                            <h5 v-text="nick"></h5>
+                            <el-avatar ref="avatar" style="width: 124px;height: 124px" :src="avatar"></el-avatar>
                         </el-upload>
+                        <h5 v-text="nick"></h5>
                         <p v-text="name" class="description" style="margin-top: -7px;font-size: 1.14em;"></p>
                     </div>
                     <ul class="user-info">
@@ -41,13 +42,14 @@
                         <li>
                             <fa-icon icon-class="fa-clock-o"/>
                             创建日期
-                            <div class="user-right">{{ user.create_time }}</div>
+                            <div class="user-right">{{ dateFormat("YYYY-mm-dd HH:MM:SS",new Date(user.create_time))
+                                }}
+                            </div>
                         </li>
                         <li>
                             <fa-icon icon-class="fa-shield"/>
                             安全设置
-                            <div class="user-right">
-                                <a>修改密码</a>
+                            <div class="user-right"><a v-if="rights('USER_INFO_EDIT')" @click="changePass">修改密码</a>
                             </div>
                         </li>
                     </ul>
@@ -60,9 +62,12 @@
 <script>
     import {mapGetters} from "vuex";
     import {user_info} from "../../../api/system/login_api";
+    import PassForm from "./PassForm";
+    import {dateFormat} from "../../../utils/utils";
 
     export default {
         name: 'UserInfo',
+        components: {PassForm},
         data() {
             return {
                 user: {},
@@ -79,15 +84,30 @@
         },
         created() {
             this.$nextTick(() => {
-                setTimeout(() => {
-                    // eslint-disable-next-line no-undef
-                    this.head = (this.$store.getters.avatar.toString() === '' ? require('../../../assets/logo.png') : this.$store.getters.avatar);
-                }, 100);
                 this.loadData();
             });
         }, methods: {
-            handleAvatarSuccess(file) {
-                this.head = file.raw;
+            dateFormat(fmt, dt) {
+                return dateFormat(fmt, dt);
+            },
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
+            handleAvatarBefore(file) {
+                const isJPG = file.type === 'image/jpeg';
+                const isLt2M = file.size / 1024 / 1024 < 2;
+
+                if (!isJPG) {
+                    this.$message.error('上传头像图片只能是 JPG 格式!');
+                }
+                if (!isLt2M) {
+                    this.$message.error('上传头像图片大小不能超过 2MB!');
+                }
+                this.$refs.avatar.src = file.raw;
+                return isJPG && isLt2M;
             },
             loadData() {
                 user_info({name}).then(resp => {
@@ -103,6 +123,15 @@
                         message: "用户信息查询错误!"
                     });
                 })
+            }, changePass() {
+                const _this = this.$refs.form;
+                _this.form = {
+                    username: this.$store.getters.name,
+                    old_password: '',
+                    password: '',
+                    match_password: ''
+                };
+                _this.dialog = true;
             }
         }
     }
@@ -195,7 +224,8 @@
                     float: right;
 
                     a {
-                        color: #317EF3;margin-right: 5px;
+                        color: #317EF3;
+                        margin-right: 5px;
                     }
                 }
             }
