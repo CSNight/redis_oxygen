@@ -14,8 +14,9 @@
                         <el-upload
                                 class="upload-demo"
                                 :disabled="!rights('USER_INFO_EDIT')"
-                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :action="up_url"
                                 :before-upload="handleAvatarBefore"
+                                with-credentials
                                 :show-file-list="false"
                                 :limit="1">
                             <el-avatar ref="avatar" style="width: 124px;height: 124px" :src="avatar"></el-avatar>
@@ -72,6 +73,7 @@
             return {
                 user: {},
                 head: '',
+                up_url:this.$store.getters.baseUrl+"/files/upload"
             }
         },
         computed: {
@@ -106,7 +108,7 @@
                 if (!isLt2M) {
                     this.$message.error('上传头像图片大小不能超过 2MB!');
                 }
-                this.$refs.avatar.src = file.raw;
+                //this.$refs.avatar.src = file.raw;
                 return isJPG && isLt2M;
             },
             loadData() {

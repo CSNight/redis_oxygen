@@ -57,7 +57,7 @@
                     label="创建时间">
                 <template slot-scope="scope">
                     <i class="el-icon-time"></i>
-                    <span style="margin-left: 10px">{{ new Date(scope.row.create_time).toLocaleString() }}</span>
+                    <span style="margin-left: 10px">{{  dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time)) }}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -98,6 +98,7 @@
     import {delete_permit, get_permits, query_permits} from "../../../api/system/access_api";
     import {get_menu_tree} from "../../../api/system/menu_api";
     import AccessForm from "./AccessForm";
+    import {dateFormat} from "../../../utils/utils";
 
     export default {
         name: "AccessTable",
@@ -119,6 +120,9 @@
                     return this.$store.getters.permit[permit];
                 }
                 return false
+            },
+            dateFormat(fmt, dt) {
+                return dateFormat(fmt, dt);
             },
             handleSizeChange: function (size) {
                 this.pg_size = size;
