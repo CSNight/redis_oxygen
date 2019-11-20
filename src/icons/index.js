@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import ElIcon from '@/components/ElIcon'
-import SygIcon from '@/components/SvgIcon'
-import FaIcon from "@/components/FaIcon";
+import ElIcon from '../components/ElIcon'
+import SygIcon from '../components/SvgIcon'
+import FaIcon from "../components/FaIcon";
 // svg component
 
 // register globally

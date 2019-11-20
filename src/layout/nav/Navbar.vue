@@ -3,21 +3,29 @@
         <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar"/>
         <breadcrumb class="breadcrumb-container"/>
         <div class="right-menu">
-            <template>
+            <template >
                 <el-tooltip content="源码地址" effect="dark" placement="bottom">
-                    <a href="https://github.com/CSNight/oxygen_vue/">
-                        <fa-icon style="padding: 3px;margin-bottom: 30px; margin-right: 25px;"
+                    <a target="_blank" href="https://github.com/CSNight/oxygen_vue/" style="margin-right: 30px">
+                        <fa-icon style="padding: 3px;margin-bottom: 30px;color:#777777"
                                  icon-class="fa-github "></fa-icon>
                     </a>
                 </el-tooltip>
             </template>
             <template>
-                <el-tooltip content="全屏" effect="dark" placement="bottom">
-                    <a>
-                        <fa-icon style="padding:3px;margin-bottom: 30px; margin-right:15px;"
+                <el-tooltip content="全屏" effect="dark" placement="bottom" >
+                    <a @click="toggleFullScreen" style="margin-right: 25px">
+                        <fa-icon style="padding:3px;margin-bottom: 30px;color:#777777"
                                  icon-class="fa-arrows-alt"></fa-icon>
                     </a>
                 </el-tooltip>
+            </template>
+            <template>
+                <el-badge :value="3" is-dot class="item" style="margin-right: 20px">
+                    <a>
+                        <i style="padding:3px;margin-bottom: 30px;color:#777777"
+                           class="tim-icons ni ni-sound-wave"></i>
+                    </a>
+                </el-badge>
             </template>
             <el-dropdown class="avatar-container" trigger="click">
                 <div class="avatar-wrapper">
@@ -37,9 +45,6 @@
                             Profile
                         </el-dropdown-item>
                     </router-link>
-                    <a target="_blank" href="https://github.com/CSNight/oxygen_vue/">
-                        <el-dropdown-item>Github</el-dropdown-item>
-                    </a>
                     <a target="_blank" href="https://github.com/CSNight/oxygen_vue">
                         <el-dropdown-item>Docs</el-dropdown-item>
                     </a>
@@ -73,7 +78,8 @@
         },
         data() {
             return {
-                head: ''
+                head: '',
+                full: false
             }
         },
         created() {
@@ -88,8 +94,39 @@
             toggleSideBar() {
                 this.$store.dispatch('app/toggleSideBar')
             },
-            get_head() {
+            toggleFullScreen() {
+                if (this.full) {
+                    this.full = false;
+                    this.exitFullscreen();
+                } else {
+                    this.full = true;
+                    this.fullScreen();
+                }
+            },
+            fullScreen() {
+                let element = document.documentElement;
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                }
+            },
 
+            //退出全屏
+            exitFullscreen() {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
             },
             async logout() {
                 await this.$store.dispatch('user/logout').then((data) => {
@@ -136,6 +173,20 @@
 
             &:focus {
                 outline: none;
+            }
+
+            .tim-icons {
+                display: inline-block;
+                vertical-align: middle;
+                speak: none;
+                font-size:18px;
+                text-transform: none;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            .icon-sound-wave::before {
+                content: "\ea4b";
             }
 
             .right-menu-item {
