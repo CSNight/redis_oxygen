@@ -3,7 +3,7 @@
         <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar"/>
         <breadcrumb class="breadcrumb-container"/>
         <div class="right-menu">
-            <template >
+            <template>
                 <el-tooltip content="源码地址" effect="dark" placement="bottom">
                     <a target="_blank" href="https://github.com/CSNight/oxygen_vue/" style="margin-right: 30px">
                         <fa-icon style="padding: 3px;margin-bottom: 30px;color:#777777"
@@ -12,7 +12,7 @@
                 </el-tooltip>
             </template>
             <template>
-                <el-tooltip content="全屏" effect="dark" placement="bottom" >
+                <el-tooltip content="全屏" effect="dark" placement="bottom">
                     <a @click="toggleFullScreen" style="margin-right: 25px">
                         <fa-icon style="padding:3px;margin-bottom: 30px;color:#777777"
                                  icon-class="fa-arrows-alt"></fa-icon>
@@ -30,7 +30,7 @@
             <el-dropdown class="avatar-container" trigger="click">
                 <div class="avatar-wrapper">
                     <el-tooltip class="item" effect="dark" :content="nick" placement="top-start">
-                        <img :src="head" class="user-avatar">
+                        <img :src="avatar" class="user-avatar">
                     </el-tooltip>
                     <i class="el-icon-caret-bottom"></i>
                 </div>
@@ -83,12 +83,6 @@
             }
         },
         created() {
-            this.$nextTick(() => {
-                setTimeout(() => {
-                    // eslint-disable-next-line no-undef
-                    this.head = (this.$store.getters.avatar.toString() === '' ? require('../../assets/logo.png') : this.$store.getters.avatar);
-                }, 100);
-            });
         },
         methods: {
             toggleSideBar() {
@@ -179,7 +173,7 @@
                 display: inline-block;
                 vertical-align: middle;
                 speak: none;
-                font-size:18px;
+                font-size: 18px;
                 text-transform: none;
                 -webkit-font-smoothing: antialiased;
                 -moz-osx-font-smoothing: grayscale;

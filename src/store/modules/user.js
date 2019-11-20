@@ -3,12 +3,12 @@ import {resetRouter} from "../../router/router";
 import {logout_req, user_avatar, user_info} from "../../api/system/login_api";
 import {MessageBox} from "element-ui";
 
-
+const ava = require('../../assets/logo.png');
 const state = {
     token: getToken(),
     name: '',
     nick: '',
-    avatar: '',
+    avatar: ava,
     roles: [],
     permit: {}
 };
@@ -36,7 +36,7 @@ const actions = {
         commit('SET_ROLES', []);
         commit('SET_NAME', '');
         commit('SET_NICK', '');
-        commit('SET_AVATAR', '');
+        commit('SET_AVATAR', ava);
         removeToken();
         resetRouter();
         return new Promise((resolve, reject) => {
@@ -80,10 +80,10 @@ const actions = {
                     if (resp.data.status === 200) {
                         commit('SET_AVATAR', resp.data.message);
                     } else {
-                        commit('SET_AVATAR', '');
+                        commit('SET_AVATAR', ava);
                     }
                 }).catch(() => {
-                    commit('SET_AVATAR', '');
+                    commit('SET_AVATAR', ava);
                 });
                 commit('SET_TOKEN', getToken());
                 resolve(data)
