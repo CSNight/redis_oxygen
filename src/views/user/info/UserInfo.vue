@@ -15,10 +15,12 @@
                                 class="upload-demo"
                                 :disabled="!rights('USER_INFO_EDIT')"
                                 :action="up_url"
+                                accept="image/*"
+                                :on-success="handleSuccess"
+                                :on-error="handleError"
                                 :before-upload="handleAvatarBefore"
                                 with-credentials
-                                :show-file-list="false"
-                                :limit="1">
+                                :show-file-list="false">
                             <el-avatar ref="avatar" style="width: 124px;height: 124px" :src="avatar"></el-avatar>
                         </el-upload>
                         <h5 v-text="nick"></h5>
@@ -73,7 +75,7 @@
             return {
                 user: {},
                 head: '',
-                up_url:this.$store.getters.baseUrl+"/files/upload"
+                up_url: this.$store.getters.baseUrl + "/users/change_avatar"
             }
         },
         computed: {
@@ -99,17 +101,28 @@
                 return false
             },
             handleAvatarBefore(file) {
-                const isJPG = file.type === 'image/jpeg';
-                const isLt2M = file.size / 1024 / 1024 < 2;
-
-                if (!isJPG) {
-                    this.$message.error('上传头像图片只能是 JPG 格式!');
+                const isLt1M = file.size / 1024 / 1024.0;
+                if (isLt1M > 0.5) {
+                    this.$message.error('上传头像图片大小不能超过 512KB!');
                 }
-                if (!isLt2M) {
-                    this.$message.error('上传头像图片大小不能超过 2MB!');
+                return isLt1M <= 1;
+            },
+            handleSuccess(res) {
+                if (res.status === 200 && res.code === 'OK') {
+                    this.$message({
+                        type: "success",
+                        message: "修改成功"
+                    });
+                    this.$store.dispatch('user/get_head');
+                } else {
+                    this.$message.error({
+                        message: "修改失败"
+                    })
                 }
-                //this.$refs.avatar.src = file.raw;
-                return isJPG && isLt2M;
+            }, handleError() {
+                this.$message.error({
+                    message: "修改失败"
+                })
             },
             loadData() {
                 user_info({name}).then(resp => {

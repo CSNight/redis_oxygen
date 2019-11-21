@@ -100,6 +100,17 @@ const actions = {
                 });
             });
         })
+    },
+    get_head({commit, state}) {
+        user_avatar({username: state.name}).then((resp) => {
+            if (resp.data.status === 200) {
+                commit('SET_AVATAR', resp.data.message);
+            } else {
+                commit('SET_AVATAR', ava);
+            }
+        }).catch(() => {
+            commit('SET_AVATAR', ava);
+        });
     }
 };
 export default {

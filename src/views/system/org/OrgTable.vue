@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="height: 100%">
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
@@ -27,7 +27,7 @@
         </div>
         <el-divider content-position="left"></el-divider>
         <OrgForm ref="form" :status="status" :is-add="isAdd"/>
-        <div style="height: 90vh">
+        <div>
             <el-scrollbar style="height: 100%">
                 <el-table :data="tableData" style="width: 100%;margin-bottom:20px;" fixed row-key="name"
                           v-loading="loading" :stripe="true"
