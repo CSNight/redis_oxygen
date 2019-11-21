@@ -100,7 +100,7 @@
 
 <script>
     import {get_org_tree} from "../../../api/system/org_api";
-    import {query_users, delete_user, edit_user, get_org_user, get_users} from "../../../api/system/user_api";
+    import {delete_user, edit_user, get_org_user, get_users, query_users} from "../../../api/system/user_api";
     import {dateFormat} from "../../../utils/utils";
     import UserForm from "./UserForm";
     import {get_roles} from "../../../api/system/role_api";
@@ -207,6 +207,10 @@
                 })
             }, enabledChange(row) {
                 let row_status = !row.enabled;
+                if (row.username === this.$store.getters.name && !row_status) {
+                    this.$message.error('不能锁定当前用户!');
+                    return;
+                }
                 let user_ent = JSON.parse(JSON.stringify(row));
                 user_ent.enabled = row_status;
                 let msg_prefix = row.enabled ? '禁用' : '启用';
@@ -249,6 +253,10 @@
                 _this.form.roles = ro;
                 this.get_role_list(false, true);
             }, deleteUser(row) {
+                if (row.username === this.$store.getters.name) {
+                    this.$message.error('不能锁定当前用户!');
+                    return;
+                }
                 this.$confirm('此操作将删除该用户, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
