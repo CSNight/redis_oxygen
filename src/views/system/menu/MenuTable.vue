@@ -33,7 +33,7 @@
         </div>
         <MenuForm ref="form" :status="status" :is-add="isAdd" :icons="icons"/>
         <el-divider content-position="left"></el-divider>
-        <div style="height: 90vh">
+        <div>
             <el-scrollbar style="height: 100%">
                 <el-table
                         :data="MenuTree"
