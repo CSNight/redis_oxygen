@@ -89,14 +89,13 @@ const actions = {
                 resolve(data)
             }).catch(error => {
                 removeToken();
-                reject(error);
                 MessageBox.confirm('登录过期请重新登录?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
                     center: true
                 }).then(() => {
-
+                    reject(error);
                 });
             });
         })
