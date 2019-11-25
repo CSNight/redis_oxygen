@@ -254,7 +254,7 @@
                 this.get_role_list(false, true);
             }, deleteUser(row) {
                 if (row.username === this.$store.getters.name) {
-                    this.$message.error('不能锁定当前用户!');
+                    this.$message.error('不能删除当前用户!');
                     return;
                 }
                 this.$confirm('此操作将删除该用户, 是否继续?', '提示', {

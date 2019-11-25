@@ -1,5 +1,5 @@
 <template>
-    <el-row style="margin-top: 30px">
+    <el-row style="margin-top: 30px;">
         <PassForm ref="form"></PassForm>
         <el-col :span="6">
             <div class="card card-user">
@@ -59,6 +59,9 @@
                 </div>
             </div>
         </el-col>
+        <el-col :span="18">
+            <LogTable></LogTable>
+        </el-col>
     </el-row>
 </template>
 
@@ -67,10 +70,11 @@
     import {user_info} from "../../../api/system/login_api";
     import PassForm from "./PassForm";
     import {dateFormat} from "../../../utils/utils";
+    import LogTable from "./LogTable";
 
     export default {
         name: 'UserInfo',
-        components: {PassForm},
+        components: {LogTable, PassForm},
         data() {
             return {
                 user: {},
