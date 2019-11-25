@@ -60,7 +60,7 @@
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="cur"
-                :page-sizes="[5,10]"
+                :page-sizes="[5,10,15]"
                 :page-size="pg_size"
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="total"
@@ -77,7 +77,7 @@
         name: "LogTable",
         data() {
             return {
-                logs: [], loading: false, pg_size: 5, cur: 1, total: 0,
+                logs: [], loading: false, pg_size: 10, cur: 1, total: 0,
             }
         },
         created() {

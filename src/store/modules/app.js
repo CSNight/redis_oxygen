@@ -7,7 +7,7 @@ const state = {
     },
     device: 'desktop',
     login_show: false,
-    BASE_API:'https://localhost'
+    BASE_API:'https://127.0.0.1'
 };
 
 

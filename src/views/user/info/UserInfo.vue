@@ -1,5 +1,5 @@
 <template>
-    <el-row style="margin-top: 30px;">
+    <el-row class="bg">
         <PassForm ref="form"></PassForm>
         <el-col :span="6">
             <div class="card card-user">
@@ -58,6 +58,9 @@
                     </ul>
                 </div>
             </div>
+            <el-card>
+                <img style="width: 100%;height: 100%" :src="src"/>
+            </el-card>
         </el-col>
         <el-col :span="18">
             <LogTable></LogTable>
@@ -79,6 +82,8 @@
             return {
                 user: {},
                 head: '',
+                // eslint-disable-next-line no-undef
+                src:require("../../../assets/background.jpg"),
                 up_url: this.$store.getters.baseUrl + "/users/change_avatar"
             }
         },
@@ -156,6 +161,10 @@
     }
 </script>
 <style lang="scss" scoped>
+    .bg {
+        margin-top: 30px;
+    }
+
     .card {
         color: #999999;
         border: 0;
