@@ -50,7 +50,10 @@
                     </el-table-column>
                     <el-table-column prop="icon" label="图标" align="center" width="100px">
                         <template slot-scope="scope">
-                            <fa-icon :icon-class="scope.row.icon" :class-name="className"></fa-icon>
+                            <fa-icon v-if="scope.row.icon.indexOf('fa-')!==-1" :icon-class="scope.row.icon"
+                                     :class-name="className"></fa-icon>
+                            <svg-icon v-if="scope.row.icon.indexOf('svg-')!==-1" :icon-class="scope.row.icon"
+                                      :class-name="className"></svg-icon>
                         </template>
                     </el-table-column>
                     <el-table-column prop="sort" label="排序" align="center" width="100px">

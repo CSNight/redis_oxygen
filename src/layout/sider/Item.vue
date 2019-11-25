@@ -20,7 +20,12 @@
             const {icon, title} = context.props;
             const vnodes = [];
             if (icon) {
-                vnodes.push(<fa-icon icon-class={icon}/>);
+                if(icon.indexOf('fa-')!==-1){
+                    vnodes.push(<fa-icon icon-class={icon}/>);
+                }else if(icon.indexOf('svg-')!==-1){
+                    vnodes.push(<svg-icon icon-class={icon}/>);
+                }
+
             }
             if (title) {
                 vnodes.push(<span><slot name='title'>{(title)}</slot></span>);

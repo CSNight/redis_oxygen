@@ -9,6 +9,10 @@
                 <fa-icon :icon-class="item._class" class-name="fa-1x" style="height: 30px;width: 30px;"/>
                 <span>{{ item.name.substring(0,10) }}</span>
             </div>
+            <div :key="'svg-redis'" @click="selectedIcon({_class:'svg-redis'})">
+                <svg-icon icon-class="svg-redis"></svg-icon>
+                <span style="vertical-align: -0.7rem !important;margin-left: 15px">redis</span>
+            </div>
         </div>
     </div>
 </template>
