@@ -17,14 +17,14 @@
                            :value="item.key"/>
             </el-select>
             <el-date-picker
-                    v-model="query.ct"
+                    v-model="query.st_et"
                     size="mini"
                     type="datetimerange"
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期">
             </el-date-picker>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索
+            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
@@ -100,7 +100,8 @@
 </template>
 
 <script>
-    import {get_logs} from "../../../api/system/log_api";
+    // eslint-disable-next-line no-unused-vars
+    import {get_logs, query_logs} from "../../../api/system/log_api";
     import {dateFormat} from "../../../utils/utils";
 
     export default {
@@ -111,8 +112,7 @@
                 query: {
                     key: '',
                     value: '',
-                    st: '',
-                    et: '',
+                    st_et: [],
                     sort: 'ct',
                     direct: 'asc'
                 },
@@ -163,19 +163,68 @@
                 }
             },
             loadData() {
+                this.loading = true;
                 get_logs(this.$store.getters.name, this.cur, this.pg_size).then((resp) => {
-                    this.logs = resp.data.message.content;
-                    this.total = resp.data.message.totalElements;
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.logs = resp.data.message.content;
+                        this.total = resp.data.message.totalElements;
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                    this.loading = false;
+                }).catch((resp) => {
+                    this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!" + resp.data.message
+                    });
                 })
             }, loadQuery() {
-
+                this.loading = true;
+                let params = {
+                    un: this.$store.getters.name,
+                    cur: this.cur,
+                    size: this.pg_size,
+                    sort: this.query.sort,
+                    direct: this.query.direct
+                };
+                if ((this.$store.getters.roles.indexOf("ROLE_DEV") !== -1 ||
+                    this.$store.getters.roles.indexOf("ROLE_SUPER") !== -1) && this.query.key === 'un') {
+                    params['un'] = this.query.value;
+                } else if (this.query.key !== '' && this.query.value != null && this.query.value !== "") {
+                    params[this.query.key] = this.query.value;
+                    if (this.query.key === 'mo') {
+                        params[this.query.key] = this.query.value.toUpperCase();
+                    }
+                }
+                if (this.query.st_et !== null && this.query.st_et.length !== 0) {
+                    params['std'] = this.query.st_et[0].toString();
+                    params['etd'] = this.query.st_et[1].toString();
+                }
+                query_logs(params).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.logs = resp.data.message.content;
+                        this.total = resp.data.message.totalElements;
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                    this.loading = false;
+                }).catch((resp) => {
+                    this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!" + resp.response.data.message
+                    });
+                })
             }, handleSizeChange: function (size) {
                 this.pg_size = size;
-                this.loadData();
+                this.loadQuery();
             },
             handleCurrentChange: function (currentPage) {
                 this.cur = currentPage;
-                this.loadData();
+                this.loadQuery();
             },
         }
     }
