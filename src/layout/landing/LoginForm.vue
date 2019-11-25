@@ -6,8 +6,7 @@
         <el-form ref="form" :model="form" :rules="rules" style="margin: 0">
             <el-form-item label="" prop="username">
                 <el-input v-model="form.username" name="username" prefix-icon="el-icon-user-solid"
-                          placeholder="Username"
-                          style="width: 360px;height: 46px"/>
+                          placeholder="Username"  maxlength="20" show-word-limit style="width: 360px;height: 46px"/>
             </el-form-item>
             <div v-if="error_reg_show">
                 <p class="error_text" v-for="error in error_reg['username']" :key="error"
@@ -23,7 +22,7 @@
             </div>
             <el-form-item label="" v-if="!isLogin" prop="phone">
                 <el-input v-model="form.phone" name="phone" prefix-icon="el-icon-mobile" placeholder="Phone Number"
-                          style="width: 360px;height: 46px"/>
+                          maxlength="11"  style="width: 360px;height: 46px"/>
             </el-form-item>
             <div v-if="error_reg_show">
                 <p class="error_text" v-for="error in error_reg['phone']" :key="error"

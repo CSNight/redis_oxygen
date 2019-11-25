@@ -3,12 +3,16 @@
                title="修改密码" width="570px" @close="resetForm">
         <el-form ref="form" :model="form" :rules="rules" size="small" label-width="100px">
             <el-form-item label="原始密码" prop="old_password">
-                <el-input type="password" v-model="form.old_password"/>
+                <el-input type="password" v-model="form.old_password" maxLength="20"/>
             </el-form-item>
+
             <el-form-item label="新密码" prop="password">
-                <el-input type="password" v-model="form.password"/>
+                <el-input type="password" v-model="form.password" maxLength="20" @keyup.native="passStrong"/>
+                <el-progress v-if="form.password.length>0" style="width: 80%;" :percentage="percent"
+                             :color="customColorMethod"
+                             :status="status"></el-progress>
             </el-form-item>
-            <el-form-item label="再次输入" prop="match_password">
+            <el-form-item label="再次输入" prop="match_password" maxLength="20">
                 <el-input type="password" v-model="form.match_password"/>
             </el-form-item>
         </el-form>
@@ -37,7 +41,7 @@
                 }
             };
             return {
-                dialog: false, loading: false,
+                dialog: false, loading: false, percent: 0, status: 'exception',
                 form: {
                     username: '',
                     old_password: '',
@@ -62,6 +66,25 @@
             }
         },
         methods: {
+            passStrong() {
+                this.percent = this.form.password.length / 20 * 100;
+                if (this.percent < 30) {
+                    this.status = 'exception'
+                } else if (this.percent >= 30 && this.percent < 70) {
+                    this.status = 'warning'
+                } else {
+                    this.status = 'success'
+                }
+            },
+            customColorMethod(percentage) {
+                if (percentage < 30) {
+                    return '#ff2222';
+                } else if (percentage < 70) {
+                    return '#e6a23c';
+                } else {
+                    return '#67c23a';
+                }
+            },
             doSubmit() {
                 this.$refs['form'].validate((valid) => {
                     if (valid && this.form.username !== '') {
@@ -112,5 +135,11 @@
 </script>
 
 <style scoped>
+    .el-progress__text {
+        float: right;
+    }
 
+    .el-progress-bar__outer {
+        float: left;
+    }
 </style>

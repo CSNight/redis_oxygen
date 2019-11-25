@@ -80,10 +80,11 @@
         components: {LogTable, PassForm},
         data() {
             return {
+
                 user: {},
                 head: '',
                 // eslint-disable-next-line no-undef
-                src:require("../../../assets/background.jpg"),
+                src: require("../../../assets/background.jpg"),
                 up_url: this.$store.getters.baseUrl + "/users/change_avatar"
             }
         },
@@ -170,7 +171,7 @@
         border: 0;
         position: relative;
         width: 100%;
-        margin-bottom: 30px;
+        margin-bottom: 7px;
         display: flex;
         flex-direction: column;
         min-width: 0;

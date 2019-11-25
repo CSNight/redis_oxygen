@@ -3,7 +3,7 @@
                :title="isAdd ? '新增权限' : '编辑权限'" width="570px" @close="resetForm">
         <el-form ref="form" :inline="true" :model="form" :rules="rules" size="small" label-width="66px">
             <el-form-item label="用户名" prop="username">
-                <el-input v-model="form.username"/>
+                <el-input v-model="form.username" show-word-limit maxlength="30"/>
             </el-form-item>
             <el-form-item label="状态" prop="enabled">
                 <el-switch
