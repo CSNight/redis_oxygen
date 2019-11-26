@@ -32,43 +32,23 @@
                 <el-table :data="tableData" style="width: 100%;margin-bottom:20px;" fixed row-key="name"
                           v-loading="loading" :stripe="true"
                           default-expand-all :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
-                    <el-table-column
-                            prop="name"
-                            label="名称">
+                    <el-table-column prop="name" label="名称"/>
+                    <el-table-column prop="id" label="编号" align="center" width="100px">
                     </el-table-column>
-                    <el-table-column
-                            prop="id"
-                            label="编号"
-                            align="center"
-                            width="100px">
-                    </el-table-column>
-                    <el-table-column
-                            prop="enabled"
-                            align="center"
-                            label="状态"
-                            width="120px">
+                    <el-table-column prop="enabled" align="center" label="状态" width="120px">
                         <template slot-scope="scope">
                             <el-tag :type="scope.row.enabled ? 'success' : 'danger'">{{scope.row.enabled?'启用':'禁用'}}
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                            prop="create_time"
-                            align="center"
-                            label="创建时间">
+                    <el-table-column prop="create_time" align="center" label="创建时间">
                         <template slot-scope="scope">
-                            <i class="el-icon-time"></i>
+                            <i class="el-icon-time"/>
                             <span style="margin-left: 10px">{{ new Date(scope.row.create_time).toLocaleString() }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                            prop="create_user"
-                            align="center"
-                            label="创建人">
-                    </el-table-column>
-                    <el-table-column
-                            align="center"
-                            label="操作">
+                    <el-table-column prop="create_user" align="center" label="创建人"/>
+                    <el-table-column align="center" label="操作">
                         <template slot-scope="scope">
                             <el-button
                                     v-if="getShow(scope.row)&&rights('ORG_UPDATE')"

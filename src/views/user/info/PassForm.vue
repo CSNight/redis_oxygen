@@ -5,12 +5,10 @@
             <el-form-item label="原始密码" prop="old_password">
                 <el-input type="password" v-model="form.old_password" maxLength="20"/>
             </el-form-item>
-
             <el-form-item label="新密码" prop="password">
                 <el-input type="password" v-model="form.password" maxLength="20" @keyup.native="passStrong"/>
                 <el-progress v-if="form.password.length>0" style="width: 80%;" :percentage="percent"
-                             :color="customColorMethod"
-                             :status="status"></el-progress>
+                             :color="customColorMethod" :status="status"/>
             </el-form-item>
             <el-form-item label="再次输入" prop="match_password" maxLength="20">
                 <el-input type="password" v-model="form.match_password"/>

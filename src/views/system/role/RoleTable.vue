@@ -4,8 +4,7 @@
         <div class="head-container">
             <!-- 搜索 -->
             <el-input v-if="rights('ROLE_QUERY')" clearable v-model="query.blurry" placeholder="输入角色名称搜索"
-                      style="width: 200px;" size="mini"
-                      class="filter-item"/>
+                      style="width: 200px;" size="mini" class="filter-item"/>
             <el-button class="filter-item" v-if="rights('ROLE_QUERY')" size="mini" type="success" icon="el-icon-search"
                        @click="loadQuery">搜索
             </el-button>
@@ -15,46 +14,26 @@
                            @click="addRow">新增
                 </el-button>
                 <el-button type="danger" v-if="rights('ROLE_QUERY')" icon="el-icon-refresh" size="mini"
-                           @click="loadData"></el-button>
-                <el-button v-if="show_clear" type="warning" icon="el-icon-delete" size="mini"
-                           @click="resetChecked">清空选中
+                           @click="loadData"/>
+                <el-button v-if="show_clear" type="warning" icon="el-icon-delete" size="mini" @click="resetChecked">
+                    清空选中
                 </el-button>
             </div>
         </div>
-        <RoleForm ref="form" :is-add="isAdd"></RoleForm>
+        <RoleForm ref="form" :is-add="isAdd"/>
         <el-card style="width: 62%;float:left;margin-right: 20px;min-width: 500px;height: 85vh">
             <div slot="header" class="">
                 <span>角色列表</span>
             </div>
             <el-table
-                    ref="roleTable"
-                    :data="RoleList"
-                    style="width: 100%;margin-bottom: 20px;font-size: 12px"
-                    row-key="name"
-                    v-loading="loading"
-                    @row-click="rowClick"
-                    highlight-current-row>
-                <el-table-column
-                        prop="name"
-                        align="center"
-                        label="名称">
-                </el-table-column>
-                <el-table-column
-                        prop="code"
-                        align="center"
-                        label="编码">
-                </el-table-column>
-                <el-table-column
-                        prop="level"
-                        align="center"
-                        label="级别">
-                </el-table-column>
-                <el-table-column
-                        prop="create_time"
-                        align="center"
-                        label="创建时间">
+                    ref="roleTable" :data="RoleList" style="width: 100%;margin-bottom: 20px;font-size: 12px"
+                    row-key="name" v-loading="loading" @row-click="rowClick" highlight-current-row>
+                <el-table-column prop="name" align="center" label="名称"/>
+                <el-table-column prop="code" align="center" label="编码"/>
+                <el-table-column prop="level" align="center" label="级别"/>
+                <el-table-column prop="create_time" align="center" label="创建时间">
                     <template slot-scope="scope">
-                        <i class="el-icon-time"></i>
+                        <i class="el-icon-time"/>
                         <span style="margin-left: 10px">{{ new Date(scope.row.create_time).toLocaleString() }}</span>
                     </template>
                 </el-table-column>
@@ -65,9 +44,7 @@
                         <el-button
                                 v-if="getShow(scope.row.level)&&rights('ROLE_UPDATE')"
                                 @click.native.prevent="editRow(scope.row)"
-                                type="primary"
-                                icon="el-icon-edit"
-                                size="small">
+                                type="primary" icon="el-icon-edit" size="small">
                         </el-button>
                         <el-button
                                 v-if="getShow(scope.row.level)&&rights('ROLE_DEL')"
@@ -189,7 +166,7 @@
                 })
             },
             loadData() {
-                if (!this.rights("ROLE_QUERY")) {
+                if (!this.rights("ROLE_QUERY") || !this.rights("MENU_QUERY") || !this.rights("RIGHTS_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
                     });

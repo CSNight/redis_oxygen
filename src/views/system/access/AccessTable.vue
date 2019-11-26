@@ -20,7 +20,7 @@
             </div>
         </div>
         <AccessForm ref="form" :is-add="isAdd"/>
-        <el-divider content-position="left"></el-divider>
+        <el-divider content-position="left"/>
         <el-table
                 :data="tableData.slice((currentPage-1)*pg_size,currentPage*pg_size)"
                 style="width: 100%;margin-bottom: 20px;"
@@ -28,41 +28,21 @@
                 v-loading="loading"
                 :stripe="true"
                 default-expand-all>
-            <el-table-column
-                    prop="description"
-                    align="center"
-                    label="名称">
-            </el-table-column>
-            <el-table-column
-                    prop="name"
-                    align="center"
-                    label="编码">
-            </el-table-column>
-            <el-table-column
-                    prop="menu"
-                    align="center"
-                    label="组件">
+            <el-table-column prop="description" align="center" label="名称"/>
+            <el-table-column prop="name" align="center" label="编码"/>
+            <el-table-column prop="menu" align="center" label="组件">
                 <template slot-scope="scope">
                     <el-tag type="primary">{{scope.row.menu.name}}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column
-                    prop="create_user"
-                    align="center"
-                    label="创建人">
-            </el-table-column>
-            <el-table-column
-                    prop="create_time"
-                    align="center"
-                    label="创建时间">
+            <el-table-column prop="create_user" align="center" label="创建人"/>
+            <el-table-column prop="create_time" align="center" label="创建时间">
                 <template slot-scope="scope">
-                    <i class="el-icon-time"></i>
+                    <i class="el-icon-time"/>
                     <span style="margin-left: 10px">{{  dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time)) }}</span>
                 </template>
             </el-table-column>
-            <el-table-column
-                    align="center"
-                    label="操作">
+            <el-table-column align="center" label="操作">
                 <template slot-scope="scope">
                     <el-button
                             v-if="rights('RIGHTS_UPDATE')"

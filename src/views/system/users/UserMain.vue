@@ -48,9 +48,9 @@
                     <el-table :data="users.slice((currentPage-1)*pg_size,currentPage*pg_size)"
                               style="width: auto;margin-top: 20px;" fixed row-key="name"
                               v-loading="loading">
-                        <el-table-column prop="username" align="center" label="名称"></el-table-column>
-                        <el-table-column prop="phone" label="电话" width="120px" align="center"></el-table-column>
-                        <el-table-column prop="email" label="邮箱" align="center"></el-table-column>
+                        <el-table-column prop="username" align="center" label="名称"/>
+                        <el-table-column prop="phone" label="电话" width="120px" align="center"/>
+                        <el-table-column prop="email" label="邮箱" align="center"/>
                         <el-table-column prop="enabled" align="center" width="100px" label="状态">
                             <template slot-scope="scope">
                                 <el-tag :type="scope.row.enabled ? 'success' : 'danger'">
@@ -68,17 +68,17 @@
                                 <span>{{ get_role_str(scope.row) }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="login_times" width="100px" align="center" label="登录次数"></el-table-column>
+                        <el-table-column prop="login_times" width="100px" align="center" label="登录次数"/>
                         <el-table-column align="center" label="操作">
                             <template slot-scope="scope">
                                 <el-button v-if="rights('USER_UPDATE')&&getShow(scope.row)" type="primary"
                                            icon="el-icon-edit"
                                            @click.native.prevent="editUser(scope.row)&&rights('ROLE_QUERY')"
-                                           size="small"></el-button>
+                                           size="small"/>
                                 <el-button v-if="getShow(scope.row)&&rights('USER_DEL')" type="danger"
                                            @click.native.prevent="deleteUser(scope.row)"
                                            icon="el-icon-delete"
-                                           size="small"></el-button>
+                                           size="small"/>
                                 <el-button v-if="getShow(scope.row)&&rights('USER_UPDATE')"
                                            :type="lockBtnType(scope.row)"
                                            :icon="lockBtnIcon(scope.row)"

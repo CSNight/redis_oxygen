@@ -32,7 +32,7 @@
             </div>
         </div>
         <MenuForm ref="form" :status="status" :is-add="isAdd" :icons="icons"/>
-        <el-divider content-position="left"></el-divider>
+        <el-divider content-position="left"/>
         <div>
             <el-scrollbar style="height: 100%">
                 <el-table
@@ -44,16 +44,13 @@
                         :stripe="true"
                         default-expand-all
                         :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
-                    <el-table-column
-                            prop="name"
-                            label="名称">
-                    </el-table-column>
+                    <el-table-column prop="name" label="名称"/>
                     <el-table-column prop="icon" label="图标" align="center" width="100px">
                         <template slot-scope="scope">
                             <fa-icon v-if="scope.row.icon.indexOf('fa-')!==-1" :icon-class="scope.row.icon"
-                                     :class-name="className"></fa-icon>
+                                     :class-name="className"/>
                             <svg-icon v-if="scope.row.icon.indexOf('svg-')!==-1" :icon-class="scope.row.icon"
-                                      :class-name="className"></svg-icon>
+                                      :class-name="className"/>
                         </template>
                     </el-table-column>
                     <el-table-column prop="sort" label="排序" align="center" width="100px">
@@ -61,52 +58,27 @@
                             <el-tag type="primary">{{scope.row.sort}}</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                            prop="enabled"
-                            align="center"
-                            label="状态"
-                            width="100px">
+                    <el-table-column prop="enabled" align="center" label="状态" width="100px">
                         <template slot-scope="scope">
                             <el-tag :type="scope.row.hidden ? 'danger' : 'success'">{{scope.row.hidden?'隐藏':'显示'}}
                             </el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                            prop="iframe"
-                            align="center"
-                            label="链接"
-                            width="100px">
+                    <el-table-column prop="iframe" align="center" label="链接" width="100px">
                         <template slot-scope="scope">
                             <el-tag type="primary">{{scope.row.iframe?'是':'否'}}</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                            prop="component"
-                            align="center"
-                            label="组件">
-                    </el-table-column>
-                    <el-table-column
-                            prop="component_name"
-                            align="center"
-                            label="组件编码">
-                    </el-table-column>
-                    <el-table-column
-                            prop="path"
-                            align="center"
-                            label="路由">
-                    </el-table-column>
-                    <el-table-column
-                            prop="create_time"
-                            align="center"
-                            label="创建时间">
+                    <el-table-column prop="component" align="center" label="组件"/>
+                    <el-table-column prop="component_name" align="center" label="组件编码"/>
+                    <el-table-column prop="path" align="center" label="路由"/>
+                    <el-table-column prop="create_time" align="center" label="创建时间">
                         <template slot-scope="scope">
-                            <i class="el-icon-time"></i>
+                            <i class="el-icon-time"/>
                             <span style="margin-left: 10px">{{ new Date(scope.row.create_time).toLocaleString() }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column
-                            align="center"
-                            label="操作">
+                    <el-table-column align="center" label="操作">
                         <template slot-scope="scope">
                             <el-button
                                     v-if="rights('MENU_UPDATE')"

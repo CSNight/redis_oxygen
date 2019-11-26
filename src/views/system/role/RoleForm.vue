@@ -7,11 +7,11 @@
             </el-form-item>
             <el-form-item label="编码" prop="code">
                 <el-input v-model="form.code" style="width: 180px;"/>
-                <el-divider direction="vertical"></el-divider>
+                <el-divider direction="vertical"/>
                 <template>
                     <label style="margin-left:10px">级别:</label>
                     <el-input-number label="排序" v-model="form.level" style="margin-left:10px;width: 120px"
-                                     controls-position="right" :min="2" :max="3"></el-input-number>
+                                     controls-position="right" :min="2" :max="3"/>
                 </template>
             </el-form-item>
         </el-form>

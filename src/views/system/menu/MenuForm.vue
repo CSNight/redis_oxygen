@@ -6,39 +6,26 @@
                 <el-input v-model="form.name"/>
             </el-form-item>
             <el-form-item label="菜单图标">
-                <el-popover
-                        width="430"
-                        placement="bottom-start"
-                        trigger="click"
-                        @show="$refs['iconSelect'].reset()">
+                <el-popover width="430" placement="bottom-start" trigger="click" @show="$refs['iconSelect'].reset()">
                     <IconSelect ref="iconSelect" @selected="selected" :icons="icons"/>
                     <el-input slot="reference" v-model="form.icon" placeholder="点击选择图标" readonly>
                         <fa-icon v-if="form.icon" slot="prefix" :icon-class="form.icon" class-name="fa-1x"
-                                 class="el-input__icon"
-                                 style="height: 32px;width: 16px;"/>
-                        <i v-else slot="prefix" class="el-icon-search el-input__icon"></i>
+                                 class="el-input__icon" style="height: 32px;width: 16px;"/>
+                        <i v-else slot="prefix" class="el-icon-search el-input__icon"/>
                     </el-input>
                 </el-popover>
             </el-form-item>
             <el-form-item label="">
-                <el-switch
-                        style="margin-right: 10px"
-                        v-model="form.hidden"
-                        active-text="隐藏"
-                        inactive-text="显示">
+                <el-switch style="margin-right: 10px" v-model="form.hidden" active-text="隐藏" inactive-text="显示"/>
+                <el-divider direction="vertical"/>
+                <el-switch v-model="form.iframe" active-text="外部链接" inactive-text="路由">
                 </el-switch>
-                <el-divider direction="vertical"></el-divider>
-                <el-switch
-                        v-model="form.iframe"
-                        active-text="外部链接"
-                        inactive-text="路由">
-                </el-switch>
-                <el-divider direction="vertical"></el-divider>
+                <el-divider direction="vertical"/>
                 <template>
                     <label style="margin-left:10px">排序:</label>
                     <el-input-number label="排序" v-model="form.sort" style="margin-left:10px;width: 90px"
                                      controls-position="right"
-                                     :min="1" :max="999"></el-input-number>
+                                     :min="1" :max="999"/>
                 </template>
             </el-form-item>
             <el-form-item label="组件名称" prop="component">
@@ -51,8 +38,7 @@
                 <el-input v-model="form.path"/>
             </el-form-item>
             <el-form-item style="margin-bottom: 0;" label="上级菜单" prop="pid">
-                <tree_select v-model="form.pid" :options="MenuTree" placeholder="选择上级菜单"
-                             :normalizer="normalizer"/>
+                <tree_select v-model="form.pid" :options="MenuTree" placeholder="选择上级菜单" :normalizer="normalizer"/>
             </el-form-item>
 
         </el-form>

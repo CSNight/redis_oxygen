@@ -1,6 +1,6 @@
 <template>
     <el-row class="bg">
-        <PassForm ref="form"></PassForm>
+        <PassForm ref="form"/>
         <el-col :span="6">
             <div class="card card-user">
                 <div class="card-body">
@@ -21,10 +21,10 @@
                                 :before-upload="handleAvatarBefore"
                                 with-credentials
                                 :show-file-list="false">
-                            <el-avatar ref="avatar" style="width: 124px;height: 124px" :src="avatar"></el-avatar>
+                            <el-avatar ref="avatar" style="width: 124px;height: 124px" :src="avatar"/>
                         </el-upload>
-                        <h5 v-text="nick"></h5>
-                        <p v-text="name" class="description" style="margin-top: -7px;font-size: 1.14em;"></p>
+                        <h5 v-text="nick"/>
+                        <p v-text="name" class="description" style="margin-top: -7px;font-size: 1.14em;"/>
                     </div>
                     <ul class="user-info">
                         <li>
@@ -63,7 +63,7 @@
             </el-card>
         </el-col>
         <el-col :span="18">
-            <LogTable></LogTable>
+            <LogTable/>
         </el-col>
     </el-row>
 </template>

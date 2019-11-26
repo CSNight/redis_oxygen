@@ -6,30 +6,22 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input clearable v-model="query.value" placeholder="输入查询条件"
-                      style="width: 200px;" size="mini"
+            <el-input clearable v-model="query.value" placeholder="输入查询条件" style="width: 200px;" size="mini"
                       class="filter-item"/>
-            <el-select v-model="query.key" clearable placeholder="关键字" class="filter-item"
-                       style="width: 90px"
+            <el-select v-model="query.key" clearable placeholder="关键字" class="filter-item" style="width: 90px"
                        size="mini" value="">
                 <el-option v-if="hasRole()" key="un" label="用户" value="un"/>
-                <el-option v-for="item in filter" :key="item.key" :label="item.label"
-                           :value="item.key"/>
+                <el-option v-for="item in filter" :key="item.key" :label="item.label" :value="item.key"/>
             </el-select>
-            <el-date-picker
-                    v-model="query.st_et"
-                    size="mini"
-                    type="datetimerange"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期">
+            <el-date-picker v-model="query.st_et" size="mini" type="datetimerange" range-separator="至"
+                            start-placeholder="开始日期" end-placeholder="结束日期">
             </el-date-picker>
             <el-button class="filter-item" size="mini" type="success" icon="el-icon-search" @click="loadQuery">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
-                <el-button @click.native.prevent="loadData" type="danger" icon="el-icon-refresh" size="mini">
-                </el-button>
+                <el-button @click="loadData" type="danger" icon="el-icon-refresh" size="mini"/>
+                <el-button v-if="rights('OPLOG_CLEAR')" @click="" type="warning" icon="el-icon-delete" size="mini"/>
             </div>
         </div>
         <el-table
@@ -39,48 +31,26 @@
                 row-key="name"
                 v-loading="loading"
                 highlight-current-row>
-            <el-table-column
-                    prop="create_time"
-                    align="center"
-                    label="创建时间">
+            <el-table-column prop="create_time" align="center" label="创建时间">
                 <template slot-scope="scope">
-                    <i class="el-icon-time"></i>
+                    <i class="el-icon-time"/>
                     <span style="margin-left: 10px">{{  dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.ct)) }}</span>
                 </template>
             </el-table-column>
-            <el-table-column
-                    prop="ip"
-                    align="center"
-                    label="IP">
+            <el-table-column prop="ip" align="center" label="IP">
             </el-table-column>
-            <el-table-column
-                    prop="mo"
-                    align="center"
-                    label="模块">
+            <el-table-column prop="mo" align="center" label="模块">
             </el-table-column>
-            <el-table-column
-                    prop="un"
-                    align="center"
-                    label="用户">
+            <el-table-column prop="un" align="center" label="用户">
             </el-table-column>
-            <el-table-column
-                    prop="op"
-                    align="center"
-                    label="操作">
+            <el-table-column prop="op" align="center" label="操作">
             </el-table-column>
-            <el-table-column
-                    prop="st"
-                    align="center"
-                    label="状态">
+            <el-table-column prop="st" align="center" label="状态">
                 <template slot-scope="scope">
                     <el-tag :type="getStType(scope.row.st)">{{scope.row.st}}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column
-                    prop="cost"
-                    align="center"
-                    sortable
-                    label="耗时">
+            <el-table-column prop="cost" align="center" sortable label="耗时">
                 <template slot-scope="scope">
                     <el-tag :type="getCostType(scope.row.cost)">{{getCostFormat(scope.row.cost)}}</el-tag>
                 </template>
@@ -127,6 +97,12 @@
                 this.loadData();
             })
         }, methods: {
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
             hasRole() {
                 return this.$store.getters.roles.indexOf("ROLE_DEV") !== -1 || this.$store.getters.roles.indexOf("ROLE_SUPER") !== -1
             },
@@ -152,7 +128,7 @@
                 } else if (cost >= 500 && cost < 1000) {
                     return 'warning'
                 } else {
-                    return 'error'
+                    return 'danger'
                 }
             },
             getCostFormat(cost) {
@@ -163,6 +139,8 @@
                 }
             },
             loadData() {
+                this.query.key = '';
+                this.query.value = '';
                 this.loading = true;
                 get_logs(this.$store.getters.name, this.cur, this.pg_size).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === 'OK') {
