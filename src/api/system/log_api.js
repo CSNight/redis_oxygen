@@ -9,3 +9,7 @@ export function query_logs(cond) {
         params: cond
     });
 }
+
+export function clear_logs(user) {
+    return REQ.delete("/logs/clear_logs/" + user);
+}

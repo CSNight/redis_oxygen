@@ -21,7 +21,8 @@
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
                 <el-button @click="loadData" type="danger" icon="el-icon-refresh" size="mini"/>
-                <el-button v-if="rights('OPLOG_CLEAR')" @click="" type="warning" icon="el-icon-delete" size="mini"/>
+                <el-button v-if="rights('OPLOG_CLEAR')" @click="clear_log" type="warning" icon="el-icon-delete"
+                           size="mini"/>
             </div>
         </div>
         <el-table
@@ -70,15 +71,15 @@
 </template>
 
 <script>
-    // eslint-disable-next-line no-unused-vars
-    import {get_logs, query_logs} from "../../../api/system/log_api";
+    import {clear_logs, get_logs, query_logs} from "../../../api/system/log_api";
     import {dateFormat} from "../../../utils/utils";
+    import {get_users} from "../../../api/system/user_api";
 
     export default {
         name: "LogTable",
         data() {
             return {
-                logs: [], loading: false, pg_size: 10, cur: 1, total: 0,
+                logs: [], loading: false, pg_size: 10, cur: 1, total: 0, users: [], clear: this.$store.getters.name,
                 query: {
                     key: '',
                     value: '',
@@ -196,14 +197,73 @@
                         message: "查询出错!" + resp.response.data.message
                     });
                 })
-            }, handleSizeChange: function (size) {
+            }, clear_log() {
+                if (this.hasRole()) {
+                    get_users().then((resp) => {
+                        this.users = resp.data.message;
+                        this.renderMsg();
+                    })
+                }
+            },
+            renderMsg() {
+                const h = this.$createElement;
+                let options = [];
+                for (let i = 0; i < this.users.length; i++) {
+                    options.push(h('el-option', {
+                        attrs: {
+                            value: this.users[i].username,
+                            label: this.users[i].username
+                        }
+                    }))
+                }
+                let el = h("el-select", {
+                    props: {
+                        value: this.clear,
+                        size: 'mini'
+                    }, on: {
+                        input: (e) => {
+                            _this.clear = e;
+                            el.elm.children["0"].firstElementChild.value = e;
+                        }
+                    },
+                }, options);
+                const _this = this;
+                this.$msgbox({
+                    title: '消息',
+                    message: h('div', [
+                        h("div", "请选择需要清空日志的用户"), el
+                    ]),
+                    showCancelButton: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    clear_logs(this.clear).then((resp) => {
+                        this.$message({
+                            type: "success",
+                            message: resp.data.message
+                        });
+                        this.loadData();
+                    }).catch((resp) => {
+                        this.$message.error({
+                            message: "请求出错!" + resp.response.data.message
+                        });
+                        this.loadData();
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });
+                });
+            },
+            handleSizeChange: function (size) {
                 this.pg_size = size;
                 this.loadQuery();
             },
             handleCurrentChange: function (currentPage) {
                 this.cur = currentPage;
                 this.loadQuery();
-            },
+            }
         }
     }
 </script>
