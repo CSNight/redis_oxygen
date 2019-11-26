@@ -216,6 +216,12 @@
                         }
                     }))
                 }
+                options.push(h('el-option', {
+                    attrs: {
+                        value: "all",
+                        label: "all"
+                    }
+                }));
                 let el = h("el-select", {
                     props: {
                         value: this.clear,
