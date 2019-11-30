@@ -94,7 +94,7 @@
             }
         }, methods: {
             normalizer(node) {
-                if (node.children.length === 0) {
+                if (node.children && node.children.length === 0) {
                     delete node.children
                 }
                 return {
