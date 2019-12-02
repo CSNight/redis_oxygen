@@ -1,6 +1,6 @@
 <template>
     <div>
-        <UserForm ref="form" :is-add="isAdd" :roles="[]" :dept="org_tree"></UserForm>
+        <UserForm ref="form" :is-add="isAdd" :roles="[]" :dept="org_tree"/>
         <el-row>
             <el-col :span="4" style="height:auto;">
                 <el-input
@@ -27,7 +27,7 @@
                                    @click="addUser" icon="el-icon-plus">新增
                         </el-button>
                         <el-button v-if="rights('USER_QUERY')" type="danger" icon="el-icon-refresh" size="mini"
-                                   @click="loadData"></el-button>
+                                   @click="loadData"/>
                     </div>
                 </div>
             </el-col>

@@ -8,10 +8,13 @@
             <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索</el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
-                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus">新增</el-button>
+                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus"
+                           @click="addInstance">新增
+                </el-button>
                 <el-button type="danger" icon="el-icon-refresh" size="mini" @click="loadData"/>
             </div>
         </div>
+        <InstanceForm ref="form" :is-add="isAdd"/>
         <el-divider content-position="left"/>
         <el-table
                 :data="instances"
@@ -34,19 +37,14 @@
             <el-table-column prop="uptime_in_seconds" align="center" width="160px" label="运行时长">
                 <template slot-scope="scope">{{parseTime(scope.row.uptime_in_seconds)}}</template>
             </el-table-column>
-            <el-table-column prop="mode" align="center" width="100px" label="模式"/>
+            <el-table-column prop="mode" align="center" width="80px" label="模式"/>
+            <el-table-column prop="role" align="center" width="80px" label="角色"/>
             <el-table-column prop="os" align="center" width="80px" label="操作系统"/>
             <el-table-column prop="version" align="center" width="80px" label="版本"/>
             <el-table-column prop="arch_bits" align="center" width="50px" label="架构">
                 <template slot-scope="scope">{{'x'+scope.row.arch_bits}}</template>
             </el-table-column>
-            <el-table-column prop="user_id" align="center" label="用户" width="50px" v-if="loadColStatus">
-                <template slot-scope="scope">
-                    <el-tooltip effect="light" :content="scope.row.user">
-                        <el-link type="primary" icon="el-icon-view"/>
-                    </el-tooltip>
-                </template>
-            </el-table-column>
+            <el-table-column prop="user" align="center" label="用户" width="50px" v-if="loadColStatus"/>
             <el-table-column prop="create_time" align="center" width="190px" label="创建时间">
                 <template slot-scope="scope">
                     <i class="el-icon-time"/>
@@ -74,12 +72,14 @@
 <script>
     import {deleteIns, getAll, getByUser, modifyState, refreshMeta} from "../../../api/redismanage/redis_ins";
     import {dateFormat, parseSec} from "../../../utils/utils";
+    import InstanceForm from "@/views/rms/instance/InstanceForm";
 
     export default {
         name: 'InsManage',
+        components: {InstanceForm},
         data() {
             return {
-                loading: false, instances: [],
+                loading: false, instances: [], isAdd: true,
                 identify: this.$store.getters.identify,
                 query: {
                     blurry: ''
@@ -154,6 +154,10 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
+            }, addInstance() {
+                this.isAdd = true;
+                const _this = this.$refs.form;
+                _this.dialog = true;
             }, changeState(row) {
                 let dto = {
                     id: row.id,
