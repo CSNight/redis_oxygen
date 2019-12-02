@@ -273,9 +273,3 @@
         }
     }
 </script>
-
-<style scoped>
-    .filter-item {
-        margin: 10px 7px;
-    }
-</style>

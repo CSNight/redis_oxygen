@@ -25,7 +25,7 @@
                 </el-button>
             </div>
         </div>
-        <el-divider content-position="left"></el-divider>
+        <el-divider content-position="left"/>
         <OrgForm ref="form" :status="status" :is-add="isAdd"/>
         <div>
             <el-scrollbar style="height: 100%">
@@ -260,14 +260,3 @@
         }
     }
 </script>
-<style lang="scss" scoped>
-    .head-container {
-        height: 30px;
-    }
-
-    .filter-item {
-        margin: 10px 7px;
-    }
-
-
-</style>

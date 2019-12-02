@@ -46,7 +46,7 @@
             <el-col :span="20" style="height: 90vh;overflow: auto">
                 <div>
                     <el-table :data="users.slice((currentPage-1)*pg_size,currentPage*pg_size)"
-                              style="width: auto;margin-top: 20px;" fixed row-key="name"
+                              style="width: auto;margin-top: 20px;" fixed row-key="username"
                               v-loading="loading">
                         <el-table-column prop="username" align="center" label="名称"/>
                         <el-table-column prop="phone" label="电话" width="120px" align="center"/>
@@ -320,15 +320,3 @@
         }
     }
 </script>
-<style lang="scss">
-    /*.el-scrollbar {*/
-    /*    .el-scrollbar__wrap {*/
-    /*        overflow-x: hidden;*/
-    /*    }*/
-    /*}*/
-</style>
-<style lang="scss" scoped>
-    .filter-item {
-        margin: 20px 7px;
-    }
-</style>

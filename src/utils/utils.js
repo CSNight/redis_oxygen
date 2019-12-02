@@ -17,3 +17,24 @@ export function dateFormat(fmt, date) {
     }
     return fmt;
 }
+
+export function parseSec(sec) {
+    let d = Math.floor(sec / (60 * 60 * 24));
+    let h = Math.floor((sec - (60 * 60 * 24 * d)) / 3600);
+    let m = Math.floor((sec - 60 * 60 * 24 * d - 3600 * h) / 60);
+    let s = sec - 60 * 60 * 24 * d - 3600 * h - 60 * m;
+    let t = "";
+    if (d > 0) {
+        t += d + "天"
+    }
+    if (h > 0) {
+        t += h + "时"
+    }
+    if (m > 0) {
+        t += m + "分"
+    }
+    if (s > 0) {
+        t += s + "秒"
+    }
+    return t;
+}

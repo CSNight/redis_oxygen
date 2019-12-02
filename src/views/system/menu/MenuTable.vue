@@ -293,13 +293,3 @@
         }
     }
 </script>
-
-<style scoped>
-    .head-container {
-        height: 30px;
-    }
-
-    .filter-item {
-        margin: 10px 7px;
-    }
-</style>
