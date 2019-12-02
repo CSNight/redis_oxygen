@@ -6,24 +6,21 @@
             <template>
                 <el-tooltip content="源码地址" effect="dark" placement="bottom">
                     <a target="_blank" href="https://github.com/CSNight/oxygen_vue/" style="margin-right: 30px">
-                        <fa-icon style="padding: 3px;margin-bottom: 30px;color:#777777"
-                                 icon-class="fa-github "></fa-icon>
+                        <fa-icon style="padding: 3px;margin-bottom: 30px;color:#777777" icon-class="fa-github "/>
                     </a>
                 </el-tooltip>
             </template>
             <template>
                 <el-tooltip content="全屏" effect="dark" placement="bottom">
                     <a @click="toggleFullScreen" style="margin-right: 25px">
-                        <fa-icon style="padding:3px;margin-bottom: 30px;color:#777777"
-                                 icon-class="fa-arrows-alt"></fa-icon>
+                        <fa-icon style="padding:3px;margin-bottom: 30px;color:#777777" icon-class="fa-arrows-alt"/>
                     </a>
                 </el-tooltip>
             </template>
             <template>
                 <el-badge :value="3" is-dot class="item" style="margin-right: 20px">
                     <a>
-                        <i style="padding:3px;margin-bottom: 30px;color:#777777"
-                           class="tim-icons ni ni-sound-wave"></i>
+                        <i style="padding:3px;margin-bottom: 30px;color:#777777" class="tim-icons ni ni-sound-wave"/>
                     </a>
                 </el-badge>
             </template>
@@ -32,7 +29,7 @@
                     <el-tooltip class="item" effect="dark" :content="nick" placement="top-start">
                         <img :src="avatar" class="user-avatar">
                     </el-tooltip>
-                    <i class="el-icon-caret-bottom"></i>
+                    <i class="el-icon-caret-bottom"/>
                 </div>
                 <el-dropdown-menu slot="dropdown" class="user-dropdown">
                     <router-link to="/">
