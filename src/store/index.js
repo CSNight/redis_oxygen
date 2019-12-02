@@ -23,6 +23,7 @@ const getters = {
     roles: state => state.user.roles,
     permit: state => state.user.permit,
     avatar: state => state.user.avatar,
+    identify: state => state.user.identify,
     loadMenus: state => state.dynamic.loadMenus,
     dynamic_routers: state => state.dynamic.routers,
     addRouters: state => state.dynamic.addRouters,

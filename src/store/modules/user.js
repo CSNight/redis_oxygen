@@ -7,6 +7,7 @@ const ava = require('../../assets/logo.png');
 const state = {
     token: getToken(),
     name: '',
+    identify: '',
     nick: '',
     avatar: ava,
     roles: [],
@@ -25,6 +26,8 @@ const mutations = {
         state.token = token
     }, SET_PERMIT: (state, permit) => {
         state.permit = permit
+    }, SET_IDENTIFY: (state, identify) => {
+        state.identify = identify
     },
 };
 const actions = {
@@ -37,6 +40,7 @@ const actions = {
         commit('SET_NAME', '');
         commit('SET_NICK', '');
         commit('SET_AVATAR', ava);
+        commit('SET_IDENTIFY', '');
         removeToken();
         resetRouter();
         return new Promise((resolve, reject) => {
@@ -59,7 +63,7 @@ const actions = {
                 if (!data) {
                     reject('Verification failed, please Login again.')
                 }
-                const {authorities, roles, username, nick_name} = data.message;
+                const {authorities, roles, username, nick_name, id} = data.message;
                 //roles must be a non-empty array
                 if (!roles || roles.length <= 0) {
                     reject('getInfo: roles must be a non-null array!')
@@ -76,6 +80,7 @@ const actions = {
                 commit('SET_ROLES', role_list);
                 commit('SET_NAME', username);
                 commit('SET_PERMIT', permits);
+                commit('SET_IDENTIFY', id);
                 user_avatar({username: state.name}).then((resp) => {
                     if (resp.data.status === 200) {
                         commit('SET_AVATAR', resp.data.message);
