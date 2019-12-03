@@ -1,6 +1,6 @@
 <template>
     <div v-if="isExternal" :style="styleExternalIcon" class="svg-external-icon svg-icon" v-on="$listeners"></div>
-    <i v-else :class="iconName+' el-icon'"></i>
+    <i v-else :class="iconName+' el-icon'"/>
 </template>
 
 <script>

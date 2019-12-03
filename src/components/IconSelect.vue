@@ -2,7 +2,7 @@
     <div class="icon-body">
         <el-input v-model="name" style="position: relative;" clearable placeholder="请输入图标名称" @clear="filterIcons"
                   @input.native="filterIcons">
-            <i slot="suffix" class="el-icon-search el-input__icon"></i>
+            <i slot="suffix" class="el-icon-search el-input__icon"/>
         </el-input>
         <div class="icon-list">
             <div v-for="(item, index) in iconList" :key="index" @click="selectedIcon(item)">
@@ -10,7 +10,7 @@
                 <span>{{ item.name.substring(0,10) }}</span>
             </div>
             <div :key="'svg-redis'" @click="selectedIcon({_class:'svg-redis'})">
-                <svg-icon icon-class="svg-redis"></svg-icon>
+                <svg-icon icon-class="svg-redis"/>
                 <span style="vertical-align: -0.7rem !important;margin-left: 15px">redis</span>
             </div>
         </div>
