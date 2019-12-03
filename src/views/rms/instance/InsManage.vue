@@ -56,8 +56,12 @@
                     <el-button v-if="rights('INS_UPDATE_STATE')" type="text" size="small"
                                @click="changeState(scope.row)">{{lockBtnTxt(scope.row)}}
                     </el-button>
-                    <el-button v-if="rights('INS_UPDATE_CONN')" type="text" size="small">连接设置</el-button>
-                    <el-button v-if="rights('INS_UPDATE_INFO')" type="text" size="small">修改名称</el-button>
+                    <el-button v-if="rights('INS_UPDATE_CONN')" type="text" size="small"
+                               @click="editConn(scope.row)">连接设置
+                    </el-button>
+                    <el-button v-if="rights('INS_UPDATE_INFO')" type="text" size="small"
+                               @click="editName(scope.row)">修改名称
+                    </el-button>
                     <el-button v-if="rights('INS_REFRESH_META')" type="text" size="small"
                                @click="refreshInfo(scope.row)">刷新
                     </el-button>
@@ -72,7 +76,7 @@
 <script>
     import {deleteIns, getAll, getByUser, modifyState, refreshMeta} from "../../../api/redismanage/redis_ins";
     import {dateFormat, parseSec} from "../../../utils/utils";
-    import InstanceForm from "@/views/rms/instance/InstanceForm";
+    import InstanceForm from "./InstanceForm";
 
     export default {
         name: 'InsManage',
@@ -158,6 +162,16 @@
                 this.isAdd = true;
                 const _this = this.$refs.form;
                 _this.dialog = true;
+            }, editConn(row) {
+                this.isAdd = false;
+                const _this = this.$refs.form;
+                let tmpForm = JSON.parse(row.conn);
+                tmpForm.name = row.instance_name;
+                tmpForm.id = row.id;
+                _this.form = tmpForm;
+                _this.dialog = true;
+            }, editName() {
+
             }, changeState(row) {
                 let dto = {
                     id: row.id,
