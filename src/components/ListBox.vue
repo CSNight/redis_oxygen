@@ -7,7 +7,7 @@
                         type="selection"
                         width="40">
                 </el-table-column>
-                <el-table-column v-for="item in this.cols" :label="item.label" align="center"
+                <el-table-column v-for="(item, index) in this.cols" :key="index" :label="item.label" align="center"
                                  :prop="item.value">
                     <template slot-scope="scope">
                         <el-input size="mini" style=""
