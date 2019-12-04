@@ -4,7 +4,7 @@
         <sidebar class="sidebar-container"/>
         <div class="main-container">
             <div :class="{'fixed-header':fixedHeader}">
-                <navbar></navbar>
+                <navbar/>
             </div>
             <app-main/>
         </div>
