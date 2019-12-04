@@ -163,7 +163,7 @@
 </script>
 <style lang="scss" scoped>
     .bg {
-        margin-top: 30px;
+        margin-top: 20px;
     }
 
     .card {
