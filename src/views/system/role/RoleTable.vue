@@ -31,10 +31,10 @@
                 <el-table-column prop="name" align="center" label="名称"/>
                 <el-table-column prop="code" align="center" label="编码"/>
                 <el-table-column prop="level" align="center" label="级别"/>
-                <el-table-column prop="create_time" align="center" label="创建时间">
+                <el-table-column prop="ct" align="center" label="创建时间">
                     <template slot-scope="scope">
                         <i class="el-icon-time"/>
-                        <span style="margin-left: 10px">{{ new Date(scope.row.create_time).toLocaleString() }}</span>
+                        <span style="margin-left: 10px">{{ new Date(scope.row.ct).toLocaleString() }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
