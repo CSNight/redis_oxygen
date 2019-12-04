@@ -33,7 +33,7 @@
             </el-col>
         </el-row>
         <el-row>
-            <el-col :span="4" style="height: 90vh;border-right: #dddddd 1px solid">
+            <el-col :span="4" style="height: 85vh;border-right: #dddddd 1px solid">
                 <el-scrollbar style="height: 100%;">
                     <div>
                         <el-tree class="filter-tree" :data="org_tree" :props="defaultProps" default-expand-all
@@ -43,7 +43,7 @@
                     </div>
                 </el-scrollbar>
             </el-col>
-            <el-col :span="20" style="height: 90vh;overflow: auto">
+            <el-col :span="20" style="height: 85vh;overflow: auto">
                 <div>
                     <el-table :data="users.slice((currentPage-1)*pg_size,currentPage*pg_size)"
                               style="width: auto;margin-top: 20px;" fixed row-key="username"
@@ -320,3 +320,8 @@
         }
     }
 </script>
+<style scoped>
+    /deep/ .el-scrollbar__wrap {
+        overflow-x: hidden;
+    }
+</style>
