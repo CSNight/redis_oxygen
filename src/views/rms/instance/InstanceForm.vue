@@ -56,13 +56,14 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button type="text" @click="cancel">取消</el-button>
-            <el-button :loading="loading" type="primary">确认</el-button>
+            <el-button :loading="loading" type="primary" @click="doSubmit">确认</el-button>
         </div>
     </el-dialog>
 </template>
 
 <script>
     import ListBox from "../../../components/ListBox";
+    import {modifyConnect, newInstance} from "../../../api/redismanage/redis_ins";
 
     export default {
         name: "InstanceForm",
@@ -90,6 +91,75 @@
                 }
             }
         }, methods: {
+            doSubmit() {
+                this.$refs['form'].validate((valid) => {
+                    if (valid) {
+                        if (!this.isAdd && this.form.id !== '') {
+                            this.loading = true;
+                            this.doEdit();
+
+                        } else if (!this.isAdd && this.form.id === '') {
+                            this.$message({
+                                message: '实例ID不能为空',
+                                type: 'warning'
+                            })
+                        } else {
+                            this.loading = true;
+                            this.doAdd();
+                        }
+                    }
+                })
+            },
+            doAdd() {
+                newInstance(this.form).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.$message({
+                            type: 'success',
+                            message: '添加成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: resp.data.message
+                        });
+                    }
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                }).catch(() => {
+                    this.$message.error({
+                        message: "添加失败!"
+                    });
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                });
+            },
+            doEdit() {
+                modifyConnect(this.form).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === 'OK') {
+                        this.$message({
+                            type: 'success',
+                            message: '连接修改成功!'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'warning',
+                            message: resp.data.message
+                        });
+                    }
+                    this.$parent.loadData();
+                    this.loading = false;
+                    this.dialog = false;
+                }).catch(() => {
+                    this.$message.error({
+                        message: "连接修改错误!"
+                    });
+                    this.loading = false;
+                    this.dialog = false;
+                    this.$parent.loadData();
+                })
+            },
             resetForm() {
                 this.dialog = false;
                 this.$refs['form'].resetFields();
