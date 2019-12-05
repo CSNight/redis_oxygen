@@ -111,6 +111,9 @@
                 })
             },
             doAdd() {
+                if (this.form.poolType === "sen") {
+                    this.form.sentinels = this.$refs.sentinels.model;
+                }
                 newInstance(this.form).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === 'OK') {
                         this.$message({

@@ -1,11 +1,17 @@
 import REQ from '../../api/services'
 
-export function getAll() {
-    return REQ.get('/instance/get_instances');
+export function getAll(update) {
+    return REQ.get('/instance/get_instances/' + update);
 }
 
 export function getByUser(user_id) {
     return REQ.get('/instance/get_instance/' + user_id);
+}
+
+export function queryBy(exp) {
+    return REQ.get('/instance/query_instance', {
+        params: exp
+    });
 }
 
 export function newInstance(dto) {
@@ -19,9 +25,11 @@ export function refreshMeta(ins_id) {
 export function modifyState(dto) {
     return REQ.put('/instance/modify_state', dto);
 }
+
 export function modifyName(dto) {
     return REQ.put('/instance/modify_name', dto);
 }
+
 export function modifyConnect(dto) {
     return REQ.put('/instance/modify_conn', dto);
 }

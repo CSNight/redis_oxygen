@@ -3,15 +3,20 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input clearable v-model="query.blurry" placeholder="输入菜单名称搜索" style="width: 200px;" size="mini"
+            <el-input v-if="rights('INS_SEARCH')" clearable v-model="query.blurry" placeholder="输入实例名称搜索"
+                      style="width: 200px;" size="mini"
                       class="filter-item"/>
-            <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">搜索</el-button>
+            <el-button v-if="rights('INS_SEARCH')" class="filter-item" size="mini" type="success" icon="el-icon-search"
+                       @click="loadQuery">
+                搜索
+            </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
-                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus"
+                <el-button v-if="rights('INS_ADD')" class="filter-item" size="mini" type="primary" icon="el-icon-plus"
                            @click="addInstance">新增
                 </el-button>
-                <el-button type="danger" icon="el-icon-refresh" size="mini" @click="loadData"/>
+                <el-button v-if="rights('INS_QUERY')||rights('INS_QUERY_ALL')" type="danger" icon="el-icon-refresh"
+                           size="mini" @click="loadData('true')"/>
             </div>
         </div>
         <InstanceForm ref="form" :is-add="isAdd"/>
@@ -24,14 +29,16 @@
             <el-table-column prop="instance_name" align="center" width="200px" label="名称"/>
             <el-table-column prop="mode" align="center" label="连接信息">
                 <template slot-scope="scope">
-                    <el-tag v-if="scope.row.mode==='standalone'">{{scope.row.ip+':'+scope.row.port}}</el-tag>
-                    <el-tag v-if="scope.row.mode===undefined">Unknown</el-tag>
-                    <el-tag v-if="scope.row.mode==='cluster'">Cluster</el-tag>
+                    <el-tag size="small" v-if="scope.row.ip!==''">{{scope.row.ip+':'+scope.row.port}}</el-tag>
+                    <el-tag size="small" v-if="scope.row.mode===undefined">Unknown</el-tag>
+                    <el-tooltip effect="light" :content="JSON.stringify(JSON.parse(scope.row.conn).sentinels)">
+                        <el-tag size="small" v-if="scope.row.ip===''">Sentinels</el-tag>
+                    </el-tooltip>
                 </template>
             </el-table-column>
             <el-table-column prop="state" width="70px" align="center" label="状态">
                 <template slot-scope="scope">
-                    <el-tag :type="scope.row.state ? 'success' : 'danger'">{{scope.row.state?'在线':'断开'}}
+                    <el-tag size="small" :type="scope.row.state ? 'success' : 'danger'">{{scope.row.state?'在线':'断开'}}
                     </el-tag>
                 </template>
             </el-table-column>
@@ -40,7 +47,9 @@
             </el-table-column>
             <el-table-column prop="mode" align="center" width="100px" label="模式"/>
             <el-table-column prop="role" align="center" width="80px" label="角色"/>
-            <el-table-column prop="os" align="center" width="80px" label="操作系统"/>
+            <el-table-column prop="os" align="center" width="80px" label="操作系统">
+                <template slot-scope="scope">{{scope.row.os.split(" ")[0]}}</template>
+            </el-table-column>
             <el-table-column prop="version" align="center" width="70px" label="版本"/>
             <el-table-column prop="arch_bits" align="center" width="50px" label="架构">
                 <template slot-scope="scope">{{'x'+scope.row.arch_bits}}</template>
@@ -52,7 +61,7 @@
                     <span style="margin-left: 10px">{{  dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.ct)) }}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column align="center" label="操作" width="250px">
                 <template slot-scope="scope">
                     <el-button v-if="rights('INS_UPDATE_STATE')" type="text" size="small"
                                @click="changeState(scope.row)">{{lockBtnTxt(scope.row)}}
@@ -81,6 +90,7 @@
         getByUser,
         modifyName,
         modifyState,
+        queryBy,
         refreshMeta
     } from "../../../api/redismanage/redis_ins";
     import {dateFormat, parseSec} from "../../../utils/utils";
@@ -99,7 +109,7 @@
             }
         }, created() {
             this.$nextTick(() => {
-                this.loadData();
+                this.loadData('false');
             })
         }, methods: {
             parseTime(sec) {
@@ -122,7 +132,7 @@
             lockBtnTxt(row) {
                 return row.state ? '断开' : '连接'
             },
-            loadData() {
+            loadData(update) {
                 if (!this.rights("INS_QUERY_ALL") && !this.rights("INS_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
@@ -130,7 +140,7 @@
                 } else if (this.rights("INS_QUERY_ALL")) {
                     this.loading = true;
                     this.instances = [];
-                    this.loadAll();
+                    this.loadAll(update);
                 } else {
                     this.loadByUser();
                 }
@@ -150,8 +160,8 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
-            }, loadAll() {
-                getAll().then((resp) => {
+            }, loadAll(update) {
+                getAll(update).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         this.instances = resp.data.message;
                     } else {
@@ -166,6 +176,21 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
+            }, loadQuery() {
+                this.loading = true;
+                if (this.query.blurry === '') {
+                    this.loadData();
+                    return;
+                }
+                this.instances = [];
+                queryBy(this.query).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.instances = resp.data.message;
+                    }
+                    this.loading = false;
+                }).catch(() => {
+                    this.loading = false;
+                })
             }, addInstance() {
                 this.isAdd = true;
                 const _this = this.$refs.form;
