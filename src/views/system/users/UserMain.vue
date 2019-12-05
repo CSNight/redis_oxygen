@@ -53,7 +53,7 @@
                         <el-table-column prop="email" label="邮箱" align="center"/>
                         <el-table-column prop="enabled" align="center" width="100px" label="状态">
                             <template slot-scope="scope">
-                                <el-tag :type="scope.row.enabled ? 'success' : 'danger'">
+                                <el-tag size="small" :type="scope.row.enabled ? 'success' : 'danger'">
                                     {{scope.row.enabled?'启用':'禁用'}}
                                 </el-tag>
                             </template>
@@ -69,7 +69,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="login_times" width="100px" align="center" label="登录次数"/>
-                        <el-table-column align="center" label="操作">
+                        <el-table-column align="center" label="操作" width="200px">
                             <template slot-scope="scope">
                                 <el-button v-if="rights('USER_UPDATE')&&getShow(scope.row)" type="primary"
                                            icon="el-icon-edit"
@@ -170,8 +170,11 @@
                     return;
                 }
                 this.users = [];
+                this.loading = true;
                 query_users(this.query).then((resp) => {
-                    this.users = resp.data.message;
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.users = resp.data.message;
+                    }
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;

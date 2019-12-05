@@ -155,8 +155,11 @@
                 this.RoleList = [];
                 this.resetChecked();
                 this.select_key = '';
+                this.loading = true;
                 query_roles(this.query).then((resp) => {
-                    this.RoleList = resp.data.message;
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.RoleList = resp.data.message;
+                    }
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;

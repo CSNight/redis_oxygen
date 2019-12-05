@@ -48,12 +48,12 @@
             </el-table-column>
             <el-table-column prop="st" align="center" label="状态">
                 <template slot-scope="scope">
-                    <el-tag :type="getStType(scope.row.st)">{{scope.row.st}}</el-tag>
+                    <el-tag size="small" :type="getStType(scope.row.st)">{{scope.row.st}}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="cost" align="center" sortable label="耗时">
                 <template slot-scope="scope">
-                    <el-tag :type="getCostType(scope.row.cost)">{{getCostFormat(scope.row.cost)}}</el-tag>
+                    <el-tag size="small" :type="getCostType(scope.row.cost)">{{getCostFormat(scope.row.cost)}}</el-tag>
                 </template>
             </el-table-column>
         </el-table>

@@ -55,18 +55,19 @@
                     </el-table-column>
                     <el-table-column prop="sort" label="排序" align="center" width="100px">
                         <template slot-scope="scope">
-                            <el-tag type="primary">{{scope.row.sort}}</el-tag>
+                            <el-tag size="small" type="primary">{{scope.row.sort}}</el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column prop="enabled" align="center" label="状态" width="100px">
                         <template slot-scope="scope">
-                            <el-tag :type="scope.row.hidden ? 'danger' : 'success'">{{scope.row.hidden?'隐藏':'显示'}}
+                            <el-tag size="small" :type="scope.row.hidden ? 'danger' : 'success'">
+                                {{scope.row.hidden?'隐藏':'显示'}}
                             </el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column prop="iframe" align="center" label="链接" width="100px">
                         <template slot-scope="scope">
-                            <el-tag type="primary">{{scope.row.iframe?'是':'否'}}</el-tag>
+                            <el-tag size="small" type="primary">{{scope.row.iframe?'是':'否'}}</el-tag>
                         </template>
                     </el-table-column>
                     <el-table-column prop="component" align="center" label="组件"/>
@@ -78,7 +79,7 @@
                             <span style="margin-left: 10px">{{ new Date(scope.row.create_time).toLocaleString() }}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column align="center" label="操作">
+                    <el-table-column align="center" label="操作" width="200px">
                         <template slot-scope="scope">
                             <el-button
                                     v-if="rights('MENU_UPDATE')"
@@ -175,13 +176,16 @@
                     this.loadData();
                     return;
                 }
+                this.loading = true;
                 let params = {name: this.query.name};
                 if (this.query.hidden !== '') {
                     params['hidden'] = this.query.hidden === 'true';
                 }
                 this.MenuTree = [];
                 query_by(params).then((resp) => {
-                    this.MenuTree = resp.data.message;
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.MenuTree = resp.data.message;
+                    }
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;

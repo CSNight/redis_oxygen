@@ -33,7 +33,7 @@
             <el-table-column prop="name" align="center" label="编码"/>
             <el-table-column prop="menu" align="center" label="组件">
                 <template slot-scope="scope">
-                    <el-tag type="primary">{{scope.row.menu.name}}</el-tag>
+                    <el-tag size="small" type="primary">{{scope.row.menu.name}}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="create_user" align="center" label="创建人"/>
@@ -43,7 +43,7 @@
                     <span style="margin-left: 10px">{{  dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time)) }}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="操作">
+            <el-table-column align="center" label="操作" width="200px">
                 <template slot-scope="scope">
                     <el-button
                             v-if="rights('RIGHTS_UPDATE')"
@@ -138,9 +138,12 @@
                     this.loadData();
                     return;
                 }
+                this.loading = true;
                 this.tableData = [];
                 query_permits(this.query).then((resp) => {
-                    this.tableData = resp.data.message;
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.tableData = resp.data.message;
+                    }
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;

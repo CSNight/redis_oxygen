@@ -37,7 +37,8 @@
                     </el-table-column>
                     <el-table-column prop="enabled" align="center" label="状态" width="120px">
                         <template slot-scope="scope">
-                            <el-tag :type="scope.row.enabled ? 'success' : 'danger'">{{scope.row.enabled?'启用':'禁用'}}
+                            <el-tag size="small" :type="scope.row.enabled ? 'success' : 'danger'">
+                                {{scope.row.enabled?'启用':'禁用'}}
                             </el-tag>
                         </template>
                     </el-table-column>
@@ -48,7 +49,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="create_user" align="center" label="创建人"/>
-                    <el-table-column align="center" label="操作">
+                    <el-table-column align="center" label="操作" width="200px">
                         <template slot-scope="scope">
                             <el-button
                                     v-if="getShow(scope.row)&&rights('ORG_UPDATE')"
@@ -149,13 +150,16 @@
                     this.loadData();
                     return;
                 }
+                this.loading = true;
                 let params = {name: this.query.name};
                 if (this.query.enabled !== '') {
                     params['enabled'] = this.query.enabled === 'true';
                 }
                 this.tableData = [];
                 query_by(params).then((resp) => {
-                    this.tableData = resp.data.message;
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.tableData = resp.data.message;
+                    }
                     this.loading = false;
                 }).catch(() => {
                     this.loading = false;
