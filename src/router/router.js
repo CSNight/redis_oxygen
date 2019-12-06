@@ -4,7 +4,7 @@ import Landing from "../layout/landing/Landing";
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import {getToken} from "../utils/token";
-import store from '@/store'
+import store from '../store/index'
 import {menu_routers} from "../api/system/menu_api";
 import {filterAsyncRouter} from "../store/modules/dynamic";
 import Index from "../layout/Index";
