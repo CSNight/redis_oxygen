@@ -46,7 +46,7 @@
                         <el-dropdown-item>Docs</el-dropdown-item>
                     </a>
                     <el-dropdown-item divided>
-                        <span style="display:block;" @click="logout">Log Out</span>
+                        <span style="display:block;" @click="signOut">Log Out</span>
                     </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -119,7 +119,7 @@
                     document.webkitExitFullscreen();
                 }
             },
-            async logout() {
+            async signOut() {
                 await this.$store.dispatch('user/logout').then((data) => {
                     this.$message({
                         type: 'info',

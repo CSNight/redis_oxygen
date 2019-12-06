@@ -3,9 +3,7 @@
         <LoginForm ref="form" :is-login="isLogin"/>
         <header class="container" style="position: relative">
             <div style="position:absolute;z-index: 100;display:flex;width: 100%;margin: 20px 0">
-                <el-image
-                        style="height: 60px;width: 100px" :src="src"
-                        fit="contain"></el-image>
+                <el-image style="height: 60px;width: 100px" :src="src" fit="contain"/>
                 <el-menu
                         class="el-menu menu"
                         mode="horizontal"
@@ -22,19 +20,18 @@
                 </el-menu>
                 <div style="margin: auto">
                     <el-button type="warning" size="medium" style="text-transform: uppercase" v-if="name!==''"
-                               @click="logout"
-                               v-html='"<i class=\"fa fa-sign-out\"></i> "+name+" logout"'></el-button>
+                               @click="signOut" v-html='"<i class=\"fa fa-sign-out\"></i> "+name+" logout"'/>
                     <el-button type="primary" size="medium" icon="el-icon-user" v-if="name===''" @click="login"
-                               v-html='"<i class=\"fa fa-sign-in\"></i> "+sign_in'></el-button>
+                               v-html='"<i class=\"fa fa-sign-in\"></i> "+sign_in'/>
                     <el-button type="primary" size="medium" v-if="name===''" @click="register"
-                               v-html='"<i class=\"fa fa-user-plus\"></i> "+sign_up'></el-button>
+                               v-html='"<i class=\"fa fa-user-plus\"></i> "+sign_up'/>
                 </div>
             </div>
         </header>
         <div>
             <section class="section-shaped my-0">
                 <div class="shape shape-style-1 shape-default shape-skew">
-                    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span/><span/><span/><span/><span/><span/><span/><span/><span/>
                 </div>
                 <div class="container shape-container d-flex">
                     <div class="col px-0">
@@ -49,7 +46,7 @@
                                     instances and monitor them.</p>
                                 <div class="btn-wrapper">
                                     <el-button class="started">
-                                        <span><i class="fa fa-code"></i></span>
+                                        <span><i class="fa fa-code"/></span>
                                         <span class="btn_txt">GET STARTED</span>
                                     </el-button>
                                 </div>
@@ -67,7 +64,7 @@
                                     <div class="card card-lift--hover shadow border-0">
                                         <div class="card-body py-5">
                                             <div class="icon icon-shape icon-shape-primary rounded-circle mb-4">
-                                                <i class="fa fa-check"></i>
+                                                <i class="fa fa-check"/>
                                             </div>
                                             <h6 class="text-primary text-uppercase">Info Command Based</h6>
                                             <p class="description mt-3">Oxygen is a redis monitor platform based on
@@ -87,7 +84,7 @@
                                     <div class="card card-lift--hover shadow border-0">
                                         <div class="card-body py-5">
                                             <div class="icon icon-shape icon-shape-success rounded-circle mb-4">
-                                                <i class="fa fa-cube"></i>
+                                                <i class="fa fa-cube"/>
                                             </div>
                                             <h6 class="text-success text-uppercase">Custom Design Monitor</h6>
                                             <p class="description mt-3">Oxygen is a redis monitor platform based on
@@ -107,7 +104,7 @@
                                     <div class="card card-lift--hover shadow border-0">
                                         <div class="card-body py-5">
                                             <div class="icon icon-shape icon-shape-warning rounded-circle mb-4">
-                                                <i class="fa fa-rocket"></i>
+                                                <i class="fa fa-rocket"/>
                                             </div>
                                             <h6 class="text-warning text-uppercase">Online Operation</h6>
                                             <p class="description mt-3">Oxygen is a redis monitor platform based on
@@ -141,7 +138,7 @@
                         <a target="_blank" href="https://github.com/CSNight/RedisMonitorServices"
                            class="btn btn-neutral btn-icon-only btn-github btn-round btn-lg" data-toggle="tooltip"
                            data-original-title="Star on Github">
-                            <i class="fa fa-github"></i>
+                            <i class="fa fa-github"/>
                         </a>
                     </div>
                 </div>
@@ -217,7 +214,7 @@
                 this.isLogin = false;
                 const _this = this.$refs.form;
                 _this.dialog = true
-            }, logout() {
+            }, signOut() {
                 this.$store.dispatch('user/logout').then((data) => {
                     this.$message({
                         type: 'info',
