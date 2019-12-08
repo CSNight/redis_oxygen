@@ -11,8 +11,10 @@ import store from "./store";
 import '@/styles/index.scss'
 import '@/icons'
 import axios from 'axios'
+import websocket from "@/api/websocket";
 
 Vue.prototype.$axios = axios;
+Vue.prototype.$wss = websocket;
 axios.defaults.withCredentials = true;
 Vue.config.productionTip = false;
 Vue.use(ElementUI, {locale});

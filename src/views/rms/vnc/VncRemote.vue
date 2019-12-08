@@ -1,25 +1,25 @@
 <template>
-    <el-button @click="init"></el-button>
+    <div>
+        <el-button @click="init"></el-button>
+        <el-button @click="send"></el-button>
+    </div>
+
 </template>
 
 <script>
-    import {mapGetters} from 'vuex'
-
     export default {
         name: "VncRemote",
-        computed: {
-            ...mapGetters([
-                'client',
-                'events',
-            ])
-        },
         created() {
         }, methods: {
             init() {
-                this.events.on("sss", this.handler);
-                this.client.connect();
+                this.$wss.on("sss", this.handler);
+                this.$wss.connect();
             },
-            handler() {
+            handler(data) {
+                // eslint-disable-next-line no-console
+                console.log(data)
+            }, send() {
+                this.$wss.send("sdada", "")
             }
         }, beforeDestroy() {
 
