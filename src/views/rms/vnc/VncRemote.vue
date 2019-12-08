@@ -1,8 +1,13 @@
 <template>
-    <div>
-        <el-button @click="init"></el-button>
-        <el-button @click="send"></el-button>
-    </div>
+    <el-row>
+        <el-col :span="4">
+            <el-tree></el-tree>
+        </el-col>
+        <el-col :span="20">
+            <el-tabs editable>
+            </el-tabs>
+        </el-col>
+    </el-row>
 
 </template>
 
