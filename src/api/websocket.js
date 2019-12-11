@@ -4,11 +4,11 @@ export default {
     channel: '',
     WS: null,
     eventMethods: [],
-    connect: function () {
+    connect: function (uid) {
         let thisCallback = this;
         //判断当前浏览器是否支持WebSocket
         if ('WebSocket' in window) {
-            this.WS = new WebSocket("wss://127.0.0.1:13244/websocket_stream");
+            this.WS = new WebSocket("wss://127.0.0.1:13244/websocket_stream?uid=" + uid);
         } else {
             Message({
                 message: "当前浏览器不支持websocket",

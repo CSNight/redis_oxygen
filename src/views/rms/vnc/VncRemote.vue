@@ -55,6 +55,7 @@
         created() {
             this.$nextTick(() => {
                 this.loadData('false');
+                this.$wss.connect(this.identify);
             })
         }, methods: {
             rights(permit) {
@@ -108,7 +109,7 @@
                 });
             }
         }, beforeDestroy() {
-
+            this.$wss.close()
         }
     }
 </script>
