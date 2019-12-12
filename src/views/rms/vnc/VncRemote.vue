@@ -27,35 +27,42 @@
             </el-col>
         </el-row>
         <el-row>
-            <el-col :span="4">
-                <el-tree class="filter-tree" :data="instances" default-expand-all :props="{label: 'instance_name'}"
-                         ref="tree">
-                    <span class="custom-tree-node" slot-scope="{ node }">
-                        <span>{{ node.label }}</span>
-                        <span>
-                            <el-button type="text" size="mini" @click="newConsole(node.label)">新建</el-button>
-                            <el-button type="text" size="mini" @click="closeAll(node.label)">全部关闭</el-button>
+            <el-col :span="5">
+                <el-card style="height:85vh">
+                    <div slot="header">
+                        <span>实例列表</span>
+                    </div>
+                    <el-tree class="filter-tree" :data="instances" default-expand-all :props="{label: 'instance_name'}"
+                             ref="tree">
+                        <span class="custom-tree-node" slot-scope="{ node,data }">
+                            <span>{{ node.label }}</span>
+                            <span>
+                                <el-button type="text" size="mini" @click="newConsole(data)">新建</el-button>
+                                <el-button type="text" size="mini" @click="closeAll(data)">全部关闭</el-button>
+                            </span>
                         </span>
-                    </span>
-                </el-tree>
+                    </el-tree>
+                </el-card>
             </el-col>
-            <el-col :span="20">
-                <el-tabs style="height: 80vh" closable editable v-model="editableTabsValue" @tab-remove="removeTab"
-                         :before-leave="changeTab">
-                    <el-tab-pane style="height: 100%;width: 100%"
-                                 v-for="(item, index) in editableTabs"
-                                 :key="item.name"
-                                 :label="item.title"
-                                 :name="item.name">
-                        <cmd-console style="border-radius: 3px;margin: -15px 10px 0 10px;" :index="index"
-                                     :name="index"/>
-                    </el-tab-pane>
-                </el-tabs>
+            <el-col :span="19" style="height:85vh">
+                <div style="height:100%;box-shadow:0 2px 12px 0 rgba(0, 0, 0, 0.1);margin-left: 10px">
+                    <el-tabs style="height:100%;padding:10px;"
+                             closable
+                             v-model="editableTabsValue"
+                             @tab-remove="removeTab"
+                             :before-leave="changeTab">
+                        <el-tab-pane style="width: 100%;background-color: #1f2d3d;color:#2fb"
+                                     v-for="item in editableTabs"
+                                     :key="item.name"
+                                     :label="item.title"
+                                     :name="item.name">
+                            <cmd-console style="" :index="item.id" :name="item.name" :prefix="item.prefix"/>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
             </el-col>
         </el-row>
     </div>
-
-
 </template>
 
 <script>
@@ -67,7 +74,7 @@
         components: {CmdConsole},
         data() {
             return {
-                loading: false, instances: [], editableTabs: [], editableTabsValue: 0, tabIndex: 0,
+                loading: false, instances: [], editableTabs: [], editableTabsValue: "", tabIndex: 0,
                 identify: this.$store.getters.identify,
             }
         },
@@ -126,18 +133,20 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
-            }, newConsole(targetName) {
-                this.addTab(targetName)
+            }, newConsole(ins) {
+                this.addTab(ins)
             }, closeAll() {
 
-            }, addTab(targetName) {
+            }, addTab(ins) {
                 let newTabName = ++this.tabIndex + '';
-                this.editableTabs.push({
-                    title: targetName + newTabName,
-                    name: targetName + newTabName,
-                    content: ''
-                });
-                this.editableTabsValue = targetName + newTabName;
+                let tab = {
+                    id: ins.id,
+                    title: ins.instance_name + "(" + newTabName + ")",
+                    name: ins.instance_name + newTabName,
+                    prefix: ins.ip + ":" + ins.port + ">"
+                };
+                this.editableTabs.push(tab);
+                this.editableTabsValue = tab.name;
             }, removeTab(targetName) {
                 let tabs = this.editableTabs;
                 let activeName = this.editableTabsValue;
@@ -153,7 +162,9 @@
                 }
                 this.editableTabsValue = activeName;
                 this.editableTabs = tabs.filter(tab => tab.name !== targetName);
-            }, changeTab(old, next) {
+            }, changeTab(next, old) {
+                // eslint-disable-next-line no-console
+                console.log(old, next);
                 return true;
             }
         }, beforeDestroy() {
@@ -170,9 +181,5 @@
         justify-content: space-between;
         font-size: 14px;
         padding-right: 8px;
-    }
-
-    /deep/ .el-tabs__content {
-        height: 100%;
     }
 </style>
