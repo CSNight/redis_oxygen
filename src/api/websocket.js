@@ -51,7 +51,7 @@ export default {
         };
     }, send: function (msg, rt) {
         let request = {
-            t: rt,
+            rt: rt,
             channel: this.channel,
             msg: msg
         };
