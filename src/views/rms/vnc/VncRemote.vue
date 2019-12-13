@@ -56,7 +56,7 @@
                                      :key="item.name"
                                      :label="item.title"
                                      :name="item.name">
-                            <cmd-console style="" :index="item.id" :name="item.name" :prefix="item.prefix"/>
+                            <cmd-console :ref="item.id" :ins="item.id" :tab-name="item.name" :prefix="item.prefix"/>
                         </el-tab-pane>
                     </el-tabs>
                 </div>
@@ -162,6 +162,9 @@
                 }
                 this.editableTabsValue = activeName;
                 this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+                if (this.editableTabs.length === 0) {
+                    this.tabIndex = 0;
+                }
             }, changeTab(next, old) {
                 // eslint-disable-next-line no-console
                 console.log(old, next);
