@@ -19,7 +19,7 @@ export default {
         //连接发生错误的回调方法
         this.WS.onerror = function () {
             Message({
-                message: "连接错误",
+                message: "Websocket连接错误",
                 type: 'error',
                 duration: 3 * 1000
             });
@@ -27,7 +27,7 @@ export default {
         //连接成功建立的回调方法
         this.WS.onopen = function () {
             Message({
-                message: "连接成功",
+                message: "Websocket连接成功",
                 type: 'success',
                 duration: 3 * 1000
             });
@@ -37,7 +37,7 @@ export default {
             // eslint-disable-next-line no-unused-vars
             let data = event.data;
             // eslint-disable-next-line no-console
-            thisCallback.emit("sss", data)
+            thisCallback.emit("msgRev", data)
         };
         this.WS.onclose = function () {
             Message({
@@ -49,11 +49,13 @@ export default {
         window.onbeforeunload = function () {
             thisCallback.close();
         };
-    }, send: function (msg, rt) {
+    }, send: function (msg, rt, appId, ins) {
         let request = {
             rt: rt,
             channel: this.channel,
-            msg: msg
+            msg: msg,
+            appId: appId,
+            ins: ins
         };
         this.WS.send(JSON.stringify(request));
     }, close: function () {
