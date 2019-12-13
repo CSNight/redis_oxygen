@@ -1,7 +1,7 @@
 <template>
     <div class="console">
         <div class="history">
-            <el-input v-for="item in logs"
+            <el-input v-for="(item,index) in logs" :key="index"
                       :class="item.type==='ERROR'?'err':'success'"
                       readonly
                       type="textarea"
@@ -44,8 +44,8 @@
                 appId: guid()
             }
         }, methods: {
-            updateHistory(msg) {
-                console.log(msg)
+            updateHistory() {
+
             }, generateNode() {
 
             }, cmdSend(e) {
