@@ -44,6 +44,8 @@ export default {
                 case "RESP":
                 case "ERROR":
                 case "UNKNOWN":
+                case "PUBSUB":
+                case "DESUB":
                     thisCallback.emit("msgRev", msgObj, msgObj.appId);
                     break;
             }
