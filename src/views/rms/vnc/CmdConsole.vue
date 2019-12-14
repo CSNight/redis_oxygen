@@ -9,7 +9,6 @@
             <el-input type="textarea" autosize class="cmdLine" @keydown.native="cmdSend" v-model="cmd"/>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -54,6 +53,9 @@
             }
         }, methods: {
             updateHistory(msg) {
+                if (msg.appId !== this.appId) {
+                    return;
+                }
                 let content = '';
                 if (msg.rmt === "RESP") {
                     content = this.bodyToNode(msg.body, 0);

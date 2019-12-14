@@ -44,10 +44,9 @@ export default {
                 case "RESP":
                 case "ERROR":
                 case "UNKNOWN":
-                    thisCallback.emit("msgRev", msgObj);
+                    thisCallback.emit("msgRev", msgObj, msgObj.appId);
                     break;
             }
-
         };
         this.WS.onclose = function () {
             Message({
@@ -93,11 +92,13 @@ export default {
             delay: delay
         });
         return identifier;
-    }, emit: function (eventName, data) {
-        if (!this.eventMethods) this.eventMethods = [];
+    }, emit: function (eventName, data, evtId) {
         for (let index = 0; index < this.eventMethods.length; index++) {
             let handler = this.eventMethods[index];
-            if (handler.eventName === eventName) {
+            if (evtId && handler.identifier === evtId) {
+                this.async(data, handler);
+                break;
+            } else if (!evtId && handler.eventName === eventName) {
                 this.async(data, handler);
             }
         }
