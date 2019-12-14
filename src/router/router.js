@@ -81,7 +81,7 @@ router.beforeEach(async (to, from, next) => {
                     center: true
                 }).then(() => {
                     store.dispatch("user/logout");
-                });
+                })
             }
             // other pages that do not have dynamic to access are redirected to the login page.
             next(`/?redirect=${to.path}`);

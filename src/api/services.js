@@ -31,6 +31,8 @@ service.interceptors.response.use(
                 center: true
             }).then(() => {
                 store.dispatch("user/logout");
+            }).catch(() => {
+                location.reload();
             });
             return Promise.reject("登录过期");
         } else {

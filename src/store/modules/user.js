@@ -101,6 +101,8 @@ const actions = {
                     center: true
                 }).then(() => {
                     reject(error);
+                }).catch(() => {
+                    location.reload();
                 });
             });
         })
