@@ -5,6 +5,7 @@ export default {
     channel: '',
     WS: null,
     eventMethods: [],
+    isConnected: false,
     connect: function (uid) {
         let thisCallback = this;
         //判断当前浏览器是否支持WebSocket
@@ -24,14 +25,18 @@ export default {
                 type: 'error',
                 duration: 3 * 1000
             });
+            thisCallback.isConnected = false;
+            thisCallback.broadcast("wsErr", "Websocket连接错误");
         };
         //连接成功建立的回调方法
         this.WS.onopen = function () {
+            thisCallback.isConnected = true;
             Message({
                 message: "Websocket连接成功",
                 type: 'success',
                 duration: 3 * 1000
             });
+            thisCallback.broadcast("wsOpen", "Websocket连接错误");
         };
         //接收到消息的回调方法
         this.WS.onmessage = function (event) {
@@ -51,11 +56,13 @@ export default {
             }
         };
         this.WS.onclose = function () {
+            thisCallback.isConnected = false;
             Message({
                 message: "WebSocket连接关闭",
                 type: 'warning',
                 duration: 3 * 1000
             });
+            thisCallback.broadcast("wsClose", "WebSocket连接关闭");
         };
         window.onbeforeunload = function () {
             thisCallback.close();

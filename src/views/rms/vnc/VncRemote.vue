@@ -9,8 +9,10 @@
                     <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">清屏</el-button>
                     <!-- 新增 -->
                     <div style="display: inline-block;margin: 0 2px;">
-                        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus">新增</el-button>
-                        <el-button type="danger" icon="el-icon-refresh" size="mini"/>
+                        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus">
+                            新增
+                        </el-button>
+                        <el-button type="danger" icon="el-icon-refresh" size="mini" @click="refresh()"/>
                     </div>
                 </div>
             </el-col>
@@ -26,7 +28,7 @@
                         <span class="custom-tree-node" slot-scope="{ node,data }">
                             <span>{{ node.label }}</span>
                             <span>
-                                <el-button type="text" :disabled="!data.state" size="mini"
+                                <el-button type="text" :disabled="btnState(data)" size="mini"
                                            @click="newConsole(data)">新建</el-button>
                                 <el-button type="text" :disabled="!data.state" size="mini"
                                            @click="closeAll(data)">全部关闭</el-button>
@@ -42,7 +44,7 @@
                         <el-tab-pane style="width: 100%;background-color:#1f2d3d;color:#2fb"
                                      v-for="item in consoleTabs" :key="item.name" :label="item.title"
                                      :name="item.name">
-                            <cmd-console :ref="item.id" :ins="item.id" :tab-name="item.name" :prefix="item.prefix"/>
+                            <cmd-console :ref="item.name" :ins="item.id" :tab-name="item.name" :prefix="item.prefix"/>
                         </el-tab-pane>
                     </el-tabs>
                 </div>
@@ -54,6 +56,7 @@
 <script>
     import {getAll, getByUser} from "../../../api/redismanage/redis_ins";
     import CmdConsole from "./CmdConsole";
+    import {guid} from "../../../utils/utils";
 
     export default {
         name: "VncRemote",
@@ -61,15 +64,25 @@
         data() {
             return {
                 loading: false, instances: [], consoleTabs: [], currentTabName: "", tabIndex: 0,
-                identify: this.$store.getters.identify,
+                identify: this.$store.getters.identify, appId: guid()
             }
         },
         created() {
             this.$nextTick(() => {
+                let _this = this;
                 this.loadData('false');
+                this.$wss.on("wsOpen", () => {
+                    _this.changeTabState(_this.$wss.isConnected);
+                }, this.appId);
+                this.$wss.on("wsClose", () => {
+                    _this.changeTabState(_this.$wss.isConnected);
+                }, this.appId);
                 this.$wss.connect(this.identify);
             })
         }, methods: {
+            btnState(ins) {
+                return !ins.state || !this.$wss.isConnected;
+            },
             rights(permit) {
                 if (this.$store.getters.permit.hasOwnProperty(permit)) {
                     return this.$store.getters.permit[permit];
@@ -119,6 +132,11 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
+            }, refresh() {
+                this.loadData('true');
+                if (!this.$wss.isConnected) {
+                    this.$wss.connect(this.identify)
+                }
             }, newConsole(ins) {
                 this.addTab(ins)
             }, closeAll(ins) {
@@ -159,12 +177,22 @@
                 if (this.consoleTabs.length === 0) {
                     this.tabIndex = 0;
                 }
+                delete this.$refs[targetName]
             }, changeTab(next, old) {
                 // eslint-disable-next-line no-console
                 console.log(old, next);
                 return true;
+            }, changeTabState(state) {
+                for (let x in this.$refs) {
+                    if (x !== 'tree') {
+                        this.$refs[x][0].enable = state;
+                    }
+                }
+                this.loadData('false');
             }
         }, beforeDestroy() {
+            this.$wss.un("wsOpen", this.appId);
+            this.$wss.un("wsClose", this.appId);
             this.$wss.close()
         }
     }

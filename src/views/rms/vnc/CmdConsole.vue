@@ -4,10 +4,11 @@
             <el-input v-for="(item,index) in logs" :key="index" :class="getNodeClass(item.type)" readonly
                       type="textarea" autosize class="area" v-model="item.content"/>
         </div>
-        <div ref="inputArea" class="in-area">
+        <div ref="inputArea" v-if="enable" class="in-area">
             <div v-if="inputShow" class="prefix">{{prefix}}</div>
             <el-input type="textarea" autosize class="cmdLine" @keydown.native="cmdProcess" v-model="cmd"/>
         </div>
+        <div v-if="!enable" class="prefix" style="color:red!important;">Websocket连接中断</div>
     </div>
 </template>
 
@@ -33,6 +34,7 @@
             })
         }, data() {
             return {
+                enable: true,
                 cmd: '',
                 inputShow: true,
                 inComing: false,
@@ -119,7 +121,7 @@
                 }
                 setTimeout(() => {
                     this.$refs.console.scrollTop = this.$refs.console.scrollHeight;
-                }, 500);
+                }, 200);
             }, cmdProcess(e) {
                 if (!this.inputShow && this.inComing) {
                     e.preventDefault();
@@ -148,7 +150,10 @@
                     //设置命令历史滚动索引
                     this.cmdHisIndex = this.cmdHis.length - 1;
                     //清空输出区
-                    this.cmd = ""
+                    this.cmd = "";
+                    setTimeout(() => {
+                        this.$refs.console.scrollTop = this.$refs.console.scrollHeight;
+                    }, 200);
                 } else if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
                     this.cmdRoll(e.code)
                 } else if (e.code === 'KeyC' && e.ctrlKey && this.inComing) {
@@ -222,7 +227,6 @@
                 let subChannels = cmdPart.slice(1);
                 let params = subChannels.join(" ");
                 this.$wss.send(params, cmdType, this.appId, this.ins);
-
             }, getNodeClass(t) {
                 switch (t) {
                     case"SUB":
