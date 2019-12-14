@@ -51,3 +51,7 @@ export function guid() {
     return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-"
         + S4() + S4() + S4());
 }
+
+export function isNum(obj) {
+    return obj === +obj
+}

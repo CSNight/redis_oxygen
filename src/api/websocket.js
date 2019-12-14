@@ -1,4 +1,5 @@
 import {Message} from "element-ui";
+import {isNum} from "../utils/utils";
 
 export default {
     channel: '',
@@ -34,10 +35,19 @@ export default {
         };
         //接收到消息的回调方法
         this.WS.onmessage = function (event) {
-            // eslint-disable-next-line no-unused-vars
             let data = event.data;
-            // eslint-disable-next-line no-console
-            thisCallback.emit("msgRev", data)
+            let msgObj = JSON.parse(data);
+            switch (msgObj.rmt) {
+                case "INIT":
+                    thisCallback.channel = msgObj.body;
+                    break;
+                case "RESP":
+                case "ERROR":
+                case "UNKNOWN":
+                    thisCallback.emit("msgRev", msgObj);
+                    break;
+            }
+
         };
         this.WS.onclose = function () {
             Message({
@@ -63,16 +73,14 @@ export default {
             this.WS.close();
         }
     }, async: function (args, handler) {
-        setTimeout(() => {
-            handler.method.apply(handler.method, [args])
-        }, handler.delay * 1000);
+        handler.method.apply(handler.method, [args])
     }, on: function (eventName, listener, id) {
         let delay = 0;
         let identifier = "";
-        if (arguments.length === 3 && isNaN(arguments[2])) {
+        if (arguments.length === 3 && isNum(arguments[2])) {
             delay = parseInt(arguments[2]);
             identifier = "";
-        } else if (arguments.length === 3 && !isNaN(arguments[2])) {
+        } else if (arguments.length === 3 && !isNum(arguments[2])) {
             identifier = id;
         } else if (arguments.length === 4) {
             delay = parseInt(arguments[3]);
