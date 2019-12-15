@@ -246,6 +246,17 @@
                     case"RESP":
                         return "success";
                 }
+            }, clearHis() {
+                if (this.logs.length === 0) {
+                    return;
+                }
+                let last = this.logs[this.logs.length - 1];
+                if (last.type === 'SUB' && this.inComing) {
+                    this.logs = [last]
+                } else {
+                    this.logs = [];
+                }
+
             }
         }, beforeDestroy() {
             this.logs = [];

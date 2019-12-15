@@ -6,7 +6,9 @@
             </el-col>
             <el-col :span="19" style="height:auto">
                 <div class="head-container">
-                    <el-button class="filter-item" size="mini" type="primary" icon="el-icon-refresh-left">清屏</el-button>
+                    <el-button class="filter-item" size="mini" type="primary" icon="el-icon-refresh-left"
+                               @click="clearScreen">清屏
+                    </el-button>
                     <!-- 新增 -->
                     <div style="display: inline-block;margin: 0 2px;">
                         <el-button class="filter-item" size="mini" type="danger" icon="el-icon-switch-button"
@@ -191,6 +193,8 @@
                 this.loadData('false');
             }, closeWss() {
                 this.$wss.close();
+            }, clearScreen() {
+                this.$refs[this.currentTabName][0].clearHis();
             }
         }, beforeDestroy() {
             this.$wss.un("wsOpen", this.appId);
