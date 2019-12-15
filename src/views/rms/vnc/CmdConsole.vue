@@ -54,6 +54,15 @@
                 if (val.length > 1000) {
                     val.splice(0, 1);
                 }
+            },
+            enable: {
+                handler: function (val) {
+                    if (!val) {
+                        this.inComing = false;
+                        this.inputShow = true;
+                    }
+                },
+                deep: true
             }
         }, methods: {
             updateHistory(msg) {

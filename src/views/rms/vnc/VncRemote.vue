@@ -6,13 +6,13 @@
             </el-col>
             <el-col :span="19" style="height:auto">
                 <div class="head-container">
-                    <el-button class="filter-item" size="mini" type="success" icon="el-icon-search">清屏</el-button>
+                    <el-button class="filter-item" size="mini" type="primary" icon="el-icon-refresh-left">清屏</el-button>
                     <!-- 新增 -->
                     <div style="display: inline-block;margin: 0 2px;">
-                        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-plus">
-                            新增
+                        <el-button class="filter-item" size="mini" type="danger" icon="el-icon-switch-button"
+                                   @click="closeWss">断开
                         </el-button>
-                        <el-button type="danger" icon="el-icon-refresh" size="mini" @click="refresh()"/>
+                        <el-button type="success" icon="el-icon-refresh" size="mini" @click="refresh()">重连</el-button>
                     </div>
                 </div>
             </el-col>
@@ -189,6 +189,8 @@
                     }
                 }
                 this.loadData('false');
+            }, closeWss() {
+                this.$wss.close();
             }
         }, beforeDestroy() {
             this.$wss.un("wsOpen", this.appId);
