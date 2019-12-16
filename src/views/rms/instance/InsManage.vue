@@ -29,10 +29,11 @@
             <el-table-column prop="instance_name" align="center" width="200px" label="名称"/>
             <el-table-column prop="mode" align="center" label="连接信息">
                 <template slot-scope="scope">
-                    <el-tag size="small" v-if="scope.row.ip!==''">{{scope.row.ip+':'+scope.row.port}}</el-tag>
+                    <el-tag size="small" v-if="scope.row.type==='Standalone'">{{scope.row.ip+':'+scope.row.port}}
+                    </el-tag>
                     <el-tag size="small" v-if="scope.row.mode===undefined">Unknown</el-tag>
                     <el-tooltip effect="light" :content="JSON.stringify(JSON.parse(scope.row.conn).sentinels)">
-                        <el-tag size="small" v-if="scope.row.ip===''">Sentinels</el-tag>
+                        <el-tag size="small" v-if="scope.row.type==='SentinelsCluster'">Sentinels</el-tag>
                     </el-tooltip>
                 </template>
             </el-table-column>
