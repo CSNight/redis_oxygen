@@ -204,9 +204,12 @@
                 _this.form = tmpForm;
                 _this.dialog = true;
             }, editName(row) {
-                this.$prompt('请输入新名称', '提示', {
+                this.$prompt('请输入新名称,不得超过20个字符', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
+                    inputValidator: (val) => {
+                        return val.length < 20
+                    },
                     inputErrorMessage: '名称格式不正确'
                 }).then(({value}) => {
                     let form = {
