@@ -85,6 +85,15 @@
                     //当收到DESUB消息时 输出区显示，取消console流接收状态
                     this.inputShow = true;
                     this.inComing = false;
+                } else if (msg.rmt === "SUBCON") {
+                    this.inputShow = false;
+                    this.inComing = true;
+                    //SUB建立成功输出区隐藏，设置console为流接收
+                    content = this.bodyToNode(msg.body, 0);
+                    if (msg.hasOwnProperty("cost")) {
+                        content += "(" + msg.cost + "ms)"
+                    }
+                    this.generateNode(content, msg.rmt);
                 }
             }, bodyToNode(body, deep) {
                 let content = '';
@@ -223,9 +232,6 @@
                     return;
                 }
                 this.$wss.send(this.cmd, cmdType, this.appId, this.ins);
-                //输出区隐藏，设置console为流接收
-                this.inputShow = false;
-                this.inComing = true;
             }, stopStream() {
                 //查询最新历史命令，判断历史sub命令，设定指令类型
                 let cmdPart = this.cmdHis[this.cmdHis.length - 1].split(" ");
@@ -338,7 +344,6 @@
             -webkit-appearance: none;
             border: none;
 
-
             .area {
                 width: 100%;
                 font-size: 1em;
@@ -381,7 +386,7 @@
         }
 
         .cmdLine {
-            width: 120vh;
+            width: 110vh;
             border: none;
             word-break: break-all;
             display: inline-block;
