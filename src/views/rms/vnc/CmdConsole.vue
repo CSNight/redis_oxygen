@@ -197,7 +197,6 @@
             }, cmdRoll(code) {
                 if (this.cmdHis.length > 0 && this.cmdHisIndex >= 0 && this.cmdHisIndex < this.cmdHis.length) {
                     this.cmd = this.cmdHis[this.cmdHisIndex];
-                    console.log(this.cmdHisIndex)
                     if (code === "ArrowUp") {
                         this.cmdHisIndex--;
                         if (this.cmdHisIndex < 0) {
