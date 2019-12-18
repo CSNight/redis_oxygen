@@ -92,7 +92,12 @@
                     for (let i = 0; i < body.length; i++) {
                         let item = body[i];
                         if (item instanceof Array) {
-                            content += (i + 1) + ') ' + this.bodyToNode(item, deep + 1) + "\r\n";
+                            if (deep === 0) {
+                                content += (i + 1) + ') ' + this.bodyToNode(item, deep + 1);
+                            } else {
+                                content += new Array(deep * 4).fill(' ').join("") + (i + 1) + ') ' +
+                                    this.bodyToNode(item, deep + 1)
+                            }
                         } else {
                             //消息体大于一层嵌套时，第二层起 第一行序号前不需要空格
                             if (i === 0 && deep > 0) {
@@ -101,7 +106,7 @@
                                 //第一层消息体第一行，序号前不需要空格
                                 content += (i + 1) + ') ' + item + "\r\n";
                             } else {
-                                content += new Array(deep + 3).fill(' ').join("") + (i + 1) + ') ' + item + "\r\n";
+                                content += new Array(deep * 4).fill(' ').join("") + (i + 1) + ') ' + item + "\r\n";
                             }
                         }
                     }
@@ -164,6 +169,7 @@
                         this.$refs.console.scrollTop = this.$refs.console.scrollHeight;
                     }, 200);
                 } else if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
+                    e.preventDefault();
                     this.cmdRoll(e.code)
                 } else if (e.code === 'KeyC' && e.ctrlKey && this.inComing) {
                     this.stopStream()
@@ -189,21 +195,22 @@
                     }
                 }
             }, cmdRoll(code) {
-                if (code === "ArrowUp") {
-                    if (this.cmdHis.length > 0 && this.cmdHisIndex >= 0) {
-                        this.cmd = this.cmdHis[this.cmdHisIndex--];
-                    } else {
-                        this.cmd = '';
-                        this.cmdHisIndex = this.cmdHis.length - 1;
-                    }
-                } else if (code === 'ArrowDown') {
-                    if (this.cmdHisIndex < this.cmdHis.length) {
-                        this.cmd = this.cmdHis[this.cmdHisIndex++];
-                    } else {
-                        this.cmd = '';
-                        this.cmdHisIndex = 0;
+                if (this.cmdHis.length > 0 && this.cmdHisIndex >= 0 && this.cmdHisIndex < this.cmdHis.length) {
+                    this.cmd = this.cmdHis[this.cmdHisIndex];
+                    console.log(this.cmdHisIndex)
+                    if (code === "ArrowUp") {
+                        this.cmdHisIndex--;
+                        if (this.cmdHisIndex < 0) {
+                            this.cmdHisIndex = this.cmdHis.length - 1;
+                        }
+                    } else if (code === 'ArrowDown') {
+                        this.cmdHisIndex++;
+                        if (this.cmdHisIndex > this.cmdHis.length - 1) {
+                            this.cmdHisIndex = 0;
+                        }
                     }
                 }
+
             }, startStream() {
                 //判断sub类型，设定指令类型
                 let cmdPart = this.cmd.split(" ");
