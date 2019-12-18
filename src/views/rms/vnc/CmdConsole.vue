@@ -69,32 +69,33 @@
                 if (msg.appId !== this.appId) {
                     return;
                 }
-                let content = '';
-                if (msg.rmt === "RESP" || msg.rmt === 'PUBSUB') {
-                    content = this.bodyToNode(msg.body, 0);
-                    if (msg.hasOwnProperty("cost")) {
-                        content += "(" + msg.cost + "ms)"
-                    }
-                    this.generateNode(content, msg.rmt);
-                } else if (msg.rmt === "ERROR") {
-                    content = this.bodyToNode(msg.body, 0);
-                    this.generateNode(content, msg.rmt)
-                } else if (msg.rmt === "DESUB") {
-                    content = this.bodyToNode(msg.body, 0);
-                    this.generateNode(content, msg.rmt);
-                    //当收到DESUB消息时 输出区显示，取消console流接收状态
-                    this.inputShow = true;
-                    this.inComing = false;
-                } else if (msg.rmt === "SUBCON") {
-                    this.inputShow = false;
-                    this.inComing = true;
-                    //SUB建立成功输出区隐藏，设置console为流接收
-                    content = this.bodyToNode(msg.body, 0);
-                    if (msg.hasOwnProperty("cost")) {
-                        content += "(" + msg.cost + "ms)"
-                    }
-                    this.generateNode(content, msg.rmt);
+                switch (msg.rmt) {
+                    case"RESP":
+                    case"PUBSUB":
+                        this.displayNode(msg, true);
+                        break;
+                    case "ERROR":
+                        this.displayNode(msg, false);
+                        break;
+                    case "DESUB":
+                        this.displayNode(msg, false);
+                        //当收到DESUB消息时 输出区显示，取消console流接收状态
+                        this.inputShow = true;
+                        this.inComing = false;
+                        break;
+                    case "SUBCON":
+                        //SUB建立成功输出区隐藏，设置console为流接收
+                        this.inputShow = false;
+                        this.inComing = true;
+                        this.displayNode(msg, true);
+                        break;
                 }
+            }, displayNode(msg, needCost) {
+                let content = this.bodyToNode(msg.body, 0);
+                if (msg.hasOwnProperty("cost") && needCost) {
+                    content += "(" + msg.cost + "ms)"
+                }
+                this.generateNode(content, msg.rmt);
             }, bodyToNode(body, deep) {
                 let content = '';
                 if (body instanceof Array) {
