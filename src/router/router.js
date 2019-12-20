@@ -31,17 +31,17 @@ export const constantRoutes = [
             component: HelloWorld,
             meta: {title: 'Dashboard', icon: 'fa-dashboard', ref: 'dashboard'}
         }]
-    }
+    },
 // // 404 page must be placed at the end !!!
-// {path: '*', redirect: '/404', hidden: true}
+    {path: '*', redirect: '/404', hidden: true}
 ];
 
 const createRouter = () => new Router({
-    // mode: 'history', // require service support
+   // eslint-disable-next-line
+    mode: process.env.NODE_ENV === 'development' ? 'history' : 'hash', // require service support
     scrollBehavior: () => ({y: 0}),
     routes: constantRoutes
 });
-
 const router = createRouter();
 router.beforeEach(async (to, from, next) => {
     // start progress bar
