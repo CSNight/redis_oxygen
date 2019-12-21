@@ -2,7 +2,8 @@
     <div>
         <el-row>
             <el-col :span="5" style="height:auto;">
-                <el-input class="filter-item" style="width:70%;height: 30px" size="mini" placeholder="输入名称进行过滤"/>
+                <el-input class="filter-item" style="width:70%;height: 30px" v-if="rights('INS_SEARCH')" clearable
+                          v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadQuery"/>
             </el-col>
             <el-col :span="19" style="height:auto">
                 <div class="head-container">
@@ -55,7 +56,7 @@
 </template>
 
 <script>
-    import {getAll, getByUser} from "../../../api/redismanage/redis_ins";
+    import {getAll, getByUser, queryBy} from "../../../api/redismanage/redis_ins";
     import CmdConsole from "./CmdConsole";
     import {guid} from "../../../utils/utils";
 
@@ -64,7 +65,7 @@
         components: {CmdConsole},
         data() {
             return {
-                loading: false, instances: [], consoleTabs: [], currentTabName: "", tabIndex: 0,
+                loading: false, instances: [], consoleTabs: [], currentTabName: "", tabIndex: 0, query: {blurry: ''},
                 identify: this.$store.getters.identify, appId: guid()
             }
         },
@@ -133,6 +134,21 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
+            }, loadQuery() {
+                this.loading = true;
+                if (this.query.blurry === '') {
+                    this.loadData('true');
+                    return;
+                }
+                this.instances = [];
+                queryBy(this.query).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.instances = resp.data.message;
+                    }
+                    this.loading = false;
+                }).catch(() => {
+                    this.loading = false;
+                })
             }, refresh() {
                 this.loadData('true');
                 if (!this.$wss.isConnected) {
