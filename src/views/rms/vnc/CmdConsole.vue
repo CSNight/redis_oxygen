@@ -34,6 +34,7 @@
             })
         }, data() {
             return {
+                streamCmd: ['SUB', 'MONITOR'],
                 enable: true,
                 cmd: '',
                 inputShow: true,
@@ -71,20 +72,23 @@
                 }
                 switch (msg.rmt) {
                     case"RESP":
+                    case"MONITOR":
                     case"PUBSUB":
                         this.displayNode(msg, true);
                         break;
                     case "ERROR":
                         this.displayNode(msg, false);
                         break;
+                    case "DEMONITOR":
                     case "DESUB":
                         this.displayNode(msg, false);
-                        //当收到DESUB消息时 输出区显示，取消console流接收状态
+                        //当收到DESUB或DEMONITOR消息时 输出区显示，取消console流接收状态
                         this.inputShow = true;
                         this.inComing = false;
                         break;
+                    case "MONITORCON":
                     case "SUBCON":
-                        //SUB建立成功输出区隐藏，设置console为流接收
+                        //SUB或Monitor建立成功输出区隐藏，设置console为流接收
                         this.inputShow = false;
                         this.inComing = true;
                         this.displayNode(msg, true);
@@ -158,11 +162,8 @@
                         this.startStream();
                         logType = 'SUB';
                     } else if (this.cmd.toUpperCase().startsWith("MONITOR")) {
-                        this.$message({
-                            message: "不支持的命令",
-                            type: 'warning',
-                            duration: 3 * 1000
-                        })
+                        this.startStream();
+                        logType = 'MONITOR';
                     } else {
                         this.$wss.send(this.cmd, 100, this.appId, this.ins);
                     }
@@ -195,7 +196,7 @@
                     });
                 } else {
                     let last = this.logs[this.logs.length - 1];
-                    if (last.type === 'ERROR' || logType === 'SUB' || last.type === 'SUB') {
+                    if (last.type === 'ERROR' || this.streamCmd.indexOf(logType) !== -1 || this.streamCmd.indexOf(last.type) !== -1) {
                         this.logs.push({
                             content: this.prefix + ' ' + this.cmd,
                             type: logType
@@ -228,6 +229,8 @@
                     cmdType = 200;
                 } else if (cmdPart[0].toUpperCase() === 'PSUBSCRIBE') {
                     cmdType = 201;
+                } else if (cmdPart[0].toUpperCase() === 'MONITOR') {
+                    cmdType = 204;
                 }
                 if (cmdType === 0) {
                     return;
@@ -241,18 +244,25 @@
                     cmdType = 202;
                 } else if (cmdPart[0].toUpperCase() === 'PSUBSCRIBE') {
                     cmdType = 203;
+                } else if (cmdPart[0].toUpperCase() === 'MONITOR') {
+                    cmdType = 205;
                 }
                 if (cmdType === 0) {
                     return;
                 }
-                //获取命令参数，既channels或patterns
-                let subChannels = cmdPart.slice(1);
-                let params = subChannels.join(" ");
-                this.$wss.send(params, cmdType, this.appId, this.ins);
+                if (cmdType === 205) {
+                    this.$wss.send('', cmdType, this.appId, this.ins);
+                } else {
+                    //获取命令参数，既channels或patterns
+                    let subChannels = cmdPart.slice(1);
+                    let params = subChannels.join(" ");
+                    this.$wss.send(params, cmdType, this.appId, this.ins);
+                }
             }, getNodeClass(t) {
                 switch (t) {
+                    case"MONITOR":
                     case"SUB":
-                        return 'sub';
+                        return 'stream';
                     case"ERROR":
                         return 'err';
                     default:
@@ -264,7 +274,7 @@
                     return;
                 }
                 let last = this.logs[this.logs.length - 1];
-                if (last.type === 'SUB' && this.inComing) {
+                if (this.streamCmd.indexOf(last.type) !== -1 && this.inComing) {
                     this.logs = [last]
                 } else {
                     this.logs = [];
@@ -320,7 +330,7 @@
             }
         }
 
-        .sub {
+        .stream {
             /deep/ .el-textarea__inner {
                 color: #f2f !important;
             }

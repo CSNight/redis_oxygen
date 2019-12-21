@@ -49,6 +49,9 @@ export default {
                 case "RESP":
                 case "ERROR":
                 case "UNKNOWN":
+                case "MONITOR":
+                case "MONITORCON":
+                case "DEMONITOR":
                 case "SUBCON":
                 case "PUBSUB":
                 case "DESUB":
