@@ -7,8 +7,7 @@
                       style="width: 200px;" size="mini"
                       class="filter-item"/>
             <el-button v-if="rights('INS_SEARCH')" class="filter-item" size="mini" type="success" icon="el-icon-search"
-                       @click="loadQuery">
-                搜索
+                       @click="loadQuery">搜索
             </el-button>
             <!-- 新增 -->
             <div style="display: inline-block;margin: 0 2px;">
@@ -180,7 +179,7 @@
             }, loadQuery() {
                 this.loading = true;
                 if (this.query.blurry === '') {
-                    this.loadData();
+                    this.loadData('true');
                     return;
                 }
                 this.instances = [];
