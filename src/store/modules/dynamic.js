@@ -29,7 +29,19 @@ const dynamic = {
 
 export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由字符串，转换为组件对象
     const accessedRouters = routers.filter(router => {
+        //外链
+        if (router.iframe) {
+            router.component = Index;
+            router.children = [{
+                name: router.meta.title,
+                path: router.path,
+                meta: router.meta,
+            }];
+            router.path = router.component_name.split('/')[0];
+            return true;
+        }
         let path_cnt = router.path.split('/').length;
+        //单级菜单
         if (path_cnt > 2 && router.children && router.children.length === 0 && router.pid === 0) {
             const component = router.component;
             router.component = Index;
@@ -44,6 +56,7 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
             router.path = "/" + router.path.split('/')[1];
             return true;
         }
+        //多级菜单
         if (router.component) {
             if (router.component === 'Index') { // Layout组件特殊处理
                 router.component = Index;
