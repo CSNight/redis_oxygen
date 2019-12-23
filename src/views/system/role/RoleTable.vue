@@ -228,7 +228,9 @@
                         }
                     }
                 }
-                this.$refs.menus.setCheckedKeys(defaultMenu);
+                defaultMenu.forEach(key => {
+                    this.$refs.menus.setChecked(key, true, false);
+                });
                 return defaultMenu;
             }, setRolePermit(row, menus) {
                 let defaultPermit = [];
