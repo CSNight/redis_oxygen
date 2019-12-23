@@ -165,7 +165,7 @@
                         this.startStream();
                         logType = 'MONITOR';
                     } else {
-                        this.$wss.send(this.cmd, 100, this.appId, this.ins);
+                        this.$wss.send(this.cmd, 100, this.appId, this.ins, 'console');
                     }
                     this.cmdToHis(logType);
                     //保存命令记录
@@ -235,7 +235,7 @@
                 if (cmdType === 0) {
                     return;
                 }
-                this.$wss.send(this.cmd, cmdType, this.appId, this.ins);
+                this.$wss.send(this.cmd, cmdType, this.appId, this.ins, 'console');
             }, stopStream() {
                 //查询最新历史命令，判断历史sub命令，设定指令类型
                 let cmdPart = this.cmdHis[this.cmdHis.length - 1].split(" ");
@@ -251,12 +251,12 @@
                     return;
                 }
                 if (cmdType === 205) {
-                    this.$wss.send('', cmdType, this.appId, this.ins);
+                    this.$wss.send('', cmdType, this.appId, this.ins, 'console');
                 } else {
                     //获取命令参数，既channels或patterns
                     let subChannels = cmdPart.slice(1);
                     let params = subChannels.join(" ");
-                    this.$wss.send(params, cmdType, this.appId, this.ins);
+                    this.$wss.send(params, cmdType, this.appId, this.ins, 'console');
                 }
             }, getNodeClass(t) {
                 switch (t) {

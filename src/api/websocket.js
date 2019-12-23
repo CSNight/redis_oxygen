@@ -71,10 +71,10 @@ export default {
         window.onbeforeunload = function () {
             thisCallback.close();
         };
-    }, send: function (msg, rt, appId, ins) {
+    }, send: function (msg, rt, appId, ins, ct) {
         let request = {
             rt: rt,
-            channel: this.channel,
+            ct: ct,
             msg: msg,
             appId: appId,
             ins: ins
