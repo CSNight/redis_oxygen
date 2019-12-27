@@ -72,6 +72,7 @@
                             accordion
                             ref="menus"
                             node-key="id"
+                            expand-on-click-node
                             @check-change="checkSetPermitChk"
                             check-on-click-node
                             show-checkbox>
@@ -287,6 +288,12 @@
                 let chkPermitKey = this.$refs.permits.getCheckedKeys().concat(this.$refs.permits.getHalfCheckedKeys());
                 if (!chk && chkPermitKey.indexOf(id) !== -1) {
                     this.$refs.permits.setChecked(id, false, true)
+                }
+                let node = this.$refs.menus.getNode(id);
+                if (data.pid === 0 && !chk && !node.expanded) {
+                    for (let i = 0; i < data.children.length; i++) {
+                        this.$refs.permits.setChecked(data.children[i].id, false, true)
+                    }
                 }
             }, checkPermitChk(data, chk) {
                 let menus_chk = this.$refs.menus.getCheckedKeys();
