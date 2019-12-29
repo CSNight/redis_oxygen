@@ -65,7 +65,7 @@
                 </el-button>
             </div>
             <el-collapse v-model="activePanels" style="height: 100%">
-                <el-collapse-item title="菜单目录" name="1">
+                <el-collapse-item title="菜单权限" name="1">
                     <el-tree
                             :props="menuProps"
                             :data="MenuTree"
@@ -78,7 +78,7 @@
                             show-checkbox>
                     </el-tree>
                 </el-collapse-item>
-                <el-collapse-item title="权限列表" name="2">
+                <el-collapse-item title="功能权限" name="2">
                     <el-tree
                             :props="accessProps"
                             :data="PermitTree"
@@ -89,6 +89,10 @@
                             @check-change="checkPermitChk"
                             show-checkbox>
                     </el-tree>
+                </el-collapse-item>
+                <el-collapse-item title="数据权限" name="3">
+                </el-collapse-item>
+                <el-collapse-item title="命令权限" name="4">
                 </el-collapse-item>
             </el-collapse>
         </el-card>

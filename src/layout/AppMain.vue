@@ -51,4 +51,14 @@
             padding-right: 15px;
         }
     }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #ddd;
+        border-radius: 3px;
+    }
 </style>
