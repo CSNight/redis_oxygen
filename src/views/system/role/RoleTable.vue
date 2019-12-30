@@ -58,7 +58,7 @@
             </el-table>
         </el-card>
         <el-card style="width: 35%;min-width: 100px;height: 85vh;overflow: auto">
-            <div slot="header" class="">
+            <div slot="header">
                 <span>权限列表</span>
                 <el-button style="float: right;" size="small" type="primary" @click="getChkNode"
                            v-if="rights('ROLE_ACCESS')">保存修改
@@ -90,9 +90,9 @@
                             show-checkbox>
                     </el-tree>
                 </el-collapse-item>
-                <el-collapse-item title="数据权限" name="3">
-                </el-collapse-item>
-                <el-collapse-item title="命令权限" name="4">
+                <el-collapse-item title="命令权限" name="3">
+                    <el-transfer size="mini" :titles="['Source', 'Target']" filterable v-model="selectCmd"
+                                 :data="commandList"/>
                 </el-collapse-item>
             </el-collapse>
         </el-card>
@@ -103,8 +103,10 @@
 <script>
     import {
         delete_role,
+        get_commands,
         get_roles,
         query_roles,
+        update_role_commands,
         update_role_menus,
         update_role_permits
     } from "../../../api/system/role_api";
@@ -130,7 +132,9 @@
                 },
                 RoleList: [],
                 MenuTree: [],
-                PermitTree: []
+                PermitTree: [],
+                commandList: [],
+                selectCmd: [],
             }
         }, computed: {
             show_clear: function () {
@@ -174,7 +178,8 @@
                 })
             },
             loadData() {
-                if (!this.rights("ROLE_QUERY") || !this.rights("MENU_QUERY") || !this.rights("RIGHTS_QUERY")) {
+                if (!this.rights("ROLE_QUERY") || !this.rights("MENU_QUERY") ||
+                    !this.rights("RIGHTS_QUERY") || !this.rights("ROLE_COMMANDS")) {
                     this.$message.error({
                         message: "禁止查询!"
                     });
@@ -182,10 +187,11 @@
                 }
                 this.loading = true;
                 this.clearData();
-                Promise.all([get_roles(), get_menu_tree(), get_permits()])
-                    .then(([roles, menus, permits]) => {
+                Promise.all([get_roles(), get_menu_tree(), get_permits(), get_commands()])
+                    .then(([roles, menus, permits, commands]) => {
                         this.RoleList = roles.data.message;
                         this.MenuTree = menus.data.message;
+                        this.commandList = commands.data.message;
                         let permit_list = permits.data.message;
                         let ids = [];
                         for (let i = 0; i < permit_list.length; i++) {
@@ -216,8 +222,11 @@
                     });
                 });
             }, rowClick(row) {
+                this.$refs.menus.setCheckedKeys([]);
+                this.$refs.permits.setCheckedKeys([]);
                 this.select_key = row.id;
                 this.setRolePermit(row, this.setRoleMenu(row));
+                this.setCommandsSelect(row);
             }, setRoleMenu(row) {
                 let defaultMenu = [];
                 let tmp = this.RoleList.filter((role) => {
@@ -233,9 +242,13 @@
                         }
                     }
                 }
-                defaultMenu.forEach(key => {
-                    this.$refs.menus.setChecked(key, true, false);
-                });
+                if (defaultMenu.length === 0) {
+                    this.$refs.menus.setCheckedKeys([]);
+                } else {
+                    defaultMenu.forEach(key => {
+                        this.$refs.menus.setChecked(key, true, false);
+                    });
+                }
                 return defaultMenu;
             }, setRolePermit(row, menus) {
                 let defaultPermit = [];
@@ -251,6 +264,12 @@
                     }
                 }
                 this.$refs.permits.setCheckedKeys(defaultPermit, true);
+            }, setCommandsSelect(row) {
+                if (row.commands) {
+                    this.selectCmd = row.commands.commands.split(",");
+                } else {
+                    this.selectCmd = [];
+                }
             }, addRow() {
                 this.isAdd = true;
                 const _this = this.$refs.form;
@@ -326,15 +345,19 @@
                 permits_chk.forEach(mid => {
                     permits.push({id: mid})
                 });
+                let cmd = {
+                    commands: this.selectCmd.join(",")
+                };
                 let form = {
                     id: this.select_key,
                     name: 'update',
                     code: 'update',
                     menuSet: menus,
-                    permissionSet: permits
+                    permissionSet: permits,
+                    commands: cmd
                 };
                 this.loading = true;
-                Promise.all([update_role_menus(form), update_role_permits(form)]).then(() => {
+                Promise.all([update_role_menus(form), update_role_permits(form), update_role_commands(form)]).then(() => {
                     this.loadData();
                 }).catch((resp) => {
                     this.$message({
@@ -363,8 +386,18 @@
                 this.$refs.menus.setCheckedKeys([]);
                 this.$refs.permits.setCheckedKeys([]);
                 this.$refs.roleTable.setCurrentRow();
+                this.selectCmd = [];
                 this.select_key = '';
             }
         }
     }
 </script>
+<style scoped>
+    /deep/ .el-transfer__buttons {
+        padding: 0 10px;
+    }
+
+    /deep/ .el-transfer__button {
+        padding: 10px 10px;
+    }
+</style>
