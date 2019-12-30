@@ -312,12 +312,12 @@
                 if (!chk && chkPermitKey.indexOf(id) !== -1) {
                     this.$refs.permits.setChecked(id, false, true)
                 }
-                let node = this.$refs.menus.getNode(id);
-                if (data.pid === 0 && !chk && !node.expanded) {
-                    for (let i = 0; i < data.children.length; i++) {
-                        this.$refs.permits.setChecked(data.children[i].id, false, true)
-                    }
-                }
+                // let node = this.$refs.menus.getNode(id);
+                // if (data.pid === 0 && !chk && !node.expanded) {
+                //     for (let i = 0; i < data.children.length; i++) {
+                //         this.$refs.permits.setChecked(data.children[i].id, false, true)
+                //     }
+                // }
             }, checkPermitChk(data, chk) {
                 let menus_chk = this.$refs.menus.getCheckedKeys();
                 if (data.hasOwnProperty('menu') && chk && menus_chk.indexOf(data.menu.id) === -1) {
