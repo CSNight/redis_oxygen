@@ -72,6 +72,7 @@
                             accordion
                             ref="menus"
                             node-key="id"
+                            @check="menuNodeChk"
                             expand-on-click-node
                             @check-change="checkSetPermitChk"
                             check-on-click-node
@@ -306,18 +307,20 @@
                         message: '已取消删除'
                     });
                 });
+            }, menuNodeChk(dt) {
+                let node = this.$refs.menus.getNode(dt.id);
+                if (dt.pid === 0 && !node.checked && !node.expanded) {
+                    for (let i = 0; i < dt.children.length; i++) {
+                        this.$refs.menus.$emit("check-change", dt.children[i], false)
+                    }
+                }
             }, checkSetPermitChk(data, chk) {
                 let id = data.id;
                 let chkPermitKey = this.$refs.permits.getCheckedKeys().concat(this.$refs.permits.getHalfCheckedKeys());
                 if (!chk && chkPermitKey.indexOf(id) !== -1) {
                     this.$refs.permits.setChecked(id, false, true)
                 }
-                // let node = this.$refs.menus.getNode(id);
-                // if (data.pid === 0 && !chk && !node.expanded) {
-                //     for (let i = 0; i < data.children.length; i++) {
-                //         this.$refs.permits.setChecked(data.children[i].id, false, true)
-                //     }
-                // }
+
             }, checkPermitChk(data, chk) {
                 let menus_chk = this.$refs.menus.getCheckedKeys();
                 if (data.hasOwnProperty('menu') && chk && menus_chk.indexOf(data.menu.id) === -1) {
