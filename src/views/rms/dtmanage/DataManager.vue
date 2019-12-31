@@ -16,12 +16,14 @@
                     <div slot="header">
                         <span>实例列表</span>
                     </div>
-                    <el-tree class="filter-tree" :data="instances" default-expand-all :props="{label: 'instance_name'}"
+                    <el-tree class="filter-tree" :data="instances" default-expand-all
+                             :props="{label: 'instance_name',children:'children'}"
                              ref="tree">
                         <span class="custom-tree-node" slot-scope="{ node,data }">
-                            <span>{{ node.label }}</span>
-                            <el-button type="text" :disabled="btnState(data)" size="mini"
-                                       @click="newViewer(data)">新建</el-button>
+                            <span>
+                                <el-button size="mini" :icon="data.icon"
+                                           style="border: none;height:25px">{{ node.label }}</el-button>
+                            </span>
                         </span>
                     </el-tree>
                 </el-card>
@@ -42,8 +44,8 @@
 </template>
 
 <script>
-    import {getAll, getByUser, queryBy} from "@/api/redismanage/redis_ins";
-    import DataViewer from "@/views/rms/dtmanage/DataViewer";
+    import {getAll, getByUser, queryBy} from "../../../api/redismanage/redis_ins";
+    import DataViewer from "../../../views/rms/dtmanage/DataViewer";
 
     export default {
         name: "DataManager",
@@ -102,7 +104,21 @@
             }, loadAll(update) {
                 getAll(update).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
-                        this.instances = resp.data.message;
+                        let ins = resp.data.message;
+                        for (let i = 0; i < ins.length; i++) {
+                            let children = [];
+                            for (let j = 0; j < 16; j++) {
+                                children.push({
+                                    id: i + "," + j,
+                                    instance_name: "db" + j,
+                                    icon: "fa fa-key",
+                                    children: []
+                                })
+                            }
+                            ins[i].children = children;
+                            ins[i].icon = "fa fa-database"
+                        }
+                        this.instances = ins;
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message

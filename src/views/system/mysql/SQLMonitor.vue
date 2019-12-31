@@ -6,7 +6,7 @@
     import IFrame from "../../../components/IFrame";
 
     export default {
-        name: "DbMonitor",
+        name: "SQLMonitor",
         components: {IFrame},
         data() {
             return {
