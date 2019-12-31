@@ -8,7 +8,7 @@
             <el-form-item label="名称" prop="description">
                 <el-input v-model="form.description" style="width: 370px;"/>
             </el-form-item>
-            <el-form-item style="margin-bottom: 0;" label="上级部门">
+            <el-form-item style="margin-bottom: 0;" label="所属菜单">
                 <tree_select v-model="form.menu.id" :options="menus" style="width: 370px;" placeholder="选择关联菜单"
                              :normalizer="normalizer"/>
             </el-form-item>

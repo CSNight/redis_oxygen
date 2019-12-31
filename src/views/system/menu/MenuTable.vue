@@ -23,7 +23,7 @@
                 </el-button>
                 <el-button
                         @click.native.prevent="refreshSide" type="warning" icon="fa fa-repeat" size="mini"
-                        v-if="rights('MENU_ADD')">右侧导航刷新
+                        v-if="rights('MENU_ADD')">左侧导航刷新
                 </el-button>
                 <el-button
                         v-if="rights('MENU_QUERY')" @click.native.prevent="loadData" type="danger"

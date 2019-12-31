@@ -75,7 +75,6 @@
                             @check="menuNodeChk"
                             expand-on-click-node
                             @check-change="checkSetPermitChk"
-                            check-on-click-node
                             show-checkbox>
                     </el-tree>
                 </el-collapse-item>
