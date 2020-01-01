@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
-import "./assets/nucleo/css/nucleo.css";
 import "./assets/font-awesome/css/font-awesome.css";
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
