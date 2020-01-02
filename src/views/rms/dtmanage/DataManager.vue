@@ -3,7 +3,7 @@
         <el-row>
             <el-col :span="5" style="height:auto;">
                 <el-input class="filter-item" style="width:70%;height: 30px" v-if="rights('INS_SEARCH')" clearable
-                          v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadQuery"/>
+                          v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadById"/>
             </el-col>
             <el-col :span="19" style="height:auto">
                 <div class="head-container">
@@ -16,8 +16,8 @@
                     <div slot="header">
                         <span>实例列表</span>
                     </div>
-                    <el-tree class="filter-tree" :data="instances" default-expand-all
-                             :props="{label: 'instance_name',children:'children'}"
+                    <el-tree class="filter-tree" :data="instances" default-expand-all accordion
+                             :props="{label: 'label',children:'children'}"
                              ref="tree">
                         <span class="custom-tree-node" slot-scope="{ node,data }">
                             <span>
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-    import {getAll, getByUser, queryBy} from "../../../api/redismanage/redis_ins";
+    import {getAll, getByIns, getByUser} from "../../../api/redismanage/redis_dba";
     import DataViewer from "../../../views/rms/dtmanage/DataViewer";
 
     export default {
@@ -62,7 +62,7 @@
             }
         }, created() {
             this.$nextTick(() => {
-                this.loadData('false');
+                this.loadData();
             })
         }, methods: {
             btnState(ins) {
@@ -73,7 +73,7 @@
                     return this.$store.getters.permit[permit];
                 }
                 return false
-            }, loadData(update) {
+            }, loadData() {
                 if (!this.rights("INS_QUERY_ALL") && !this.rights("INS_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
@@ -81,7 +81,7 @@
                 } else if (this.rights("INS_QUERY_ALL")) {
                     this.loading = true;
                     this.instances = [];
-                    this.loadAll(update);
+                    this.loadAll();
                 } else {
                     this.loadByUser();
                 }
@@ -101,23 +101,10 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
-            }, loadAll(update) {
-                getAll(update).then((resp) => {
+            }, loadAll() {
+                getAll().then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let ins = resp.data.message;
-                        for (let i = 0; i < ins.length; i++) {
-                            let children = [];
-                            for (let j = 0; j < 16; j++) {
-                                children.push({
-                                    id: i + "," + j,
-                                    instance_name: "db" + j,
-                                    icon: "fa fa-key",
-                                    children: []
-                                })
-                            }
-                            ins[i].children = children;
-                            ins[i].icon = "fa fa-database"
-                        }
                         this.instances = ins;
                     } else {
                         this.$message.error({
@@ -131,14 +118,14 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
-            }, loadQuery() {
+            }, loadById() {
                 this.loading = true;
                 if (this.query.blurry === '') {
                     this.loadData('true');
                     return;
                 }
                 this.instances = [];
-                queryBy(this.query).then((resp) => {
+                getByIns(this.query).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         this.instances = resp.data.message;
                     }
