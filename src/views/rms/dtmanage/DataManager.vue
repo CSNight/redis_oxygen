@@ -16,16 +16,23 @@
                     <div slot="header">
                         <span>实例列表</span>
                     </div>
-                    <el-tree class="filter-tree" :data="instances" default-expand-all accordion
-                             :props="{label: 'label',children:'children'}"
-                             ref="tree">
+                    <div style="height:75vh;overflow-y: auto">
+                        <el-tree class="filter-tree" :data="instances" accordion
+                                 :props="{label: 'label',children:'children'}"
+                                 ref="tree">
                         <span class="custom-tree-node" slot-scope="{ node,data }">
                             <span>
-                                <el-button size="mini" :icon="data.icon"
-                                           style="border: none;height:25px">{{ node.label }}</el-button>
+                                <el-button size="mini" :icon="getIcon(data.type)"
+                                           class="ins">{{ node.label }}</el-button>
+                            </span>
+                            <span>
+                                <el-button v-if="data.type==='ins'" type="text" size="mini"
+                                           @click="loadById">刷新</el-button>
                             </span>
                         </span>
-                    </el-tree>
+                        </el-tree>
+                    </div>
+
                 </el-card>
             </el-col>
             <el-col :span="19" style="height:85vh">
@@ -68,6 +75,14 @@
             btnState(ins) {
                 return !ins.state;
             },
+            getIcon(type) {
+                switch (type) {
+                    case"ins":
+                        return "fac fa fa-codepen";
+                    case"db":
+                        return "fac fa fa-database";
+                }
+            },
             rights(permit) {
                 if (this.$store.getters.permit.hasOwnProperty(permit)) {
                     return this.$store.getters.permit[permit];
@@ -104,8 +119,7 @@
             }, loadAll() {
                 getAll().then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
-                        let ins = resp.data.message;
-                        this.instances = ins;
+                        this.instances = resp.data.message;
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -118,14 +132,8 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
-            }, loadById() {
-                this.loading = true;
-                if (this.query.blurry === '') {
-                    this.loadData('true');
-                    return;
-                }
-                this.instances = [];
-                getByIns(this.query).then((resp) => {
+            }, loadById(ins) {
+                getByIns(ins.id).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         this.instances = resp.data.message;
                     }
@@ -173,13 +181,23 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .custom-tree-node {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: space-between;
         font-size: 14px;
-        padding-right: 8px;
+
+        /deep/ .ins {
+            background: transparent;
+            border: none;
+            height: 25px;
+            padding-left: 0;
+        }
+
+        /deep/ .fac {
+            margin-right: 5px;
+        }
     }
 </style>
