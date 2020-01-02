@@ -6,14 +6,14 @@
             <template>
                 <el-tooltip content="源码地址" effect="dark" placement="bottom">
                     <a target="_blank" href="https://github.com/CSNight/oxygen_vue/" style="margin-right: 30px">
-                        <fa-icon style="padding: 3px;margin-bottom: 30px;color:#777777" icon-class="fa-github "/>
+                        <fa-icon style="margin-bottom: 30px;color:#777777" icon-class="fa-github "/>
                     </a>
                 </el-tooltip>
             </template>
             <template>
                 <el-tooltip content="全屏" effect="dark" placement="bottom">
                     <a @click="toggleFullScreen" style="margin-right: 25px">
-                        <fa-icon style="padding:3px;margin-bottom: 30px;color:#777777" icon-class="fa-arrows-alt"/>
+                        <fa-icon style="margin-bottom: 30px;color:#777777" icon-class="fa-arrows-alt"/>
                     </a>
                 </el-tooltip>
             </template>

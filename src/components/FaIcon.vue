@@ -24,7 +24,7 @@
             },
             iconName() {
                 if (!this.className || this.className === '') {
-                    return `fa fa-lg ${this.iconClass}`
+                    return `fa ${this.iconClass}`
                 } else {
                     return `fa ${this.className} ${this.iconClass}`
                 }
@@ -41,11 +41,12 @@
 
 <style scoped>
     .fa-icon {
-        width: 1em;
+        width: 1.5em;
         height: 1em;
         vertical-align: middle;
         fill: currentColor;
         overflow: hidden;
+        text-align: center;
     }
 
     .svg-external-icon {

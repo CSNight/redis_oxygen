@@ -29,7 +29,7 @@ export const constantRoutes = [
             path: 'dashboard',
             name: 'dashboard',
             component: HelloWorld,
-            meta: {title: 'Dashboard', icon: 'fa-dashboard', ref: 'dashboard'}
+            meta: {title: 'Dashboard', icon: 'fa-tachometer-alt-fast', ref: 'dashboard'}
         }]
     },
 // // 404 page must be placed at the end !!!

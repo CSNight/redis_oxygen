@@ -43,7 +43,7 @@
                             <div class="user-right"> {{ user.password}}</div>
                         </li>
                         <li>
-                            <fa-icon icon-class="fa-clock-o"/>
+                            <fa-icon icon-class="fa-clock"/>
                             创建日期
                             <div class="user-right">{{ dateFormat("YYYY-mm-dd HH:MM:SS",new Date(user.create_time))
                                 }}
@@ -235,13 +235,13 @@
             }
 
             .user-info {
-                padding-left: 0px;
+                padding-left: 0;
                 list-style: none;
 
                 li {
                     border-bottom: 1px solid #F0F3F4;
                     border-top: 1px solid #F0F3F4;
-                    padding: 11px 0px;
+                    padding: 11px 0;
                     font-size: 13px;
 
                     i {
