@@ -9,5 +9,5 @@ export function getByUser(user_id) {
 }
 
 export function getByIns(ins_id) {
-    return REQ.get('/dba/databases/' + ins_id);
+    return REQ.get('/dba/database/' + ins_id);
 }
