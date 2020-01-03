@@ -72,8 +72,8 @@
                             accordion
                             ref="menus"
                             node-key="id"
-                            @check="menuNodeChk"
                             expand-on-click-node
+                            :render-after-expand="false"
                             @check-change="checkSetPermitChk"
                             show-checkbox>
                     </el-tree>
@@ -86,6 +86,7 @@
                             check-on-click-node
                             node-key="id"
                             ref="permits"
+                            :render-after-expand="false"
                             @check-change="checkPermitChk"
                             show-checkbox>
                     </el-tree>
@@ -306,13 +307,6 @@
                         message: '已取消删除'
                     });
                 });
-            }, menuNodeChk(dt) {
-                let node = this.$refs.menus.getNode(dt.id);
-                if (dt.pid === 0 && !node.checked && !node.expanded) {
-                    for (let i = 0; i < dt.children.length; i++) {
-                        this.$refs.menus.$emit("check-change", dt.children[i], false)
-                    }
-                }
             }, checkSetPermitChk(data, chk) {
                 let id = data.id;
                 let chkPermitKey = this.$refs.permits.getCheckedKeys().concat(this.$refs.permits.getHalfCheckedKeys());
