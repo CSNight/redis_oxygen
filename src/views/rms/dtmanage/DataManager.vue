@@ -26,10 +26,9 @@
                                         :type="getTagType(data)">{{getTagText(data)}}</el-tag>
                             </span>
                             <span v-if="data.type==='ins'">
-                                <el-tag style="margin-right: 10px" size="mini"
-                                        :type="getTagType(data)">{{getTagText(data)}}</el-tag>
-                                <el-button :disabled="!data.reachable" type="text" size="mini"
-                                           @click="newViewer(data)">清空</el-button>
+                                <el-tag style="margin-right: 10px" size="mini" :type="getTagType(data)">{{getTagText(data)}}</el-tag>
+                                <el-button v-if="rights('DBA_FLUSH_ALL')" :disabled="!data.reachable" type="text"
+                                           size="mini" @click="flushAll(data)">清空</el-button>
                                 <el-button type="text" size="mini"
                                            @click="loadById(data)">刷新</el-button>
                             </span>
@@ -55,7 +54,7 @@
 </template>
 
 <script>
-    import {getAll, getByIns, getByUser} from "../../../api/redismanage/redis_dba";
+    import {getAll, getByIns, getByUser, insFlushAll} from "../../../api/redismanage/redis_dba";
     import DataViewer from "../../../views/rms/dtmanage/DataViewer";
 
     export default {
@@ -163,18 +162,55 @@
             }, loadById(ins) {
                 this.loading = true;
                 getByIns(ins.id).then((resp) => {
+                    this.loading = false;
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let insNew = resp.data.message;
                         for (let i = 0; i < this.instances.length; i++) {
                             if (this.instances[i].id === insNew.id) {
-                                this.$set(this.instances,i,insNew);
+                                this.$set(this.instances, i, insNew);
                                 break;
                             }
                         }
+                    } else {
+                        this.$message.error({
+                            message: "刷新出错!" + resp.data.message
+                        });
                     }
+                }).catch((resp) => {
                     this.loading = false;
+                    this.$message.error({
+                        message: "刷新出错!" + resp.data.message
+                    });
+                })
+            }, flushAll(ins) {
+                this.$confirm('将清空此实例所有数据, 是否继续?', '警告', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    insFlushAll(ins.id).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.code === "OK") {
+                            this.$message({
+                                message: "清空数据成功!",
+                                type: "success"
+                            });
+                        } else {
+                            this.$message.error({
+                                message: "清空数据出错!" + resp.data.message
+                            });
+                        }
+                        this.loadById(ins);
+                    }).catch((resp) => {
+                        this.$message.error({
+                            message: "清空数据出错!" + resp.data.message
+                        });
+                        this.loadById(ins);
+                    })
                 }).catch(() => {
-                    this.loading = false;
+                    this.$message({
+                        type: 'info',
+                        message: '已取消清空'
+                    });
                 })
             }, newViewer(ins) {
                 this.addTab(ins)
