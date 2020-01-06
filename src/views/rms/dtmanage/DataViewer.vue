@@ -11,7 +11,6 @@
             </div>
         </div>
     </div>
-
 </template>
 <script>
     export default {
@@ -33,10 +32,6 @@
 
 <style scoped>
 
-    body {
-
-    }
-
     .container {
         color: #fff;
         font-family: 'Inter UI', sans-serif;
@@ -50,10 +45,6 @@
         font-weight: 200;
         height: 100%;
         text-align: center;
-    }
-
-    .text {
-
     }
 
     .cube,

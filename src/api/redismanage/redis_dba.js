@@ -19,3 +19,9 @@ export function insFlushAll(ins_id) {
 export function insFlushDb(ins_id, db) {
     return REQ.delete('/dba/flush/' + ins_id + "/" + db);
 }
+
+export function insScanKey(dto) {
+    return REQ.get('/dba/scanner', {
+        params: dto
+    });
+}

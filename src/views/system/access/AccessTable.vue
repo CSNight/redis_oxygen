@@ -27,8 +27,7 @@
                 style="width: 100%;margin-bottom: 20px;"
                 row-key="name"
                 v-loading="loading"
-                :stripe="true"
-                default-expand-all>
+                :stripe="true">
             <el-table-column prop="description" align="center" label="名称"/>
             <el-table-column prop="name" align="center" label="编码"/>
             <el-table-column prop="menu" align="center" label="组件">

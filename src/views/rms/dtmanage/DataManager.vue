@@ -20,7 +20,7 @@
                         <el-tree class="filter-tree" :data="instances" accordion :props="treeProps" ref="tree">
                         <span class="custom-tree-node" slot-scope="{ node,data }">
                             <span>
-                                <el-button size="mini" :icon="getIcon(data.type)"
+                                <el-button size="mini" :icon="getIcon(data.type)" @click="treeClick(data)"
                                            :class="'ins '+(data.type==='db'?'dbBtn':'')">{{ node.label }}</el-button>
                                 <el-tag v-if="data.type==='db'" style="margin-left: 10px" size="mini"
                                         :type="getTagType(data)">{{getTagText(data)}}</el-tag>
@@ -39,14 +39,8 @@
             </el-col>
             <el-col :span="18" style="height:85vh">
                 <div style="height:100%;box-shadow:0 2px 12px 0 rgba(0, 0, 0, 0.1);margin-left: 10px">
-                    <el-tabs style="height:100%;padding:10px;"
-                             closable v-model="currentTabName" @tab-remove="removeTab" :before-leave="changeTab">
-                        <el-tab-pane style="width: 100%;display: block" v-for="item in dbTabs" :key="item.name"
-                                     :label="item.title"
-                                     :name="item.name">
-                            <data-viewer :ref="item.name" :ins="item.id" :tab-name="item.name" :prefix="item.prefix"/>
-                        </el-tab-pane>
-                    </el-tabs>
+                    <key-table v-for="item in dbTabs" :total="item.total" :ref="item.id" :key="item.id" :db="item.db"
+                               :ins="item.ins"/>
                 </div>
             </el-col>
         </el-row>
@@ -55,11 +49,11 @@
 
 <script>
     import {getAll, getByIns, getByUser, insFlushAll} from "../../../api/redismanage/redis_dba";
-    import DataViewer from "../../../views/rms/dtmanage/DataViewer";
+    import KeyTable from "./KeyTable";
 
     export default {
         name: "DataManager",
-        components: {DataViewer},
+        components: {KeyTable},
         data() {
             return {
                 query: {blurry: ''},
@@ -212,41 +206,16 @@
                         message: '已取消清空'
                     });
                 })
-            }, newViewer(ins) {
-                this.addTab(ins)
-            }, addTab(ins) {
-                let newTabName = ++this.tabIndex + '';
-                let tab = {
-                    id: ins.id,
-                    title: ins.instance_name + "(" + newTabName + ")",
-                    name: ins.instance_name + newTabName,
-                    prefix: ins.ip + ":" + ins.port + ">"
-                };
-                this.dbTabs.push(tab);
-                this.currentTabName = tab.name;
-            }, removeTab(targetName) {
-                let tabs = this.dbTabs;
-                let activeName = this.currentTabName;
-                if (activeName === targetName) {
-                    tabs.forEach((tab, index) => {
-                        if (tab.name === targetName) {
-                            let nextTab = tabs[index + 1] || tabs[index - 1];
-                            if (nextTab) {
-                                activeName = nextTab.name;
-                            }
-                        }
+            }, treeClick(e) {
+                if (e.type === 'db') {
+                    this.dbTabs.pop();
+                    this.dbTabs.push({
+                        id: e.id,
+                        total: e.keySize,
+                        ins: e.ins,
+                        db: Number(e.label.replace("db", ''))
                     });
                 }
-                this.currentTabName = activeName;
-                this.dbTabs = tabs.filter(tab => tab.name !== targetName);
-                if (this.dbTabs.length === 0) {
-                    this.tabIndex = 0;
-                }
-                delete this.$refs[targetName]
-            }, changeTab(next, old) {
-                // eslint-disable-next-line no-console
-                console.log(old, next);
-                return true;
             }
         }
     }

@@ -7,7 +7,7 @@
                 <el-menu
                         class="el-menu menu"
                         mode="horizontal"
-                        background-color="transparent"
+                        background-color="#748EF4"
                         text-color="#fff"
                         active-text-color="#fff">
                     <el-menu-item index="1">Home</el-menu-item>
