@@ -10,6 +10,11 @@
             <el-table-column prop="type" align="center" label="类型"/>
             <el-table-column prop="size" align="center" label="长度"/>
             <el-table-column prop="ttl" align="center" label="过期时间"/>
+            <infinite-loading
+                    slot="append"
+                    @infinite="infiniteHandler"
+                    force-use-infinite-wrapper=".el-table__body-wrapper">
+            </infinite-loading>
         </el-table>
     </div>
 
@@ -18,9 +23,10 @@
 <script>
 
     import {insScanKey} from "../../../api/redismanage/redis_dba";
-
+    import InfiniteLoading from 'vue-infinite-loading';
     export default {
         name: "KeyTable",
+        components:{InfiniteLoading},
         props: {
             total: {
                 type: Number,
@@ -39,6 +45,15 @@
                 keyDt: [], cur: 1, cursor: '0', match: '*',
             }
         }, methods: {
+            infiniteHandler($state) {
+                this.keyDt.push({
+                    key: '2016-05-07',
+                    type: '王小虎',
+                    size: '上海市普陀区金沙江路 1518 弄',
+                    ttl: 1
+                });
+                $state.loaded();
+            },
             pageChange(e) {
                 console.log("cur" + this.cur, e);
                 if (e > this.cur) {
