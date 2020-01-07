@@ -169,6 +169,7 @@
                             message: "删除成功!" + resp.data.message,
                             type: 'success'
                         });
+                        this.keyDt.splice(this.keyDt.indexOf(row), 1);
                     } else {
                         this.$message.error({
                             message: "删除失败!" + resp.data.message
