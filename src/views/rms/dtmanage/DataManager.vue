@@ -2,11 +2,21 @@
     <div>
         <el-row>
             <el-col :span="6" style="height:auto;">
-                <el-input class="filter-item" style="width:70%;height: 30px" v-if="rights('INS_SEARCH')" clearable
-                          v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadById"/>
+                <el-button class="filter-item" size="mini" type="danger" icon="el-icon-refresh"
+                           v-if="rights('DBA_QUERY')||rights('DBA_QUERY_ALL')" @click="loadData">刷新实例列表
+                </el-button>
             </el-col>
             <el-col :span="18" style="height:auto">
-                <div class="head-container">
+                <div class="head-container" v-if="dbTabs.length!==0">
+                    <el-input v-if="rights('KEYS_KEY_SCAN')" clearable v-model="match" placeholder="输入菜单名称搜索"
+                              style="width: 200px;" size="mini"
+                              class="filter-item"/>
+                    <el-button class="filter-item" size="mini" type="success" icon="el-icon-refresh"
+                               v-if="rights('KEYS_KEY_SCAN')" @click="triggerScan">搜索
+                    </el-button>
+                    <el-button class="filter-item" size="mini" type="danger" icon="el-icon-delete"
+                               v-if="rights('DBA_FLUSH_DB')" @click="flushDb">清空当前数据库
+                    </el-button>
                 </div>
             </el-col>
         </el-row>
@@ -29,7 +39,7 @@
                                 <el-tag style="margin-right: 10px" size="mini" :type="getTagType(data)">{{getTagText(data)}}</el-tag>
                                 <el-button v-if="rights('DBA_FLUSH_ALL')" :disabled="!data.reachable" type="text"
                                            size="mini" @click="flushAll(data)">清空</el-button>
-                                <el-button type="text" size="mini"
+                                <el-button type="text" size="mini" v-if="rights('DBA_QUERY_SINGLE')"
                                            @click="loadById(data)">刷新</el-button>
                             </span>
                         </span>
@@ -38,17 +48,15 @@
                 </el-card>
             </el-col>
             <el-col :span="18" style="height:85vh">
-                <div style="height:100%;box-shadow:0 2px 12px 0 rgba(0, 0, 0, 0.1);margin-left: 10px">
-                    <key-table v-for="item in dbTabs" :total="item.total" :ref="item.id" :key="item.id" :db="item.db"
-                               :ins="item.ins"/>
-                </div>
+                <key-table v-for="item in dbTabs" :total="item.total" :ref="item.id" :key="item.id" :db="item.db"
+                           :match="match" :ins="item.ins"/>
             </el-col>
         </el-row>
     </div>
 </template>
 
 <script>
-    import {getAll, getByIns, getByUser, insFlushAll} from "../../../api/redismanage/redis_dba";
+    import {getAll, getByIns, getByUser, insFlushAll, insFlushDb} from "../../../api/redismanage/redis_dba";
     import KeyTable from "./KeyTable";
 
     export default {
@@ -56,9 +64,7 @@
         components: {KeyTable},
         data() {
             return {
-                query: {blurry: ''},
-                loading: false,
-                instances: [],
+                instances: [], match: '',
                 identify: this.$store.getters.identify,
                 treeProps: {label: 'label', children: 'children'},
                 dbTabs: [],
@@ -109,18 +115,17 @@
                 }
                 return false
             }, loadData() {
-                if (!this.rights("INS_QUERY_ALL") && !this.rights("INS_QUERY")) {
+                if (!this.rights("DBA_QUERY_ALL") && !this.rights("DBA_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
                     });
-                } else if (this.rights("INS_QUERY_ALL")) {
-                    this.loading = true;
+                } else if (this.rights("DBA_QUERY_ALL")) {
                     this.instances = [];
                     this.loadAll();
                 } else {
-                    this.loading = true;
                     this.loadByUser();
                 }
+                this.dbTabs.pop();
             }, loadByUser() {
                 getByUser(this.identify).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
@@ -130,9 +135,7 @@
                             message: "查询出错!" + resp.data.message
                         });
                     }
-                    this.loading = false;
                 }).catch((resp) => {
-                    this.loading = false;
                     this.$message.error({
                         message: "查询出错!" + resp.data.message
                     });
@@ -146,17 +149,14 @@
                             message: "查询出错!" + resp.data.message
                         });
                     }
-                    this.loading = false;
                 }).catch((resp) => {
-                    this.loading = false;
                     this.$message.error({
                         message: "查询出错!" + resp.data.message
                     });
                 });
             }, loadById(ins) {
-                this.loading = true;
+                this.dbTabs.pop();
                 getByIns(ins.id).then((resp) => {
-                    this.loading = false;
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let insNew = resp.data.message;
                         for (let i = 0; i < this.instances.length; i++) {
@@ -171,7 +171,6 @@
                         });
                     }
                 }).catch((resp) => {
-                    this.loading = false;
                     this.$message.error({
                         message: "刷新出错!" + resp.data.message
                     });
@@ -206,6 +205,36 @@
                         message: '已取消清空'
                     });
                 })
+            }, flushDb() {
+                this.$confirm('将清空此DB所有数据, 是否继续?', '警告', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    insFlushDb(this.dbTabs[0].ins, this.dbTabs[0].db).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.code === "OK") {
+                            this.$message({
+                                message: "清空数据成功!",
+                                type: "success"
+                            });
+                        } else {
+                            this.$message.error({
+                                message: "清空数据出错!" + resp.data.message
+                            });
+                        }
+                        this.triggerScan();
+                    }).catch((resp) => {
+                        this.$message.error({
+                            message: "清空数据出错!" + resp.data.message
+                        });
+                        this.triggerScan();
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消清空'
+                    });
+                })
             }, treeClick(e) {
                 if (e.type === 'db') {
                     this.dbTabs.pop();
@@ -216,6 +245,9 @@
                         db: Number(e.label.replace("db", ''))
                     });
                 }
+            }, triggerScan() {
+                this.$refs[this.dbTabs[0].id][0].keyDt = [];
+                this.$refs[this.dbTabs[0].id][0].$refs['loader'].stateChanger.reset();
             }
         }
     }
