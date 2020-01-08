@@ -11,7 +11,7 @@
                        v-if="rights('DBA_FLUSH_DB')" @click="flushDb">清空当前数据库
             </el-button>
             <el-button class="filter-item" size="mini" type="warning" icon="el-icon-timer"
-                       v-if="rights('KEYS_KEY_EXPIRE')">批量设置过期
+                       v-if="rights('KEYS_KEY_EXPIRE')" @click="setMultiNx">批量设置过期
             </el-button>
             <el-button class="filter-item" size="mini" type="danger" icon="el-icon-delete"
                        v-if="rights('KEYS_KEY_DELETE')" @click="deleteMultiKeys">批量删除键
@@ -326,6 +326,28 @@
                         message: '已取消删除'
                     });
                 })
+            }, setMultiNx() {
+                if (this.selection.length === 0) {
+                    this.$message({
+                        message: "请先选中数据",
+                        type: 'warning'
+                    });
+                    return;
+                }
+                let expires = [];
+                for (let i = 0; i < this.selection.length; i++) {
+                    expires.push(this.selection[i].key);
+                }
+                const _this = this.$refs.nxForm;
+                _this.form = {
+                    keys: expires,
+                    keyName: "expire",
+                    type: "expire",
+                    ins_id: this.ins,
+                    db: this.db,
+                    ttl: -1
+                };
+                _this.dialog = true;
             }
         }, beforeDestroy() {
             this.$wss.un("msgRev", this.appId);
