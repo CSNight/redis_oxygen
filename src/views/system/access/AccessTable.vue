@@ -3,7 +3,7 @@
         <!--工具栏-->
         <div class="head-container">
             <!-- 搜索 -->
-            <el-input v-if="rights('RIGHTS_QUERY')" clearable v-model="query.blurry" placeholder="输入菜单名称搜索"
+            <el-input v-if="rights('RIGHTS_QUERY')" clearable v-model="query.blurry" placeholder="输入权限名称搜索"
                       style="width: 200px;" size="mini"
                       class="filter-item"/>
             <el-button class="filter-item" size="mini" type="success" icon="el-icon-search"
