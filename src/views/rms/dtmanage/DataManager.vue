@@ -1,33 +1,17 @@
 <template>
-    <div>
-        <el-row>
-            <el-col :span="6" style="height:auto;">
-                <el-button class="filter-item" size="mini" type="danger" icon="el-icon-refresh"
+    <el-row>
+        <el-col :span="6">
+            <div class="head-container">
+                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-refresh"
                            v-if="rights('DBA_QUERY')||rights('DBA_QUERY_ALL')" @click="loadData">刷新实例列表
                 </el-button>
-            </el-col>
-            <el-col :span="18" style="height:auto">
-                <div class="head-container" v-if="dbTabs.length!==0">
-                    <el-input v-if="rights('KEYS_KEY_SCAN')" clearable v-model="match" placeholder="输入菜单名称搜索"
-                              style="width: 200px;" size="mini"
-                              class="filter-item"/>
-                    <el-button class="filter-item" size="mini" type="success" icon="el-icon-refresh"
-                               v-if="rights('KEYS_KEY_SCAN')" @click="triggerScan">搜索
-                    </el-button>
-                    <el-button class="filter-item" size="mini" type="danger" icon="el-icon-delete"
-                               v-if="rights('DBA_FLUSH_DB')" @click="flushDb">清空当前数据库
-                    </el-button>
+            </div>
+            <el-card style="height:85vh">
+                <div slot="header">
+                    <span>实例列表</span>
                 </div>
-            </el-col>
-        </el-row>
-        <el-row>
-            <el-col :span="6">
-                <el-card style="height:85vh">
-                    <div slot="header">
-                        <span>实例列表</span>
-                    </div>
-                    <div style="height:75vh;overflow-y: auto">
-                        <el-tree class="filter-tree" :data="instances" accordion :props="treeProps" ref="tree">
+                <div style="height:75vh;overflow-y: auto">
+                    <el-tree class="filter-tree" :data="instances" accordion :props="treeProps" ref="tree">
                         <span class="custom-tree-node" slot-scope="{ node,data }">
                             <span>
                                 <el-button size="mini" :icon="getIcon(data.type)" @click="treeClick(data)"
@@ -43,20 +27,19 @@
                                            @click="loadById(data)">刷新</el-button>
                             </span>
                         </span>
-                        </el-tree>
-                    </div>
-                </el-card>
-            </el-col>
-            <el-col :span="18" style="height:85vh">
-                <key-table v-for="item in dbTabs" :total="item.total" :ref="item.id" :key="item.id" :db="item.db"
-                           :match="match" :ins="item.ins"/>
-            </el-col>
-        </el-row>
-    </div>
+                    </el-tree>
+                </div>
+            </el-card>
+        </el-col>
+        <el-col :span="18">
+            <key-table v-for="item in dbTabs" :total="item.total" :ref="item.id" :key="item.id" :db="item.db"
+                       :ins="item.ins"/>
+        </el-col>
+    </el-row>
 </template>
 
 <script>
-    import {getAll, getByIns, getByUser, insFlushAll, insFlushDb} from "../../../api/redismanage/redis_dba";
+    import {getAll, getByIns, getByUser, insFlushAll} from "../../../api/redismanage/redis_dba";
     import KeyTable from "./KeyTable";
 
     export default {
@@ -64,7 +47,7 @@
         components: {KeyTable},
         data() {
             return {
-                instances: [], match: '',
+                instances: [],
                 identify: this.$store.getters.identify,
                 treeProps: {label: 'label', children: 'children'},
                 dbTabs: [],
@@ -205,36 +188,6 @@
                         message: '已取消清空'
                     });
                 })
-            }, flushDb() {
-                this.$confirm('将清空此DB所有数据, 是否继续?', '警告', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    insFlushDb(this.dbTabs[0].ins, this.dbTabs[0].db).then((resp) => {
-                        if (resp.data.status === 200 && resp.data.code === "OK") {
-                            this.$message({
-                                message: "清空数据成功!",
-                                type: "success"
-                            });
-                        } else {
-                            this.$message.error({
-                                message: "清空数据出错!" + resp.data.message
-                            });
-                        }
-                        this.triggerScan();
-                    }).catch((resp) => {
-                        this.$message.error({
-                            message: "清空数据出错!" + resp.data.message
-                        });
-                        this.triggerScan();
-                    })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消清空'
-                    });
-                })
             }, treeClick(e) {
                 if (e.type === 'db') {
                     this.dbTabs.pop();
@@ -245,9 +198,6 @@
                         db: Number(e.label.replace("db", ''))
                     });
                 }
-            }, triggerScan() {
-                this.$refs[this.dbTabs[0].id][0].keyDt = [];
-                this.$refs[this.dbTabs[0].id][0].$refs['loader'].stateChanger.reset();
             }
         }
     }
