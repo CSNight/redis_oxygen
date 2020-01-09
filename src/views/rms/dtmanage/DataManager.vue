@@ -6,7 +6,7 @@
                            v-if="rights('DBA_QUERY')||rights('DBA_QUERY_ALL')" @click="loadData">刷新实例列表
                 </el-button>
             </div>
-            <el-card style="height:85vh">
+            <el-card style="height:83vh">
                 <div slot="header">
                     <span>实例列表</span>
                 </div>
@@ -138,7 +138,9 @@
                     });
                 });
             }, loadById(ins) {
-                this.dbTabs.pop();
+                if (this.dbTabs.length > 0 && this.dbTabs[0].ins === ins.id) {
+                    this.dbTabs.pop();
+                }
                 getByIns(ins.id).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let insNew = resp.data.message;

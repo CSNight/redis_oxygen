@@ -17,11 +17,11 @@
                        v-if="rights('KEYS_KEY_DELETE')" @click="deleteMultiKeys">批量删除键
             </el-button>
         </div>
-        <el-card style="height:85vh;margin-left: 10px">
+        <el-card style="height:83vh;margin-left: 10px">
             <div slot="header">
                 <span>数据列表</span>
             </div>
-            <el-table :data="keyDt" height="50%" style="width: 100%;margin-bottom: 20px;min-height: 40vh"
+            <el-table :data="keyDt" height="40vh" style="width: 100%;margin-bottom: 20px;"
                       row-key="name" v-loading="loading" @selection-change="handlerTableSelect">
                 <el-table-column align="center" type="selection" width="55"/>
                 <el-table-column prop="id" width="80" align="center" label="id"/>
@@ -55,22 +55,22 @@
                                   force-use-infinite-wrapper=".el-table__body-wrapper">
                 </infinite-loading>
             </el-table>
+            <value-viewer ref="viewer" :db="db" :ins="ins"/>
         </el-card>
     </div>
 </template>
 
 <script>
-
-    import {deleteKeys, getKeyValue, insScanKey} from "../../../api/redismanage/redis_keys";
+    import {deleteKeys, getKeyValue, insScanKey, refreshKey} from "../../../api/redismanage/redis_keys";
     import InfiniteLoading from 'vue-infinite-loading';
-    import {insFlushDb} from "@/api/redismanage/redis_dba";
-    import {guid} from "@/utils/utils";
-    import KeyNxForm from "@/views/rms/dtmanage/KeyNxForm";
-    import {refreshKey} from "@/api/redismanage/redis_keys";
+    import {insFlushDb} from "../../../api/redismanage/redis_dba";
+    import {guid} from "../../../utils/utils";
+    import KeyNxForm from "../../../views/rms/dtmanage/KeyNxForm";
+    import ValueViewer from "../../../views/rms/dtmanage/ValueViewer";
 
     export default {
         name: "KeyTable",
-        components: {KeyNxForm, InfiniteLoading},
+        components: {ValueViewer, KeyNxForm, InfiniteLoading},
         props: {
             total: {
                 type: Number,
@@ -86,7 +86,7 @@
         data() {
             return {
                 loading: false,
-                keyDt: [], cur: 1, cursor: '0', match: '', appId: guid(), selection: [],
+                keyDt: [], cur: 1, cursor: '0', match: '', appId: guid(), selection: [], viewKeyItem: {},
                 filters: [
                     {text: "String", value: "string"},
                     {text: "Set", value: "Set"},
@@ -155,8 +155,9 @@
                 };
                 getKeyValue(params).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
-                        // eslint-disable-next-line no-console
-                        console.log(resp.data.message[row.key])
+                        this.viewKeyItem = JSON.parse(JSON.stringify(row));
+                        this.viewKeyItem.val = resp.data.message[row.key];
+                        this.$refs.viewer.$set(this.$refs.viewer, 'key', this.viewKeyItem);
                     }
                 }).catch((resp) => {
                     this.$message.error({
@@ -183,6 +184,12 @@
                                 message: "删除成功!" + resp.data.message,
                                 type: 'success'
                             });
+                            //清除正在查看的键值
+                            if (row.key === this.viewKeyItem.key) {
+                                this.$refs.viewer.$set(this.$refs.viewer, 'key', {});
+                                this.viewKeyItem = {};
+                            }
+                            //操作列表删除
                             this.keyDt.splice(this.keyDt.indexOf(row), 1);
                         } else {
                             this.$message.error({
@@ -304,6 +311,7 @@
                                 message: "删除成功!" + resp.data.message,
                                 type: 'success'
                             });
+                            //操作列表删除
                             for (let i = 0; i < this.selection.length; i++) {
                                 let index = this.keyDt.indexOf(this.selection[i]);
                                 if (index !== -1) {
@@ -349,9 +357,6 @@
                 };
                 _this.dialog = true;
             }
-        }, beforeDestroy() {
-            this.$wss.un("msgRev", this.appId);
-            this.$wss.close();
         }
     }
 </script>
@@ -359,5 +364,9 @@
 <style scoped>
     /deep/ .el-table td, /deep/ .el-table th {
         padding: 5px 0;
+    }
+
+    /deep/ .el-divider {
+        margin: 12px 0 !important;
     }
 </style>
