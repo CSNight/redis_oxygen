@@ -41,7 +41,7 @@
         },
         computed: {
             visitedViews() {
-                return this.$store.state.tagsView.visitedViews
+                return this.$store.getters.visitedViews
             },
             routes() {
                 return this.$store.getters.dynamic_routers
@@ -88,7 +88,7 @@
                             tags = [...tags, ...tempTags]
                         }
                     }
-                })
+                });
                 return tags
             },
             initTags() {
