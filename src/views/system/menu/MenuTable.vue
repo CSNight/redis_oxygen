@@ -32,7 +32,7 @@
             </div>
         </div>
         <MenuForm ref="form" :status="status" :is-add="isAdd" :icons="icons"/>
-        <el-divider content-position="left"/>
+
         <div>
             <el-scrollbar style="height: 100%">
                 <el-table

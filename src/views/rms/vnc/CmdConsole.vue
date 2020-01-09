@@ -314,7 +314,7 @@
         padding: 10px;
         border: none;
         position: relative;
-        height: calc(80vh - 20px);
+        height: calc(80vh - 40px);
         font-size: 0.8em;
         overflow: auto;
 

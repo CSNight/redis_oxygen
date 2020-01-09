@@ -21,7 +21,7 @@
             </div>
         </div>
         <RoleForm ref="form" :is-add="isAdd"/>
-        <el-card style="width: 62%;float:left;margin-right: 20px;min-width: 500px;height: 85vh">
+        <el-card style="width: 62%;float:left;margin-right: 20px;min-width: 500px;height: 83vh">
             <div slot="header" class="">
                 <span>角色列表</span>
             </div>
@@ -57,7 +57,7 @@
                 </el-table-column>
             </el-table>
         </el-card>
-        <el-card style="width: 35%;min-width: 100px;height: 85vh;overflow: auto">
+        <el-card style="width: 35%;min-width: 100px;height: 83vh;overflow: auto">
             <div slot="header">
                 <span>权限列表</span>
                 <el-button style="float: right;" size="small" type="primary" @click="getChkNode"

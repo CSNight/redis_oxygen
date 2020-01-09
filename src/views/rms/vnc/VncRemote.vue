@@ -22,7 +22,7 @@
         </el-row>
         <el-row>
             <el-col :span="5">
-                <el-card style="height:85vh">
+                <el-card style="height:83vh">
                     <div slot="header">
                         <span>实例列表</span>
                     </div>
@@ -39,7 +39,7 @@
                     </el-tree>
                 </el-card>
             </el-col>
-            <el-col :span="19" style="height:85vh">
+            <el-col :span="19" style="height:83vh">
                 <div style="height:100%;box-shadow:0 2px 12px 0 rgba(0, 0, 0, 0.1);margin-left: 10px">
                     <el-tabs style="height:100%;padding:10px;"
                              closable v-model="currentTabName" @tab-remove="removeTab" :before-leave="changeTab">

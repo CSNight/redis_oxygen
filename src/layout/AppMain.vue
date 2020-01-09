@@ -28,7 +28,7 @@
     }
 
     .fixed-header + .app-main {
-        padding-top: 50px;
+        padding-top: 85px;
     }
 
     .hasTagsView {
