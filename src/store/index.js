@@ -30,7 +30,9 @@ const getters = {
     baseUrl: state => state.app.BASE_API,
     channel: state => state.websocket.channel,
     client: state => state.websocket.client,
-    events: state => state.websocket.events
+    events: state => state.websocket.events,
+    visitedViews: state => state.tagsView.visitedViews,
+    cachedViews: state => state.tagsView.cachedViews,
 };
 const store = new Vuex.Store({
     modules,
