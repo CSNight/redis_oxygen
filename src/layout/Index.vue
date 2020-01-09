@@ -5,6 +5,7 @@
         <div class="main-container">
             <div :class="{'fixed-header':fixedHeader}">
                 <navbar/>
+                <tags-view v-if="needTagsView"/>
             </div>
             <app-main/>
         </div>
@@ -15,6 +16,8 @@
     import AppMain from './AppMain'
     import Sidebar from './sider/SideBar'
     import Navbar from "./nav/Navbar";
+    import TagsView from "./TagsView"
+    import {mapState} from "vuex";
 
     export default {
         name: "Index",
@@ -22,7 +25,11 @@
             AppMain,
             Navbar,
             Sidebar,
+            TagsView
         }, computed: {
+            ...mapState({
+                needTagsView: state => state.dynamic.showTagsView,
+            }),
             sidebar() {
                 return this.$store.state.app.sidebar
             },
@@ -37,7 +44,8 @@
                     hideSidebar: !this.sidebar.opened,
                     openSidebar: this.sidebar.opened,
                     withoutAnimation: this.sidebar.withoutAnimation,
-                    mobile: this.device === 'mobile'
+                    mobile: this.device === 'mobile',
+
                 }
             }
         },

@@ -6,6 +6,7 @@ const dynamic = {
         routers: constantRoutes,
         addRouters: [],
         // 第一次加载菜单时用到
+        showTagsView: false,
         loadMenus: false
     },
     mutations: {
@@ -14,6 +15,8 @@ const dynamic = {
             state.routers = constantRoutes.concat(routers)
         }, SET_LOAD_MENUS: (state, loadMenus) => {
             state.loadMenus = loadMenus
+        }, SET_TAGS: (state, show) => {
+            state.showTagsView = show
         }
     },
     actions: {
@@ -23,12 +26,15 @@ const dynamic = {
             return new Promise(() => {
                 commit('SET_LOAD_MENUS', true)
             })
+        }, updateTags({commit}, show) {
+            commit('SET_TAGS', show);
         }
     }
 };
 
 export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由字符串，转换为组件对象
     const accessedRouters = routers.filter(router => {
+        router.meta.noCache = true;
         //外链
         if (router.iframe) {
             router.component = Index;

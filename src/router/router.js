@@ -29,8 +29,18 @@ export const constantRoutes = [
             path: 'dashboard',
             name: 'dashboard',
             component: HelloWorld,
-            meta: {title: 'Dashboard', icon: 'fa-tachometer-alt-fast', ref: 'dashboard'}
+            meta: {title: 'Dashboard', icon: 'fa-tachometer-alt-fast', ref: 'dashboard', affix: true}
         }]
+    },{
+        path: '/redirect',
+        component: Index,
+        hidden: true,
+        children: [
+            {
+                path: '/redirect/:path*',
+                component: () => import('../components/Redirect')
+            }
+        ]
     },
 // // 404 page must be placed at the end !!!
     //{path: '*', redirect: '/404', hidden: true}
@@ -99,8 +109,11 @@ export const loadMenus = (next, to) => {
         const asyncRouter = filterAsyncRouter(res.data.message);
         asyncRouter.push({path: '*', redirect: '/404', hidden: true});
         store.dispatch('GenerateRoutes', asyncRouter).then(() => { // 存储路由
-            router.addRoutes(asyncRouter); // 动态添加可访问路由表
-            next({...to, replace: true});
+            router.addRoutes(asyncRouter);
+            store.dispatch('updateTags', true).then(() => {
+                next({...to, replace: true});
+            })// 动态添加可访问路由表
+
         })
     })
 };
