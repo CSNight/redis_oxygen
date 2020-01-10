@@ -57,6 +57,11 @@ export default {
                 case "DESUB":
                     thisCallback.emit("msgRev", msgObj, msgObj.appId);
                     break;
+                case"KEYWATCH":
+                case"DEKEYWATCH":
+                case"KEYWATCHCON":
+                    thisCallback.emit("dtRev", msgObj, msgObj.appId);
+                    break;
             }
         };
         this.WS.onclose = function () {
@@ -108,7 +113,7 @@ export default {
     }, emit: function (eventName, data, evtId) {
         for (let index = 0; index < this.eventMethods.length; index++) {
             let handler = this.eventMethods[index];
-            if (evtId && handler.identifier === evtId) {
+            if (handler.eventName === eventName && evtId && handler.identifier === evtId) {
                 this.async(data, handler);
                 break;
             } else if (!evtId && handler.eventName === eventName) {
