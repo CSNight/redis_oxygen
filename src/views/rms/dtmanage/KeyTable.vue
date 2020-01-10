@@ -55,7 +55,8 @@
                                   force-use-infinite-wrapper=".el-table__body-wrapper">
                 </infinite-loading>
             </el-table>
-            <value-viewer ref="viewer" :db="db" :ins="ins"/>
+            <value-viewer ref="viewer" v-for="item in viewCom" :key="item.ins" :ins="item.ins" :db="item.db"
+                          :keyEnt="item.key"/>
         </el-card>
     </div>
 </template>
@@ -64,7 +65,6 @@
     import {deleteKeys, getKeyValue, insScanKey, refreshKey} from "../../../api/redismanage/redis_keys";
     import InfiniteLoading from 'vue-infinite-loading';
     import {insFlushDb} from "../../../api/redismanage/redis_dba";
-    import {guid} from "../../../utils/utils";
     import KeyNxForm from "../../../views/rms/dtmanage/KeyNxForm";
     import ValueViewer from "../../../views/rms/dtmanage/ValueViewer";
 
@@ -86,7 +86,7 @@
         data() {
             return {
                 loading: false,
-                keyDt: [], cur: 1, cursor: '0', match: '', appId: guid(), selection: [], viewKeyItem: {},
+                keyDt: [], cur: 1, cursor: '0', match: '', selection: [], viewKeyItem: {}, viewCom: [],
                 filters: [
                     {text: "String", value: "string"},
                     {text: "Set", value: "Set"},
@@ -155,9 +155,17 @@
                 };
                 getKeyValue(params).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
+                        if (this.$refs.viewer && this.$refs.viewer.length > 0) {
+                            this.$refs.viewer[0].stopMonitor();
+                        }
+                        this.viewCom.pop();
                         this.viewKeyItem = JSON.parse(JSON.stringify(row));
                         this.viewKeyItem.val = resp.data.message[row.key];
-                        this.$refs.viewer.$set(this.$refs.viewer, 'key', this.viewKeyItem);
+                        this.viewCom.push({
+                            ins: this.ins,
+                            db: this.db,
+                            key: this.viewKeyItem
+                        });
                     }
                 }).catch((resp) => {
                     this.$message.error({
@@ -186,7 +194,10 @@
                             });
                             //清除正在查看的键值
                             if (row.key === this.viewKeyItem.key) {
-                                this.$refs.viewer.$set(this.$refs.viewer, 'key', {});
+                                if (this.$refs.viewer && this.$refs.viewer.length > 0) {
+                                    this.$refs.viewer[0].stopMonitor();
+                                    this.viewCom.pop();
+                                }
                                 this.viewKeyItem = {};
                             }
                             //操作列表删除
