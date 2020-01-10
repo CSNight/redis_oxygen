@@ -89,8 +89,8 @@
                 keyDt: [], cur: 1, cursor: '0', match: '', selection: [], viewKeyItem: {}, viewCom: [],
                 filters: [
                     {text: "String", value: "string"},
-                    {text: "Set", value: "Set"},
-                    {text: "List", value: "List"},
+                    {text: "Set", value: "set"},
+                    {text: "List", value: "list"},
                     {text: "ZSet", value: "zset"},
                     {text: "Hash", value: "hash"}]
             }
@@ -156,7 +156,9 @@
                 getKeyValue(params).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         if (this.$refs.viewer && this.$refs.viewer.length > 0) {
-                            this.$refs.viewer[0].stopMonitor();
+                            if (this.$refs.viewer[0].isMonitor) {
+                                this.$refs.viewer[0].stopMonitor();
+                            }
                         }
                         this.viewCom.pop();
                         this.viewKeyItem = JSON.parse(JSON.stringify(row));
@@ -367,6 +369,13 @@
                     ttl: -1
                 };
                 _this.dialog = true;
+            }
+        }, beforeDestroy() {
+            if (this.$refs.viewer && this.$refs.viewer.length > 0) {
+                if (this.$refs.viewer[0].isMonitor) {
+                    this.$refs.viewer[0].stopMonitor();
+                }
+                this.viewCom.pop()
             }
         }
     }
