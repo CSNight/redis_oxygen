@@ -14,7 +14,7 @@
         },
         data() {
             return {
-                height: document.documentElement.clientHeight - 94.5 + 'px;',
+                height: document.documentElement.clientHeight - 110 + 'px;',
                 loading: true
             }
         },
@@ -24,7 +24,7 @@
             }, 230)
             const that = this
             window.onresize = function temp() {
-                that.height = document.documentElement.clientHeight - 94.5 + 'px;'
+                that.height = document.documentElement.clientHeight - 110 + 'px;'
             }
         }
     }
