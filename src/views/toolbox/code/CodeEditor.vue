@@ -16,6 +16,10 @@
             </div>
             <div class="card-op">
                 <el-button v-if="language==='html'" type="primary" size="mini" @click="submit">运行</el-button>
+                <el-button v-if="language==='json'" icon="fa fa-indent" size="mini" title="格式化"
+                           @click="jsonFormat"/>
+                <el-button v-if="language==='json'" icon="fa fa-archive" size="mini" title="压缩"
+                           @click="jsonCompact"/>
             </div>
         </div>
         <div style="width:100%;height: 75vh;" :class="language==='html'?'preview-code':''">
@@ -137,7 +141,7 @@
                 // eslint-disable-next-line no-undef
                 require('brace/theme/monokai'); //snippet
                 this.getThemes();
-                this.code=this.codeJava;
+                this.code = this.codeJava;
             }, getThemes() {
                 this.themes = this.themeData.map(function (data) {
                     let name = data[1] || data[0].replace(/ /g, '_').toLowerCase();
@@ -162,8 +166,28 @@
             }, langChange() {
                 if (this.language === 'html') {
                     this.code = this.codeHtml;
-                } else {
+                } else if (this.language === 'java') {
                     this.code = this.codeJava;
+                } else {
+                    this.code = '';
+                }
+            }, jsonCompact() {
+                try {
+                    let json = JSON.parse(this.$refs.editor.editor.getValue());
+                    this.$refs.editor.editor.setValue(JSON.stringify(json));
+                } catch (e) {
+                    this.$message.error({
+                        message: "格式化错误! " + e.message
+                    });
+                }
+            }, jsonFormat() {
+                try {
+                    let json = JSON.parse(this.$refs.editor.editor.getValue());
+                    this.$refs.editor.editor.setValue(JSON.stringify(json, null, 4));
+                } catch (e) {
+                    this.$message.error({
+                        message: "格式化错误! " + e.message
+                    });
                 }
             }
         }
