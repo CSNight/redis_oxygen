@@ -830,5 +830,6 @@
     .menu {
         width: 400px;
         border-bottom: none !important;
+        background: linear-gradient(to right, #748AF2 30%, #6F85EF 100%) !important;
     }
 </style>
