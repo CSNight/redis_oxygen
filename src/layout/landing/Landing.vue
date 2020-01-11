@@ -20,7 +20,7 @@
                 </el-menu>
                 <div style="margin: auto">
                     <el-button type="warning" size="medium" style="text-transform: uppercase" v-if="name!==''"
-                               @click="signOut" v-html='"<i class=\"fa fa-sign-out\"></i> "+name+" logout"'/>
+                               @click="signOut" v-html='"<i class=\"fa fa-sign-out\"></i> "+name'/>
                     <el-button type="primary" size="medium" icon="el-icon-user" v-if="name===''" @click="login"
                                v-html='"<i class=\"fa fa-sign-in\"></i> "+sign_in'/>
                     <el-button type="primary" size="medium" v-if="name===''" @click="register"
