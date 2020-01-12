@@ -32,8 +32,7 @@
                             <span>{{ node.label }}</span>
                             <span>
                                 <el-button type="text" :disabled="btnState(data)" size="mini" @click="newConsole(data)">新建</el-button>
-                                <el-button type="text" :disabled="!data.state" size="mini"
-                                           @click="closeAll(data)">全部关闭</el-button>
+                                <el-button type="text" :disabled="!data.state" size="mini" @click="closeAll(data)">全部关闭</el-button>
                             </span>
                         </span>
                     </el-tree>
