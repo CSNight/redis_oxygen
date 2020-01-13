@@ -1,57 +1,50 @@
 <template>
-    <div>
-        <el-row>
-            <el-col :span="5" style="height:auto;">
-                <el-input class="filter-item" style="width:70%;height: 30px" v-if="rights('INS_SEARCH')" clearable
-                          v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadQuery"/>
-            </el-col>
-            <el-col :span="19" style="height:auto">
-                <div class="head-container">
-                    <el-button class="filter-item" size="mini" type="primary" icon="el-icon-refresh-left"
-                               @click="clearScreen">清屏
-                    </el-button>
-                    <!-- 新增 -->
-                    <div style="display: inline-block;margin: 0 2px;">
-                        <el-button class="filter-item" size="mini" type="danger" icon="el-icon-switch-button"
-                                   @click="closeWss">断开
-                        </el-button>
-                        <el-button type="success" icon="el-icon-refresh" size="mini" @click="refresh()">重连</el-button>
-                    </div>
+    <el-row style="height: 100%">
+        <el-col :span="5">
+            <el-input class="filter-item" style="width:70%;height: 30px" v-if="rights('INS_SEARCH')" clearable
+                      v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadQuery"/>
+            <el-card style="height:83vh">
+                <div slot="header">
+                    <span>实例列表</span>
                 </div>
-            </el-col>
-        </el-row>
-        <el-row>
-            <el-col :span="5">
-                <el-card style="height:83vh">
-                    <div slot="header">
-                        <span>实例列表</span>
-                    </div>
-                    <el-tree class="filter-tree" :data="instances" default-expand-all :props="{label: 'instance_name'}"
-                             ref="tree">
+                <el-tree class="filter-tree" :data="instances" default-expand-all :props="{label: 'instance_name'}"
+                         ref="tree">
                         <span class="custom-tree-node" slot-scope="{ node,data }">
                             <span>{{ node.label }}</span>
                             <span>
                                 <el-button type="text" :disabled="btnState(data)" size="mini" @click="newConsole(data)">新建</el-button>
-                                <el-button type="text" :disabled="!data.state" size="mini" @click="closeAll(data)">全部关闭</el-button>
+                                <el-button type="text" :disabled="!data.state" size="mini"
+                                           @click="closeAll(data)">全部关闭</el-button>
                             </span>
                         </span>
-                    </el-tree>
-                </el-card>
-            </el-col>
-            <el-col :span="19" style="height:83vh">
-                <div style="height:100%;box-shadow:0 2px 12px 0 rgba(0, 0, 0, 0.1);margin-left: 10px">
-                    <el-tabs style="height:100%;padding:10px;"
-                             closable v-model="currentTabName" @tab-remove="removeTab" :before-leave="changeTab">
-                        <el-tab-pane style="width: 100%;background-color:#1f2d3d;color:#2fb"
-                                     v-for="item in consoleTabs" :key="item.name" :label="item.title"
-                                     :name="item.name">
-                            <cmd-console :ref="item.name" :ins="item.id" :tab-name="item.name" :prefix="item.prefix"/>
-                        </el-tab-pane>
-                    </el-tabs>
+                </el-tree>
+            </el-card>
+        </el-col>
+        <el-col :span="19" style="height:83vh">
+            <div class="head-container">
+                <el-button class="filter-item" size="mini" type="primary" icon="el-icon-refresh-left"
+                           @click="clearScreen">清屏
+                </el-button>
+                <!-- 新增 -->
+                <div style="display: inline-block;margin: 0 2px;">
+                    <el-button class="filter-item" size="mini" type="danger" icon="el-icon-switch-button"
+                               @click="closeWss">断开
+                    </el-button>
+                    <el-button type="success" icon="el-icon-refresh" size="mini" @click="refresh()">重连</el-button>
                 </div>
-            </el-col>
-        </el-row>
-    </div>
+            </div>
+            <div style="height:100%;box-shadow:0 2px 12px 0 rgba(0, 0, 0, 0.1);margin-left: 10px">
+                <el-tabs style="height:100%;padding:10px;"
+                         closable v-model="currentTabName" @tab-remove="removeTab" :before-leave="changeTab">
+                    <el-tab-pane style="width: 100%;background-color:#1f2d3d;color:#2fb"
+                                 v-for="item in consoleTabs" :key="item.name" :label="item.title"
+                                 :name="item.name">
+                        <cmd-console :ref="item.name" :ins="item.id" :tab-name="item.name" :prefix="item.prefix"/>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+        </el-col>
+    </el-row>
 </template>
 
 <script>

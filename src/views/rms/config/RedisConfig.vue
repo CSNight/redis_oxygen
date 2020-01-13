@@ -1,75 +1,66 @@
 <template>
-    <div>
-        <el-row>
-            <el-col :span="5" style="height:auto;">
-                <el-input class="filter-item" style="width:70%;height: 30px" v-if="rights('INS_SEARCH')" clearable
-                          v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadQuery"/>
-            </el-col>
-            <el-col :span="19" style="height:auto">
-                <div class="head-container">
+    <el-row>
+        <el-col :span="5">
+            <el-input class="filter-item" style="width:70%;height: 30px" v-if="rights('INS_SEARCH')" clearable
+                      v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadQuery"/>
+            <el-card style="height:83vh">
+                <div slot="header">
+                    <span>实例列表</span>
                 </div>
-            </el-col>
-        </el-row>
-        <el-row>
-            <el-col :span="5">
-                <el-card style="height:83vh">
-                    <div slot="header">
-                        <span>实例列表</span>
-                    </div>
-                    <el-tree class="filter-tree" :data="instances" default-expand-all :props="{label: 'instance_name'}"
-                             ref="tree">
-                        <span class="custom-tree-node" slot-scope="{ node,data }">
-                            <span>{{ node.label }}</span>
-                            <span>
-                                <el-button type="text" :disabled="data.role==='sentinel'" size="mini"
-                                           @click="getConfigs(data.id)">配置</el-button>
-                                <el-button type="text" size="mini">信息</el-button>
-                            </span>
+                <el-tree class="filter-tree" :data="instances" default-expand-all :props="{label: 'instance_name'}"
+                         ref="tree">
+                    <span class="custom-tree-node" slot-scope="{ node,data }">
+                        <span>{{ node.label }}</span>
+                        <span>
+                            <el-button type="text" :disabled="data.role==='sentinel'" size="mini"
+                                       @click="getConfigs(data.id)">配置</el-button>
+                            <el-button type="text" size="mini">信息</el-button>
                         </span>
-                    </el-tree>
-                </el-card>
-            </el-col>
-            <el-col :span="19" style="height:83vh;padding-left: 10px">
-                <el-card style="height: 83vh;overflow-y: auto">
-                    <el-collapse v-model="panes" accordion>
-                        <el-collapse-item title="Redis信息" name="1">
-                            <template slot="title">
-                                Redis信息
-                                <el-switch style="margin-left: 20px;" v-model="autoRefresh" active-text="自动刷新"
-                                           inactive-text="停止刷新" @click.stop.native/>
-                            </template>
-                            <el-table :show-header="false">
-                                <el-table-column align="center" type="selection" width="55"/>
-                                <el-table-column prop="id" width="80" align="center" label="id"/>
-                            </el-table>
-                        </el-collapse-item>
-                        <el-collapse-item title="Redis配置" name="2">
-                            <el-table :data="configs" :show-header="false" size="mini"
-                                      style="height:65vh;overflow-y: auto">
-                                <el-table-column align="right" prop="confKey" width="220px"/>
-                                <el-table-column align="center" prop="confVal">
-                                    <template slot-scope="scope">
-                                        <el-input size="mini" v-model="scope.row.confVal"/>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column align="center" prop="confVal" width="120px">
-                                    <template slot-scope="scope">
-                                        <el-button
-                                                v-if="rights('RMS_CONF_SAVE')"
-                                                type="primary"
-                                                @click="saveConfig(scope.row)"
-                                                icon="fa fa-save"
-                                                size="mini">
-                                        </el-button>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </el-collapse-item>
-                    </el-collapse>
-                </el-card>
-            </el-col>
-        </el-row>
-    </div>
+                    </span>
+                </el-tree>
+            </el-card>
+        </el-col>
+        <el-col :span="19" style="height:83vh;padding-left: 10px">
+            <div class="head-container">
+            </div>
+            <el-card style="height: 83vh;overflow-y: auto">
+                <el-collapse v-model="panes" accordion>
+                    <el-collapse-item title="Redis信息" name="1">
+                        <template slot="title">
+                            Redis信息
+                            <el-switch style="margin-left: 20px;" v-model="autoRefresh" active-text="自动刷新"
+                                       inactive-text="停止刷新" @click.stop.native/>
+                        </template>
+                        <el-table :show-header="false">
+                            <el-table-column align="center" type="selection" width="55"/>
+                            <el-table-column prop="id" width="80" align="center" label="id"/>
+                        </el-table>
+                    </el-collapse-item>
+                    <el-collapse-item title="Redis配置" name="2">
+                        <el-table :data="configs" :show-header="false" size="mini" style="height:65vh;overflow-y: auto">
+                            <el-table-column align="right" prop="confKey" width="220px"/>
+                            <el-table-column align="center" prop="confVal">
+                                <template slot-scope="scope">
+                                    <el-input size="mini" v-model="scope.row.confVal"/>
+                                </template>
+                            </el-table-column>
+                            <el-table-column align="center" prop="confVal" width="120px">
+                                <template slot-scope="scope">
+                                    <el-button
+                                            v-if="rights('RMS_CONF_SAVE')"
+                                            type="primary"
+                                            @click="saveConfig(scope.row)"
+                                            icon="fa fa-save"
+                                            size="mini">
+                                    </el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-card>
+        </el-col>
+    </el-row>
 </template>
 
 <script>
