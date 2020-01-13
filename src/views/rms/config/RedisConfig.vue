@@ -30,13 +30,13 @@
                 </el-card>
             </el-col>
             <el-col :span="19" style="height:83vh;padding-left: 10px">
-                <el-card style="height: 100%">
-                    <el-collapse>
+                <el-card style="height: 83vh;overflow-y: auto">
+                    <el-collapse v-model="panes" accordion>
                         <el-collapse-item title="Redis信息" name="1">
                             <template slot="title">
                                 Redis信息
                                 <el-switch style="margin-left: 20px;" v-model="autoRefresh" active-text="自动刷新"
-                                           inactive-text="停止刷新"/>
+                                           inactive-text="停止刷新" @click.stop.native/>
                             </template>
                             <el-table :show-header="false">
                                 <el-table-column align="center" type="selection" width="55"/>
@@ -57,6 +57,7 @@
                                         <el-button
                                                 v-if="rights('RMS_CONF_SAVE')"
                                                 type="primary"
+                                                @click="saveConfig(scope.row)"
                                                 icon="fa fa-save"
                                                 size="mini">
                                         </el-button>
@@ -73,14 +74,14 @@
 
 <script>
     import {getAll, getByUser, queryBy} from "../../../api/redismanage/redis_ins";
-    import {getConfigs} from "../../../api/redismanage/redis_conf";
+    import {getConfigs, saveConfig} from "../../../api/redismanage/redis_conf";
 
     export default {
         name: "RedisConfig",
         data() {
             return {
                 loading: false, instances: [], query: {blurry: ''}, configs: [], infos: [],
-                identify: this.$store.getters.identify, autoRefresh: false
+                identify: this.$store.getters.identify, autoRefresh: false, curIns: '', panes: ''
             }
         }, created() {
             this.$nextTick(() => {
@@ -162,6 +163,8 @@
                                 confVal: config[k]
                             })
                         }
+                        this.panes = '2';
+                        this.curIns = ins_id;
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -170,6 +173,25 @@
                 }).catch(() => {
                     this.$message.error({
                         message: "查询出错!"
+                    });
+                })
+            }, saveConfig(row) {
+                let params = JSON.parse(JSON.stringify(row));
+                params.ins_id = this.curIns;
+                saveConfig(params).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.$message({
+                            message: "保存成功!",
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message.error({
+                            message: "保存出错!" + resp.data.message
+                        });
+                    }
+                }).catch(() => {
+                    this.$message.error({
+                        message: "保存出错!"
                     });
                 })
             }
