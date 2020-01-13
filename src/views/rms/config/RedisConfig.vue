@@ -44,20 +44,21 @@
                             </el-table>
                         </el-collapse-item>
                         <el-collapse-item title="Redis配置" name="2">
-                            <el-table :data="configs" :show-header="false" style="height:60vh;overflow-y: auto">
-                                <el-table-column align="center" prop="confKey"/>
+                            <el-table :data="configs" :show-header="false" size="mini"
+                                      style="height:65vh;overflow-y: auto">
+                                <el-table-column align="right" prop="confKey" width="220px"/>
                                 <el-table-column align="center" prop="confVal">
                                     <template slot-scope="scope">
                                         <el-input size="mini" v-model="scope.row.confVal"/>
                                     </template>
                                 </el-table-column>
-                                <el-table-column align="center" prop="confVal">
+                                <el-table-column align="center" prop="confVal" width="120px">
                                     <template slot-scope="scope">
                                         <el-button
                                                 v-if="rights('RMS_CONF_SAVE')"
                                                 type="primary"
                                                 icon="fa fa-save"
-                                                size="small">
+                                                size="mini">
                                         </el-button>
                                     </template>
                                 </el-table-column>
@@ -184,5 +185,9 @@
         justify-content: space-between;
         font-size: 14px;
         padding-right: 8px;
+    }
+
+    .el-table:before {
+        height: 0 !important;
     }
 </style>
