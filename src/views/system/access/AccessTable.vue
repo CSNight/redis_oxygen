@@ -111,6 +111,7 @@
                 this.currentPage = currentPage;
             },
             loadData() {
+                this.currentPage = 1;
                 if (!this.rights("RIGHTS_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
@@ -133,6 +134,7 @@
                     this.MenuTree = resp.data.message;
                 });
             }, loadQuery() {
+                this.currentPage = 1;
                 if (this.query.blurry === '') {
                     this.loadData();
                     return;

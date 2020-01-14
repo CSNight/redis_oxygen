@@ -165,6 +165,7 @@
                 if (!value) return true;
                 return data.name.indexOf(value) !== -1;
             }, loadQuery() {
+                this.currentPage = 1;
                 if (this.query.blurry === '') {
                     this.loadData();
                     return;
@@ -180,6 +181,7 @@
                     this.loading = false;
                 })
             }, loadData() {
+                this.currentPage = 1;
                 if (!this.rights("USER_QUERY") || !this.rights("ORG_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
