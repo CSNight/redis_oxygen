@@ -14,7 +14,7 @@
                         <span>
                             <el-button type="text" :disabled="data.role==='sentinel'" size="mini"
                                        @click="getConfigs(data.id)">配置</el-button>
-                            <el-button type="text" size="mini">信息</el-button>
+                            <el-button type="text" size="mini" @click="getInfo(data.id,'refresh')">信息</el-button>
                         </span>
                     </span>
                 </el-tree>
@@ -65,7 +65,7 @@
 
 <script>
     import {getAll, getByUser, queryBy} from "../../../api/redismanage/redis_ins";
-    import {getConfigs, saveConfig} from "../../../api/redismanage/redis_conf";
+    import {getConfigs, rmsInfo, saveConfig} from "../../../api/redismanage/redis_conf";
 
     export default {
         name: "RedisConfig",
@@ -183,6 +183,21 @@
                 }).catch(() => {
                     this.$message.error({
                         message: "保存出错!"
+                    });
+                })
+            }, getInfo(ins, refresh) {
+                rmsInfo(ins, refresh).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        let info = resp.data.message;
+                        console.log(info)
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                }).catch(() => {
+                    this.$message.error({
+                        message: "查询出错!"
                     });
                 })
             }
