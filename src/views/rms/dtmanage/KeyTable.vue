@@ -92,6 +92,7 @@
                     {text: "Set", value: "set"},
                     {text: "List", value: "list"},
                     {text: "ZSet", value: "zset"},
+                    {text: "Stream", value: "stream"},
                     {text: "Hash", value: "hash"}]
             }
         }, methods: {
@@ -112,6 +113,8 @@
                         return "warning";
                     case"zset":
                         return "danger";
+                    case"stream":
+                        return "info";
                     case"hash":
                         return "info";
                 }
