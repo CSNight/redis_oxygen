@@ -13,8 +13,8 @@
                         <span>{{ node.label }}</span>
                         <span>
                             <el-button type="text" :disabled="data.role==='sentinel'" size="mini"
-                                       @click="getConfigs(data.id)">配置</el-button>
-                            <el-button type="text" size="mini" @click="getInfo(data.id,'refresh')">信息</el-button>
+                                       @click="getConfigs(data)">配置</el-button>
+                            <el-button type="text" size="mini" @click="getInfo(data,'refresh')">信息</el-button>
                         </span>
                     </span>
                 </el-tree>
@@ -27,16 +27,24 @@
                 <el-collapse v-model="panes" accordion>
                     <el-collapse-item title="Redis信息" name="1">
                         <template slot="title">
-                            Redis信息
+                            {{ 'Redis信息: '+curInfo}}
                             <el-switch style="margin-left: 20px;" v-model="autoRefresh" active-text="自动刷新"
-                                       inactive-text="停止刷新" @click.stop.native/>
+                                       inactive-text="停止刷新" @click.stop.native @change="infoVis"/>
                         </template>
-                        <el-table :show-header="false">
-                            <el-table-column align="center" type="selection" width="55"/>
-                            <el-table-column prop="id" width="80" align="center" label="id"/>
-                        </el-table>
+                        <div style="display: flex;flex-wrap: wrap">
+                            <el-card v-for="(item,index) in infos" :key="index"
+                                     style="height: 200px;width: 30%;margin: 10px">
+                                <div slot="header">{{'#'+item.caption}}</div>
+                                <el-table :data="item.keys" size="mini" :show-header="false"
+                                          :row-class-name="rowClass"
+                                          style="height: 160px;font-size: 11px;overflow-y: auto">
+                                    <el-table-column prop="infK" width="auto"/>
+                                    <el-table-column prop="infV" width="auto" align="center"/>
+                                </el-table>
+                            </el-card>
+                        </div>
                     </el-collapse-item>
-                    <el-collapse-item title="Redis配置" name="2">
+                    <el-collapse-item :title="'Redis配置: '+ curConfig" name="2">
                         <el-table :data="configs" :show-header="false" size="mini" style="height:65vh;overflow-y: auto">
                             <el-table-column align="right" prop="confKey" width="220px"/>
                             <el-table-column align="center" prop="confVal">
@@ -71,8 +79,8 @@
         name: "RedisConfig",
         data() {
             return {
-                loading: false, instances: [], query: {blurry: ''}, configs: [], infos: [],
-                identify: this.$store.getters.identify, autoRefresh: false, curIns: '', panes: ''
+                loading: false, instances: [], query: {blurry: ''}, configs: [], infos: [], curInfo: '', curConfig: '',
+                identify: this.$store.getters.identify, autoRefresh: false, curIns: '', panes: '', intHolder: null
             }
         }, created() {
             this.$nextTick(() => {
@@ -143,9 +151,11 @@
                 }).catch(() => {
                     this.loading = false;
                 })
-            }, getConfigs(ins_id) {
+            }, getConfigs(ins) {
                 this.configs = [];
-                getConfigs(ins_id).then((resp) => {
+                this.curIns = ins.id;
+                this.curConfig = ins.instance_name;
+                getConfigs(ins.id).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let config = resp.data.message;
                         for (let k in config) {
@@ -155,7 +165,6 @@
                             })
                         }
                         this.panes = '2';
-                        this.curIns = ins_id;
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -186,10 +195,33 @@
                     });
                 })
             }, getInfo(ins, refresh) {
-                rmsInfo(ins, refresh).then((resp) => {
+                clearInterval(this.intHolder);
+                this.curIns = ins.id;
+                this.curInfo = ins.instance_name;
+                this.requestInfo(ins.id, refresh);
+                this.autoRefresh = false;
+            }, requestInfo(id, refresh) {
+                this.infos = [];
+                rmsInfo(id, refresh).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let info = resp.data.message;
-                        console.log(info)
+                        for (let key in info) {
+                            if (Object.keys(info[key]).length !== 0) {
+                                let items = [];
+                                for (let it in info[key]) {
+                                    items.push({
+                                        infK: it,
+                                        infV: info[key][it],
+                                        change: false
+                                    })
+                                }
+                                this.infos.push({caption: key, keys: items})
+                            }
+                        }
+                        this.infos.sort((a, b) => {
+                            return a.caption > b.caption
+                        });
+                        this.panes = '1';
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -200,7 +232,51 @@
                         message: "查询出错!"
                     });
                 })
+            }, refreshInfo(id, refresh) {
+                rmsInfo(id, refresh).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        let info = resp.data.message;
+                        for (let i = 0; i < this.infos.length; i++) {
+                            let items = info[this.infos[i].caption];
+                            let keys = [];
+                            for (let j = 0; j < this.infos[i].keys.length; j++) {
+                                let nV = items[this.infos[i].keys[j].infK];
+                                console.log(nV !== this.infos[i].keys[j].infV);
+                                keys.push({
+                                    infK: this.infos[i].keys[j].infK,
+                                    infV: nV,
+                                    change: nV !== this.infos[i].keys[j].infV
+                                })
+                            }
+                            this.infos[i].keys = keys;
+                        }
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                }).catch(() => {
+                    this.$message.error({
+                        message: "查询出错!"
+                    });
+                })
+            }, rowClass({row}) {
+                if (row.change) {
+                    return 'dt-change';
+                } else {
+                    return '';
+                }
+            }, infoVis() {
+                if (this.autoRefresh) {
+                    this.intHolder = setInterval(() => {
+                        this.refreshInfo(this.curIns, 'true');
+                    }, 3000)
+                } else {
+                    clearInterval(this.intHolder)
+                }
             }
+        }, beforeDestroy() {
+            clearInterval(this.intHolder)
         }
     }
 </script>
@@ -217,5 +293,17 @@
 
     .el-table:before {
         height: 0 !important;
+    }
+
+    /deep/ .el-card__header {
+        padding: 5px 8px;
+    }
+
+    /deep/.el-table .dt-change {
+        background-color: rgba(50, 255, 240, 0.4);
+    }
+
+    /deep/ .el-card__body {
+        padding: 10px;
     }
 </style>
