@@ -50,7 +50,7 @@
                             </div>
                         </li>
                         <li>
-                            <fa-icon icon-class="fa-shield"/>
+                            <fa-icon icon-class="fa-shield-cross"/>
                             安全设置
                             <div class="user-right"><a v-if="rights('USER_INFO_EDIT')" @click="changePass">修改密码</a>
                             </div>
