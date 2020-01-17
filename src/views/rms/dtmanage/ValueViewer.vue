@@ -29,7 +29,12 @@
                             <el-col :span="8" class="s-col" style="height: 25px;font-weight: bold">Sequence</el-col>
                         </el-row>
                         <el-row class="s-row" v-for="(item,index) in kv" :key="index">
-                            <el-col class="s-col" :span="8">{{item.id.sequence+'-'+item.id.time}}</el-col>
+                            <el-col v-if="item.hasOwnProperty('id')" class="s-col" :span="8">
+                                {{item.id.sequence+'-'+item.id.time}}
+                            </el-col>
+                            <el-col v-if="item.hasOwnProperty('iD')" class="s-col" :span="8">
+                                {{item.iD.sequence+'-'+item.iD.time}}
+                            </el-col>
                             <el-col class="s-col" :span="8">
                                 <div v-for="(ik,j) in Object.keys(item.fields)" :key="j">{{ik}}</div>
                             </el-col>
@@ -137,14 +142,14 @@
                 switch (e.rmt) {
                     case"KEYWATCH":
                         this.kv = e.body[this.keyEnt.key];
-                        this.output += new Date(e.time).toLocaleString() + ": Receive Data Refresh for Key " + this.keyEnt.key + "\r\n";
+                        this.output += new Date(e.time).toLocaleString() + ": Receive Data Refresh for Key '" + this.keyEnt.key + "'\r\n";
                         break;
                     case"KEYWATCHCON":
-                        this.output += new Date(e.time).toLocaleString() + ": " + e.body + " for Key " + this.keyEnt.key + "\r\n";
+                        this.output += new Date(e.time).toLocaleString() + ": " + e.body + " for Key '" + this.keyEnt.key + "'\r\n";
                         this.isMonitor = true;
                         break;
                     case"DEKEYWATCH":
-                        this.output += new Date(e.time).toLocaleString() + ": " + e.body + " for Key " + this.keyEnt.key + "\r\n";
+                        this.output += new Date(e.time).toLocaleString() + ": " + e.body + " for Key '" + this.keyEnt.key + "'\r\n";
                         this.isMonitor = false;
                         break;
                 }
