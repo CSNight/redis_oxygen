@@ -9,7 +9,7 @@
                 <el-input v-if="keyEnt.type==='string'" type="textarea" v-model="kv" class="value-win"
                           resize="none"/>
                 <div style="width: 100%;overflow-y: auto;height: 230px" v-if="format.hasOwnProperty(keyEnt.type)">
-                    <table class="value-win">
+                    <table v-if="keyEnt.type!== 'stream'" class="value-win">
                         <tr style="font-weight: bold;font-size:14px;border-top:1px solid #dddddd">
                             <td v-for="(k ,i) in format[keyEnt.type]" :key="i">{{k}}</td>
                         </tr>
@@ -22,6 +22,22 @@
                             <td v-if="keyEnt.type==='hash'">{{kv[item]}}</td>
                         </tr>
                     </table>
+                    <el-row v-if="keyEnt.type==='stream'" class="value-win" style="border-top:1px solid #dddddd;">
+                        <el-row class="s-row">
+                            <el-col :span="8" class="s-col" style="height: 25px;font-weight: bold">ID</el-col>
+                            <el-col :span="8" class="s-col" style="height: 25px;font-weight: bold">Field</el-col>
+                            <el-col :span="8" class="s-col" style="height: 25px;font-weight: bold">Sequence</el-col>
+                        </el-row>
+                        <el-row class="s-row" v-for="(item,index) in kv" :key="index">
+                            <el-col class="s-col" :span="8">{{item.id.sequence+'-'+item.id.time}}</el-col>
+                            <el-col class="s-col" :span="8">
+                                <div v-for="(ik,j) in Object.keys(item.fields)" :key="j">{{ik}}</div>
+                            </el-col>
+                            <el-col class="s-col" :span="8">
+                                <div v-for="(ik,j) in Object.keys(item.fields)" :key="j">{{item.fields[ik]}}</div>
+                            </el-col>
+                        </el-row>
+                    </el-row>
                 </div>
             </div>
         </el-col>
@@ -85,7 +101,8 @@
                     list: ['ID', 'Element'],
                     set: ['ID', 'Element'],
                     zset: ['ID', 'Score', 'Element'],
-                    hash: ['Field', 'Value']
+                    hash: ['Field', 'Value'],
+                    stream: ['Sequence', 'Time', 'Field', 'Value']
                 },
                 taskForm: {
                     interval: 1000, delay: 0
@@ -161,6 +178,26 @@
 
             td {
                 width: auto;
+            }
+        }
+
+        .s-row {
+            font-size: 13px;
+            color: #5a5e66;
+            text-align: center;
+            border-bottom: 1px solid #dddddd;
+
+            .s-col {
+                margin-top: 5px;
+                align-items: center;
+                font-size: 13px;
+                color: #5a5e66;
+                text-align: center;
+                height: auto;
+
+                div {
+                    height: 20px;
+                }
             }
         }
     }
