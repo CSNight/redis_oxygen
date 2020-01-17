@@ -106,14 +106,14 @@
                     for (let i = 0; i < body.length; i++) {
                         let item = body[i];
                         if (item instanceof Array) {
-                            if (deep === 0) {
+                            if (i === 0) {
                                 content += (i + 1) + ') ' + this.bodyToNode(item, deep + 1);
                             } else {
                                 content += new Array(deep * 4).fill(' ').join("") + (i + 1) + ') ' +
                                     this.bodyToNode(item, deep + 1)
                             }
                         } else {
-                            //消息体大于一层嵌套时，第二层起 第一行序号前不需要空格
+                            //消息体大于一层嵌套时，第二层起 第一行序号前不需要空格new Array(deep * 4).fill(' ').join("") +
                             if (i === 0 && deep > 0) {
                                 content += (i + 1) + ') ' + item + "\r\n";
                             } else if (deep === 0) {

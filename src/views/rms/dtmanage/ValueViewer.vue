@@ -29,6 +29,7 @@
                             <el-col :span="8" class="s-col" style="height: 25px;font-weight: bold">Sequence</el-col>
                         </el-row>
                         <el-row class="s-row" v-for="(item,index) in kv" :key="index">
+                            <!-- 查询的id键名称可能发生变化-->
                             <el-col v-if="item.hasOwnProperty('id')" class="s-col" :span="8">
                                 {{item.id.sequence+'-'+item.id.time}}
                             </el-col>
