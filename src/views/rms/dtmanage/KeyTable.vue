@@ -29,7 +29,12 @@
                 <el-table-column prop="type" width="120" align="center" label="类型" :filters="filters"
                                  :filter-method="filterHandler">
                     <template slot-scope="scope">
-                        <el-tag size="mini" :type="getTagType(scope.row.type)">{{scope.row.type}}</el-tag>
+                        <el-tag size="mini" v-if="scope.row.type==='stream'" style="color:#a2a" type="info">
+                            {{scope.row.type}}
+                        </el-tag>
+                        <el-tag size="mini" v-if="scope.row.type!=='stream'" :type="getTagType(scope.row.type)">
+                            {{scope.row.type}}
+                        </el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="size" width="150" align="center" label="长度"/>

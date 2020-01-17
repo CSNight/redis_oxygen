@@ -4,7 +4,7 @@
             <el-divider content-position="center">键值</el-divider>
             <div style="height: 30vh">
                 <el-input placeholder="请输入内容" v-model="keyEnt.key" readonly size="mini">
-                    <template slot="prepend"><i class="el-icon-key"/>键</template>
+                    <template slot="prepend"><el-tag size="mini">{{keyEnt.type}}</el-tag>键</template>
                 </el-input>
                 <el-input v-if="keyEnt.type==='string'" type="textarea" v-model="kv" class="value-win"
                           resize="none"/>
