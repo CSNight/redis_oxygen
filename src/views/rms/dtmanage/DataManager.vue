@@ -14,12 +14,12 @@
                     <el-tree class="filter-tree" :data="instances" accordion :props="treeProps" ref="tree">
                         <span class="custom-tree-node" slot-scope="{ node,data }">
                             <span>
-                                <el-button size="mini" :icon="getIcon(data.type)" @click="treeClick(data)"
-                                           :class="'ins '+(data.type==='db'?'dbBtn':'')">{{ node.label }}</el-button>
-                                <el-tag v-if="data.type==='db'" style="margin-left: 10px" size="mini"
+                                <el-button size="mini" :icon="getIcon(data.node_type)" @click="treeClick(data)"
+                                           :class="'ins '+(data.node_type==='db'?'dbBtn':'')">{{ node.label }}</el-button>
+                                <el-tag v-if="data.node_type==='db'" style="margin-left: 10px" size="mini"
                                         :type="getTagType(data)">{{getTagText(data)}}</el-tag>
                             </span>
-                            <span v-if="data.type==='ins'">
+                            <span v-if="data.node_type==='ins'">
                                 <el-tag style="margin-right: 10px" size="mini" :type="getTagType(data)">{{getTagText(data)}}</el-tag>
                                 <el-button v-if="rights('DBA_FLUSH_ALL')" :disabled="!data.reachable" type="text"
                                            size="mini" @click="flushAll(data)">清空</el-button>
@@ -71,18 +71,18 @@
                 }
             },
             getTagText(item) {
-                if (item.hasOwnProperty('reachable') && item.type === 'ins') {
+                if (item.hasOwnProperty('reachable') && item.node_type === 'ins') {
                     if (item.reachable) {
                         return 'db:' + item.dbCount
                     } else {
-                        return 'disconnect'
+                        return 'unlink'
                     }
-                } else if (item.type === "db") {
+                } else if (item.node_type === "db") {
                     return 'keys:' + item.keySize;
                 }
             },
             getTagType(item) {
-                if (item.hasOwnProperty('reachable') && item.type === 'ins') {
+                if (item.hasOwnProperty('reachable') && item.node_type === 'ins') {
                     if (item.reachable) {
                         return 'success'
                     } else {
@@ -191,7 +191,7 @@
                     });
                 })
             }, treeClick(e) {
-                if (e.type === 'db') {
+                if (e.node_type === 'db') {
                     this.dbTabs.pop();
                     this.dbTabs.push({
                         id: e.id,
