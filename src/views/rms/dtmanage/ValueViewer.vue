@@ -47,7 +47,7 @@
                 </div>
             </div>
         </el-col>
-        <el-col style="margin-left: 10px;height:100%;width:32%">
+        <el-col v-if="rights('INS_DT_OP')" style="margin-left: 10px;height:100%;width:32%">
             <el-divider content-position="center">监控任务</el-divider>
             <el-form :model="taskForm" size="mini" label-width="120px" style="margin-top: 20px">
                 <el-form-item label="监控周期(ms)" prop="ttl">
@@ -115,6 +115,12 @@
                 }, isMonitor: false,
             }
         }, methods: {
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
             startMonitor() {
                 let params = {
                     keyName: this.keyEnt.key,
