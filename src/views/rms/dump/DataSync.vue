@@ -28,7 +28,7 @@
             </el-card>
         </el-col>
         <el-col :span="9" class="el-card is-always-shadow" style="height:85vh;padding:0 0 0 10px;margin-left: 10px;">
-            <el-form inline size="mini" style="height:80vh;overflow-y:auto;" label-width="100px">
+            <el-form inline size="mini" style="height:80vh;overflow-y:auto;" label-width="100px" v-model="configs">
                 <el-collapse style="height: auto" v-model="collaspes">
                     <el-collapse-item title="基础设置" :name="1">
                         <el-form-item label="操作类型">
@@ -138,8 +138,9 @@
                 </el-collapse>
             </el-form>
             <div style="float: right;margin:10px">
-                <el-button type="primary" size="mini">执行</el-button>
-                <el-button v-if="configs.mode==='sync'" type="primary" size="mini">停止</el-button>
+                <el-button :disabled="canExec" type="primary" size="mini" :loading="loading" @click="executeTask">执行
+                </el-button>
+                <el-button :disabled="!canExec" type="primary" size="mini">停止</el-button>
             </div>
         </el-col>
         <el-col :span="8" style="height:85vh;margin-left: 10px;">
@@ -153,6 +154,7 @@
 
 <script>
     import {getAll, getByIns, getByUser} from "../../../api/redismanage/redis_dba";
+    import {newConf} from "../../../api/redismanage/redis_dump";
 
     export default {
         name: "DataSync",
@@ -162,65 +164,31 @@
                 collaspes: [1, 2, 3, 4],
                 identify: this.$store.getters.identify,
                 treeProps: {label: 'label', children: 'children'},
-                insType: [
-                    {value: 'standalone', label: '单例模式'},
-                    {value: 'sentinel', label: '哨兵模式'},
-                    {value: 'cluster', label: '集群模式'},
-                    {value: 'proxy', label: '代理模式'}],
+                insType: [{value: 'standalone', label: '单例模式'}, {value: 'sentinel', label: '哨兵模式'},
+                    {value: 'cluster', label: '集群模式'}, {value: 'proxy', label: '代理模式'}],
                 filterMode: ['db', 'key', 'slot', 'lua'],
                 opTarget: ['master', 'slave'],
-                opMode: [
-                    {value: 'dump', label: 'RDB模式备份'},
-                    {value: 'rump', label: 'Scan模式备份'},
-                    {value: 'restore', label: '数据还原'},
-                    {value: 'sync', label: '实例间数据同步'},
+                opMode: [{value: 'dump', label: 'RDB模式备份'}, {value: 'rump', label: 'Scan模式备份'},
+                    {value: 'restore', label: '数据还原'}, {value: 'sync', label: '实例间数据同步'},
                     {value: 'decode', label: 'RDB解析'}],
                 configs: {
-                    mode: 'dump',
-                    targetId: '',
-                    sourceId: '',
+                    mode: 'dump', targetId: '', sourceId: '',
                     source: {
-                        type: 'standalone',
-                        address: '',
-                        password_raw: '',
-                        role: 'slave',
-                        tls_enable: '',
-                        auth_type: 'auth',
-                        rdb: {
-                            input: '',
-                            parallel: 0
-                        }
+                        type: 'standalone', address: '', password_raw: '', role: 'slave', tls_enable: '',
+                        auth_type: 'auth', rdb: {input: '', parallel: 0}
                     }, target: {
-                        type: 'standalone',
-                        address: '',
-                        role: 'master',
-                        password_raw: '',
-                        tls_enable: '',
-                        db: -1,
-                        version: '',
-                        rdb: {
-                            output: '',
-                        }
-                    },
-                    parallel: 64,
-                    fake_time: '',
-                    rewrite: true,
+                        type: 'standalone', address: '', role: 'master', password_raw: '', tls_enable: '',
+                        db: -1, version: '', rdb: {output: ''}
+                    }, parallel: 64, fake_time: '', rewrite: true,
                     filter: {
-                        db: {whitelist: '', blacklist: ''},
-                        key: {whitelist: '', blacklist: ''},
-                        slot: '',
-                        lua: false
-                    }, sender: {
-                        size: 104857600,
-                        count: 4095,
-                        delay_channel_size: 65535,
-                    }, scan: {
-                        key_number: 50,
-                        special_cloud: '',
-                        key_file: ''
-                    }
+                        db: {whitelist: '', blacklist: ''}, key: {whitelist: '', blacklist: ''}, slot: '', lua: false
+                    },
+                    sender: {size: 104857600, count: 4095, delay_channel_size: 65535,},
+                    scan: {key_number: 50, special_cloud: '', key_file: ''}
                 },
                 logs: '',
+                canExec: false,
+                loading: false
             }
         },
         created() {
@@ -356,8 +324,10 @@
                     this.configs.target.password_raw = conn.password;
                 }
             }, selectSourceRole() {
+                //切换dump/restore读取的集群角色
                 this.configs.source.address = this.configs.source.address.replace(/:\S*@/, ":" + this.configs.source.role + '@')
             }, selectTargetRole() {
+                //切换dump/restore读取的集群角色
                 this.configs.target.address = this.configs.target.address.replace(/:\S*@/, ":" + this.configs.target.role + '@')
             }, getInstanceById(ins_id) {
                 for (let i = 0; i < this.instances.length; i++) {
@@ -366,6 +336,7 @@
                     }
                 }
             }, checkTargetSource() {
+                //检查源实例与目标实例冲突
                 if (this.configs.mode === 'sync'
                     && this.checkEmpty(this.configs.sourceId)
                     && this.checkEmpty(this.configs.targetId)
@@ -378,6 +349,68 @@
                 return false;
             }, checkEmpty(source) {
                 return !(source === '' || source === null || source === undefined);
+            }, executeTask() {
+                this.canExec = true;
+                this.loading = true;
+                if (this.checkParams()) {
+                    let dto = {
+                        type: this.configs.mode,
+                        configs: JSON.stringify(this.configs)
+                    };
+                    newConf(dto).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.code === "OK") {
+                            this.logs += new Date().toLocaleString() + ": Generate Config File Complete Details:\r\nFilename: "
+                                + resp.data.message.filepath + "\r\nConfigDetail: "
+                                + JSON.stringify(JSON.parse(resp.data.message.conf), null, 4)
+                        } else {
+                            this.$message.error({
+                                message: "生成配置文件失败,请检查配置项 " + resp.data.message
+                            });
+                            this.canExec = false;
+                            this.loading = false;
+                        }
+                    }).catch(() => {
+                        this.$message.error({
+                            message: "生成配置文件失败,请检查配置项"
+                        });
+                        this.canExec = false;
+                        this.loading = false;
+                    })
+                } else {
+                    this.$message.error({
+                        message: "请检查参数配置是否正确"
+                    });
+                    this.canExec = false;
+                    this.loading = false;
+                }
+            }, checkParams() {
+                //生成配置文件前检查参数有效性
+                if (this.configs.mode === 'dump') {
+                    return this.checkEmpty(this.configs.source.address)
+                        && this.checkEmpty(this.configs.source.type)
+                        && this.checkEmpty(this.configs.target.rdb.output)
+                }
+                if (this.configs.mode === "rump") {
+                    return this.checkEmpty(this.configs.source.address)
+                        && this.checkEmpty(this.configs.source.type)
+                        && this.checkEmpty(this.configs.target.rdb.output)
+                        && this.configs.scan.key_number > 0;
+                }
+                if (this.configs.mode === "restore") {
+                    return this.checkEmpty(this.configs.target.address)
+                        && this.checkEmpty(this.configs.target.type)
+                        && this.checkEmpty(this.configs.source.rdb.input)
+                }
+                if (this.configs.mode === "sync") {
+                    return this.checkEmpty(this.configs.target.address)
+                        && this.checkEmpty(this.configs.target.type)
+                        && this.checkEmpty(this.configs.source.address)
+                        && this.checkEmpty(this.configs.source.type)
+                }
+                if (this.configs.mode === "decode") {
+                    return this.checkEmpty(this.configs.source.rdb.input)
+                        && this.checkEmpty(this.configs.target.rdb.output)
+                }
             }
         }
     }
@@ -425,6 +458,7 @@
 
         .el-textarea__inner {
             border: none;
+            font-size: 11px;
         }
     }
 
