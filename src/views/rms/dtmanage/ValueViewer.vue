@@ -160,7 +160,6 @@
                         this.isMonitor = false;
                         break;
                 }
-                console.log(e)
             }
         },
         beforeDestroy() {
