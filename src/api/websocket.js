@@ -47,7 +47,6 @@ export default {
                     thisCallback.channel = msgObj.body;
                     break;
                 case "RESP":
-                case "ERROR":
                 case "UNKNOWN":
                 case "MONITOR":
                 case "MONITORCON":
@@ -60,8 +59,14 @@ export default {
                 case"KEYWATCH":
                 case"DEKEYWATCH":
                 case"KEYWATCHCON":
+                case"SHAKESTART":
+                case"SHAKEFINISH":
+                case"SHAKEPROCESS":
                     thisCallback.emit("dtRev", msgObj, msgObj.appId);
                     break;
+                case "ERROR":
+                    thisCallback.emit("msgRev", msgObj, msgObj.appId);
+                    thisCallback.emit("dtRev", msgObj, msgObj.appId);
             }
         };
         this.WS.onclose = function () {
