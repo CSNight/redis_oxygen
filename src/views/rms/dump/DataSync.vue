@@ -73,12 +73,9 @@
                         <el-form-item label="启用TLS">
                             <el-switch v-model="configs.source.tls_enable"/>
                         </el-form-item>
-                        <el-form-item v-if="['restore','decode'].indexOf(configs.mode)!==-1" label="恢复数据文件">
-                            <el-input v-model="configs.source.rdb.input"/>
-                        </el-form-item>
                     </el-collapse-item>
                     <el-collapse-item title="目标实例设置" :name="3">
-                        <el-form-item v-if="['restore','sync'].indexOf(configs.mode)!==-1" label="目标实例">
+                        <el-form-item v-if="['rump','restore','sync'].indexOf(configs.mode)!==-1" label="目标实例">
                             <el-select v-model="configs.targetId" clearable @change="selectTarget">
                                 <el-option v-for="t in instances" :key="t.id" :label="t.instance_name" :value="t.id"/>
                             </el-select>
@@ -96,23 +93,23 @@
                         </el-form-item>
                         <el-form-item label="目标实例地址">
                             <el-input readonly style="width:400px"
-                                      :disabled="['dump','rump','decode'].indexOf(configs.mode)!==-1"
+                                      :disabled="['dump','decode'].indexOf(configs.mode)!==-1"
                                       v-model="configs.target.address"/>
                         </el-form-item>
                         <el-form-item label="目标实例密码">
-                            <el-input :disabled="['dump','rump','decode'].indexOf(configs.mode)!==-1"
+                            <el-input :disabled="['dump','decode'].indexOf(configs.mode)!==-1"
                                       v-model="configs.target.password_raw"/>
                         </el-form-item>
                         <el-form-item label="启用TLS">
-                            <el-switch :disabled="['dump','rump','decode'].indexOf(configs.mode)!==-1"
+                            <el-switch :disabled="['dump','decode'].indexOf(configs.mode)!==-1"
                                        v-model="configs.target.tls_enable"/>
                         </el-form-item>
                         <el-form-item label="目标DB-Index">
-                            <el-input-number :disabled="['dump','rump','decode'].indexOf(configs.mode)!==-1"
+                            <el-input-number :disabled="['dump','decode'].indexOf(configs.mode)!==-1"
                                              v-model="configs.target.db" controls-position="right" :min="-1" :max="64"/>
                         </el-form-item>
-                        <el-form-item v-if="['dump','rump','decode'].indexOf(configs.mode)!==-1" label="备份数据文件">
-                            <el-input v-model="configs.target.rdb.output"/>
+                        <el-form-item v-if="['restore','decode'].indexOf(configs.mode)!==-1" label="恢复数据文件">
+                            <el-input v-model="configs.source.rdb.input"/>
                         </el-form-item>
                     </el-collapse-item>
                     <el-collapse-item title="过滤设置" :name="4">
@@ -155,6 +152,7 @@
 <script>
     import {getAll, getByIns, getByUser} from "../../../api/redismanage/redis_dba";
     import {newConf} from "../../../api/redismanage/redis_dump";
+    import {guid} from "../../../utils/utils";
 
     export default {
         name: "DataSync",
@@ -163,6 +161,7 @@
                 instances: [],
                 collaspes: [1, 2, 3, 4],
                 identify: this.$store.getters.identify,
+                appId: guid(),
                 treeProps: {label: 'label', children: 'children'},
                 insType: [{value: 'standalone', label: '单例模式'}, {value: 'sentinel', label: '哨兵模式'},
                     {value: 'cluster', label: '集群模式'}, {value: 'proxy', label: '代理模式'}],
@@ -174,10 +173,10 @@
                 configs: {
                     mode: 'dump', targetId: '', sourceId: '',
                     source: {
-                        type: 'standalone', address: '', password_raw: '', role: 'slave', tls_enable: '',
+                        type: 'standalone', address: '', password_raw: '', role: 'slave', tls_enable: false,
                         auth_type: 'auth', rdb: {input: '', parallel: 0}
                     }, target: {
-                        type: 'standalone', address: '', role: 'master', password_raw: '', tls_enable: '',
+                        type: 'standalone', address: '', role: 'master', password_raw: '', tls_enable: false,
                         db: -1, version: '', rdb: {output: ''}
                     }, parallel: 64, fake_time: '', rewrite: true,
                     filter: {
@@ -194,6 +193,8 @@
         created() {
             this.$nextTick(() => {
                 this.loadData();
+                this.$wss.on("dtRev", this.handlerMsg, this.appId);
+                this.$wss.connect(this.identify);
             })
         },
         methods: {
@@ -361,7 +362,8 @@
                         if (resp.data.status === 200 && resp.data.code === "OK") {
                             this.logs += new Date().toLocaleString() + ": Generate Config File Complete Details:\r\nFilename: "
                                 + resp.data.message.filepath + "\r\nConfigDetail: "
-                                + JSON.stringify(JSON.parse(resp.data.message.conf), null, 4)
+                                + JSON.stringify(JSON.parse(resp.data.message.conf), null, 4);
+                            this.$wss.send(JSON.stringify(resp.data.message), 200, this.appId, "", 'dt_operation')
                         } else {
                             this.$message.error({
                                 message: "生成配置文件失败,请检查配置项 " + resp.data.message
@@ -388,12 +390,13 @@
                 if (this.configs.mode === 'dump') {
                     return this.checkEmpty(this.configs.source.address)
                         && this.checkEmpty(this.configs.source.type)
-                        && this.checkEmpty(this.configs.target.rdb.output)
+
                 }
                 if (this.configs.mode === "rump") {
                     return this.checkEmpty(this.configs.source.address)
                         && this.checkEmpty(this.configs.source.type)
-                        && this.checkEmpty(this.configs.target.rdb.output)
+                        && this.checkEmpty(this.configs.target.address)
+                        && this.checkEmpty(this.configs.target.type)
                         && this.configs.scan.key_number > 0;
                 }
                 if (this.configs.mode === "restore") {
@@ -409,9 +412,18 @@
                 }
                 if (this.configs.mode === "decode") {
                     return this.checkEmpty(this.configs.source.rdb.input)
-                        && this.checkEmpty(this.configs.target.rdb.output)
                 }
+            }, handlerMsg(e) {
+                this.logs += e.body + "\r\n";
+            }, startProcess() {
+
+            }, stopProcess() {
+                this.$wss.send("", 201, this.appId, "", 'dt_operation')
             }
+        }, beforeDestroy() {
+
+            this.$wss.un("dtRev", this.appId);
+            this.$wss.close();
         }
     }
 </script>
