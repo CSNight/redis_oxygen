@@ -86,7 +86,7 @@
                 return false
             },
             loadShakeRec() {
-                if (!this.rights("DUMP_GET_RECORD")) {
+                if (!this.rights("DUMP_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
                     });

@@ -14,7 +14,7 @@
                         <span>
                             <el-button type="text" :disabled="data.role==='sentinel'" size="mini"
                                        @click="getConfigs(data)">配置</el-button>
-                            <el-button type="text" size="mini" @click="getInfo(data,'refresh')">信息</el-button>
+                            <el-button type="text" size="mini" @click="getInfo(data,'false')">信息</el-button>
                         </span>
                     </span>
                 </el-tree>
@@ -268,6 +268,7 @@
                 }
             }, infoVis() {
                 if (this.autoRefresh) {
+                    this.refreshInfo(this.curIns, 'true');
                     this.intHolder = setInterval(() => {
                         this.refreshInfo(this.curIns, 'true');
                     }, 3000)
