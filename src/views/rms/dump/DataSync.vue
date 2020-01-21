@@ -1,33 +1,6 @@
 <template>
     <el-row style="margin-top: 10px">
-        <el-col :span="6">
-            <el-card style="height:85vh">
-                <div slot="header">
-                    <span>实例列表</span>
-                    <el-button style="float: right; padding: 3px 3px" size="mini" type="primary" icon="el-icon-refresh"
-                               v-if="rights('DBA_QUERY')||rights('DBA_QUERY_ALL')" @click="loadData">刷新实例列表
-                    </el-button>
-                </div>
-                <div style="height:75vh;overflow-y: auto">
-                    <el-tree class="filter-tree" :data="instances" accordion :props="treeProps" ref="tree">
-                        <span class="custom-tree-node" slot-scope="{ node,data }">
-                            <span>
-                                <el-button size="mini" :icon="getIcon(data.node_type)"
-                                           :class="'ins '+(data.node_type==='db'?'dbBtn':'')">{{ node.label }}</el-button>
-                                <el-tag v-if="data.node_type==='db'" style="margin-left: 10px" size="mini"
-                                        :type="getTagType(data)">{{getTagText(data)}}</el-tag>
-                            </span>
-                            <span v-if="data.node_type==='ins'">
-                                <el-tag style="margin-right: 10px" size="mini" :type="getTagType(data)">{{getTagText(data)}}</el-tag>
-                                <el-button type="text" size="mini" v-if="rights('DBA_QUERY_SINGLE')"
-                                           @click="loadById(data)">刷新</el-button>
-                            </span>
-                        </span>
-                    </el-tree>
-                </div>
-            </el-card>
-        </el-col>
-        <el-col :span="9" class="el-card is-always-shadow" style="height:85vh;padding:0 0 0 10px;margin-left: 10px;">
+        <el-col :span="9" class="el-card is-always-shadow" style="height:85vh;padding:0 0 0 10px;">
             <el-form inline size="mini" style="height:80vh;overflow-y:auto;" label-width="100px" v-model="configs">
                 <el-collapse style="height: auto" v-model="collaspes">
                     <el-collapse-item title="基础设置" :name="1">
@@ -140,8 +113,8 @@
                 <el-button :disabled="!canExec" type="primary" size="mini" @click="stopProcess">停止</el-button>
             </div>
         </el-col>
-        <el-col :span="8" style="height:85vh;margin-left: 10px;">
-            <el-card style="height: 100%" class="log-panel" ref="log">
+        <el-col :span="15" style="height:85vh;">
+            <el-card style="height: 50%;margin-left: 10px;" class="log-panel" ref="log">
                 <div slot="header">
                     <span>操作日志</span>
                     <el-button style="float: right; padding: 3px 3px" size="mini" type="primary" icon="el-icon-delete"
@@ -150,6 +123,7 @@
                 </div>
                 <el-input v-model="logs" readonly type="textarea" autosize :resize="'none'"/>
             </el-card>
+            <RecordTable ref="records" :instances="instances"/>
         </el-col>
     </el-row>
 </template>
@@ -158,9 +132,11 @@
     import {getAll, getByIns, getByUser} from "../../../api/redismanage/redis_dba";
     import {newConf} from "../../../api/redismanage/redis_dump";
     import {guid} from "../../../utils/utils";
+    import RecordTable from "./RecordTable";
 
     export default {
         name: "DataSync",
+        components: {RecordTable},
         data() {
             return {
                 instances: [],
@@ -203,34 +179,7 @@
             })
         },
         methods: {
-            getIcon(type) {
-                switch (type) {
-                    case"ins":
-                        return "fac fa fa-codepen";
-                    case"db":
-                        return "fac fa fa-database";
-                }
-            }, getTagText(item) {
-                if (item.hasOwnProperty('reachable') && item.node_type === 'ins') {
-                    if (item.reachable) {
-                        return 'db:' + item.dbCount
-                    } else {
-                        return 'unlink'
-                    }
-                } else if (item.node_type === "db") {
-                    return 'keys:' + item.keySize;
-                }
-            }, getTagType(item) {
-                if (item.hasOwnProperty('reachable') && item.node_type === 'ins') {
-                    if (item.reachable) {
-                        return 'success'
-                    } else {
-                        return 'danger'
-                    }
-                } else {
-                    return 'primary'
-                }
-            }, rights(permit) {
+            rights(permit) {
                 if (this.$store.getters.permit.hasOwnProperty(permit)) {
                     return this.$store.getters.permit[permit];
                 }
@@ -246,11 +195,11 @@
                 } else {
                     this.loadByUser();
                 }
-
             }, loadByUser() {
                 getByUser(this.identify).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         this.instances = resp.data.message;
+                        this.$refs.records.loadShakeRec();
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -265,6 +214,7 @@
                 getAll().then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         this.instances = resp.data.message;
+                        this.$refs.records.loadShakeRec();
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -285,6 +235,7 @@
                                 break;
                             }
                         }
+                        this.$refs.records.loadShakeRec();
                     } else {
                         this.$message.error({
                             message: "刷新出错!" + resp.data.message
@@ -426,13 +377,14 @@
                 if (e.rmt === "SHAKEFINISH" || e.rmt === "ERROR") {
                     this.canExec = false;
                     this.loading = false;
+                    this.$refs.records.loadShakeRec();
                 }
                 if (this.logs.length > 20000) {
                     this.logs = '';
                 }
                 this.logs += e.body + "\r\n";
 
-                this.$refs.log.$el.children[1].scrollTop = this.$refs.log.$el.children[1].scrollHeight + 100;
+                this.$refs.log.$el.children[1].scrollTop = this.$refs.log.$el.children[1].scrollHeight + 10;
 
             }, stopProcess() {
                 this.$wss.send("", 201, this.appId, "", 'dt_operation')
@@ -482,7 +434,7 @@
     /deep/ .log-panel > .el-card__body {
         padding: 0 !important;
         overflow-y: auto;
-        height: 75vh;
+        height: 35vh;
 
         .el-textarea__inner {
             border: none;

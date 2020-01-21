@@ -1,0 +1,190 @@
+<template>
+    <el-table :data="shakeRecords" height="50%" style="height:50%;margin-left: 10px;" size="mini">
+        <el-table-column prop="source_name" align="center" label="源实例名"/>
+        <el-table-column prop="target_name" align="center" label="目标实例名"/>
+        <el-table-column align="center" width="80" label="类型">
+            <template slot-scope="scope">
+                <el-tag size="mini" :type="getTagType(scope.row.shake_type)">
+                    {{scope.row.shake_type}}
+                </el-tag>
+            </template>
+        </el-table-column>
+        <el-table-column prop="result" width="80" align="center" label="结果">
+            <template slot-scope="scope">
+                <el-tag size="mini" :type="scope.row.result==='success'?'success':'error'">
+                    {{scope.row.result}}
+                </el-tag>
+            </template>
+        </el-table-column>
+        <el-table-column prop="create_time" width="140" align="center" label="时间">
+            <template slot-scope="scope">
+                {{dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time))}}
+            </template>
+        </el-table-column>
+        <el-table-column prop="create_user" width="150" align="center" label="用户"/>
+        <el-table-column prop="id" width="150" align="center" label="操作">
+            <template slot-scope="scope">
+                <el-popover v-if="scope.row.shake_type==='dump'||scope.row.shake_type==='decode'"
+                            placement="top-start"
+                            title="标题"
+                            width="200"
+                            trigger="click"
+                            content="">
+                    <el-button slot="reference" size="mini" type="text">备份信息
+                    </el-button>
+                </el-popover>
+                <el-button size="mini" v-if="rights('DUMP_DEL_RECORD')" @click="deleteRecord(scope.row.id)" type="text">
+                    删除
+                </el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+</template>
+
+<script>
+    import {deleteShakeRecord, getShakes, getShakesByUser} from "../../../api/redismanage/redis_dump";
+    import {dateFormat} from "../../../utils/utils";
+
+    export default {
+        name: "RecordTable",
+        props: {
+            instances: {
+                type: Array,
+                required: true
+            }
+        },
+        created() {
+            this.$nextTick(() => {
+                this.loadShakeRec();
+            })
+        },
+        data() {
+            return {
+                shakeRecords: [],
+            }
+        }, methods: {
+            dateFormat(fmt, dt) {
+                return dateFormat(fmt, dt);
+            }, getTagType(item) {
+                switch (item) {
+                    case"dump":
+                        return "success";
+                    case"rump":
+                        return "warning";
+                    case"sync":
+                        return "error";
+                    case"restore":
+                        return "info";
+                    case"decode":
+                        return "primary";
+                }
+            },
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
+            loadShakeRec() {
+                if (!this.rights("DUMP_GET_RECORD")) {
+                    this.$message.error({
+                        message: "禁止查询!"
+                    });
+                } else if (this.rights("DBA_QUERY_ALL")) {
+                    this.shakeRecords = [];
+                    this.loadAll();
+                } else {
+                    this.loadByUser();
+                }
+            }, loadAll() {
+                getShakes().then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.shakeRecords = this.parseRecords(resp.data.message);
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                }).catch((resp) => {
+                    if (resp.hasOwnProperty("data")) {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.message
+                        });
+                    }
+                });
+
+            }, loadByUser() {
+                getShakesByUser().then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.shakeRecords = this.parseRecords(resp.data.message);
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                }).catch((resp) => {
+                    if (resp.hasOwnProperty("data")) {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.message
+                        });
+                    }
+                });
+            }, deleteRecord(id) {
+                this.$confirm('将删除该条记录, 是否继续?', '警告', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    deleteShakeRecord(id).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.message === "success") {
+                            this.$message({
+                                message: "删除成功!",
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error({
+                                message: "删除失败!"
+                            });
+                        }
+                        this.loadShakeRec();
+                    }).catch(() => {
+                        this.$message.error({
+                            message: "删除失败!"
+                        });
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                })
+            }, parseRecords(records) {
+                for (let i = 0; i < records.length; i++) {
+                    for (let j = 0; j < this.instances.length; j++) {
+                        if (records[i].source_ins === this.instances[j].id) {
+                            records[i].source = this.instances[j];
+                            records[i].source_name = this.instances[j].label;
+                        }
+                        if (records[i].target_ins === this.instances[j].id) {
+                            records[i].target = this.instances[j];
+                            records[i].target_name = this.instances[j].label;
+                        }
+                    }
+                }
+                return records;
+            }
+        }
+    }
+</script>
+
+<style scoped>
+
+</style>
