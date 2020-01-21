@@ -137,12 +137,17 @@
             <div style="float: right;margin:10px">
                 <el-button :disabled="canExec" type="primary" size="mini" :loading="loading" @click="executeTask">执行
                 </el-button>
-                <el-button :disabled="!canExec" type="primary" size="mini">停止</el-button>
+                <el-button :disabled="!canExec" type="primary" size="mini" @click="stopProcess">停止</el-button>
             </div>
         </el-col>
         <el-col :span="8" style="height:85vh;margin-left: 10px;">
-            <el-card style="height: 100%" class="log-panel">
-                <div slot="header">操作日志</div>
+            <el-card style="height: 100%" class="log-panel" ref="log">
+                <div slot="header">
+                    <span>操作日志</span>
+                    <el-button style="float: right; padding: 3px 3px" size="mini" type="primary" icon="el-icon-delete"
+                               @click="logs=''">清空日志
+                    </el-button>
+                </div>
                 <el-input v-model="logs" readonly type="textarea" autosize :resize="'none'"/>
             </el-card>
         </el-col>
@@ -306,6 +311,8 @@
                 }
                 if (conn.hasOwnProperty('password')) {
                     this.configs.source.password_raw = conn.password;
+                } else {
+                    this.configs.source.password_raw = '';
                 }
             }, selectTarget() {
                 if (this.checkTargetSource()) {
@@ -323,6 +330,8 @@
                 }
                 if (conn.hasOwnProperty('password')) {
                     this.configs.target.password_raw = conn.password;
+                } else {
+                    this.configs.target.password_raw = '';
                 }
             }, selectSourceRole() {
                 //切换dump/restore读取的集群角色
@@ -362,7 +371,7 @@
                         if (resp.data.status === 200 && resp.data.code === "OK") {
                             this.logs += new Date().toLocaleString() + ": Generate Config File Complete Details:\r\nFilename: "
                                 + resp.data.message.filepath + "\r\nConfigDetail: "
-                                + JSON.stringify(JSON.parse(resp.data.message.conf), null, 4);
+                                + JSON.stringify(JSON.parse(resp.data.message.conf), null, 4) + "\r\n";
                             this.$wss.send(JSON.stringify(resp.data.message), 200, this.appId, "", 'dt_operation')
                         } else {
                             this.$message.error({
@@ -414,14 +423,21 @@
                     return this.checkEmpty(this.configs.source.rdb.input)
                 }
             }, handlerMsg(e) {
+                if (e.rmt === "SHAKEFINISH" || e.rmt === "ERROR") {
+                    this.canExec = false;
+                    this.loading = false;
+                }
+                if (this.logs.length > 20000) {
+                    this.logs = '';
+                }
                 this.logs += e.body + "\r\n";
-            }, startProcess() {
+
+                this.$refs.log.$el.children[1].scrollTop = this.$refs.log.$el.children[1].scrollHeight + 100;
 
             }, stopProcess() {
                 this.$wss.send("", 201, this.appId, "", 'dt_operation')
             }
         }, beforeDestroy() {
-
             this.$wss.un("dtRev", this.appId);
             this.$wss.close();
         }
@@ -471,6 +487,7 @@
         .el-textarea__inner {
             border: none;
             font-size: 11px;
+            overflow: hidden;
         }
     }
 
