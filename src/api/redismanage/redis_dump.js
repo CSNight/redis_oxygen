@@ -4,7 +4,7 @@ export function newConf(dto) {
     return REQ.post('/dump/shakeConf', dto);
 }
 
-export function getShakes(dto) {
+export function getShakes() {
     return REQ.get('/dump/shakeRecords');
 }
 
