@@ -25,13 +25,50 @@
         <el-table-column prop="id" width="150" align="center" label="操作">
             <template slot-scope="scope">
                 <el-popover v-if="scope.row.shake_type==='dump'||scope.row.shake_type==='decode'"
-                            placement="top-start"
-                            title="标题"
-                            width="200"
-                            trigger="click"
+                            placement="left-start"
+                            title="备份信息"
+                            width="300"
+                            trigger="hover"
+                            @show="getBackup(scope.row.relate_backup)"
                             content="">
-                    <el-button slot="reference" size="mini" type="text">备份信息
-                    </el-button>
+                    <el-row v-if="backupInfo===null||backupInfo==={}">
+                        未找到备份文件
+                    </el-row>
+                    <div v-if="backupInfo!==null&&backupInfo!=={}">
+                        <el-row class="dump-info">
+                            <el-col :span="8">备份文件名:</el-col>
+                            <el-col :span="16">{{backupInfo.filename}}</el-col>
+                        </el-row>
+                        <el-row class="dump-info">
+                            <el-col :span="8">文件大小:</el-col>
+                            <el-col :span="16">{{Number(backupInfo.size/1024).toFixed(2)+'KB'}}</el-col>
+                        </el-row>
+                        <el-row class="dump-info">
+                            <el-col :span="8">文件类型:</el-col>
+                            <el-col :span="16">{{backupInfo.backup_type==='dump'?'RDB备份':'JSON解析结果'}}</el-col>
+                        </el-row>
+                        <el-row class="dump-info">
+                            <el-col :span="8">备份时间:</el-col>
+                            <el-col :span="16">{{dateFormat("YYYY-mm-dd HH:MM:SS",new Date(backupInfo.create_time))}}
+                            </el-col>
+                        </el-row>
+                        <el-row class="dump-info">
+                            <el-col :span="8">下载次数:</el-col>
+                            <el-col :span="16">{{backupInfo.dl_count+'次'}}</el-col>
+                        </el-row>
+                        <el-row v-if="backupInfo.last_down!==null" class="dump-info">
+                            <el-col :span="8">下载次数:</el-col>
+                            <el-col :span="16">{{backupInfo.dl_count+'次'}}</el-col>
+                        </el-row>
+                        <el-row class="dump-info">
+                            <el-col :span="8">操作:</el-col>
+                            <el-col :span="16">
+                                <el-button type="text" size="mini">下载</el-button>
+                                <el-button type="text" size="mini" @click="deleteBackup(backupInfo.id)">删除</el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <el-button slot="reference" size="mini" type="text" style="margin-right: 15px">备份信息</el-button>
                 </el-popover>
                 <el-button size="mini" v-if="rights('DUMP_DEL_RECORD')" @click="deleteRecord(scope.row.id)" type="text">
                     删除
@@ -44,6 +81,7 @@
 <script>
     import {deleteShakeRecord, getShakes, getShakesByUser} from "../../../api/redismanage/redis_dump";
     import {dateFormat} from "../../../utils/utils";
+    import {deleteBackupRecord, getBackupInfo} from "../../../api/redismanage/redis_backup";
 
     export default {
         name: "RecordTable",
@@ -60,7 +98,7 @@
         },
         data() {
             return {
-                shakeRecords: [],
+                shakeRecords: [], backupInfo: null
             }
         }, methods: {
             dateFormat(fmt, dt) {
@@ -116,7 +154,6 @@
                         });
                     }
                 });
-
             }, loadByUser() {
                 getShakesByUser().then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
@@ -180,11 +217,55 @@
                     }
                 }
                 return records;
+            }, getBackup(bk_id) {
+                getBackupInfo(bk_id).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.backupInfo = resp.data.message;
+                    } else {
+                        this.backupInfo = null;
+                    }
+                }).catch(() => {
+                    this.$message.error({
+                        message: "查询备份信息失败!"
+                    });
+                    this.backupInfo = null;
+                })
+            }, deleteBackup(id) {
+                this.$confirm('将永久删除该备份文件, 是否继续?', '警告', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    deleteBackupRecord(id).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.message === "success") {
+                            this.$message({
+                                message: "删除成功!",
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error({
+                                message: "删除失败!"
+                            });
+                        }
+                        this.loadShakeRec();
+                    }).catch(() => {
+                        this.$message.error({
+                            message: "删除失败!"
+                        });
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                })
             }
         }
     }
 </script>
 
 <style scoped>
-
+    .dump-info {
+        border-bottom: 1px solid #dddddd;
+    }
 </style>
