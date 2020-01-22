@@ -82,7 +82,9 @@
                                              v-model="configs.target.db" controls-position="right" :min="-1" :max="64"/>
                         </el-form-item>
                         <el-form-item v-if="['restore','decode'].indexOf(configs.mode)!==-1" label="恢复数据文件">
-                            <el-input v-model="configs.source.rdb.input"/>
+                            <el-select v-model="configs.source.rdb.input">
+                                <el-option v-for="t in backups" :label="t.filename" :value="t.filename" :key="t.id"/>
+                            </el-select>
                         </el-form-item>
                     </el-collapse-item>
                     <el-collapse-item title="过滤设置" :name="4">
@@ -133,6 +135,7 @@
     import {newConf} from "../../../api/redismanage/redis_dump";
     import {guid} from "../../../utils/utils";
     import RecordTable from "./RecordTable";
+    import {getBackupList} from "../../../api/redismanage/redis_backup";
 
     export default {
         name: "DataSync",
@@ -168,7 +171,8 @@
                 },
                 logs: '',
                 canExec: false,
-                loading: false
+                loading: false,
+                backups: [],
             }
         },
         created() {
@@ -195,6 +199,7 @@
                 } else {
                     this.loadByUser();
                 }
+                this.loadBackupRecord();
             }, loadByUser() {
                 getByUser(this.identify).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
@@ -378,6 +383,7 @@
                     this.canExec = false;
                     this.loading = false;
                     this.$refs.records.loadShakeRec();
+                    this.loadBackupRecord();
                 }
                 if (this.logs.length > 20000) {
                     this.logs = '';
@@ -388,6 +394,16 @@
 
             }, stopProcess() {
                 this.$wss.send("", 201, this.appId, "", 'dt_operation')
+            }, loadBackupRecord() {
+                getBackupList().then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.backups = resp.data.message;
+                    } else {
+                        this.backups = [];
+                    }
+                }).catch(() => {
+                    this.backups = [];
+                })
             }
         }, beforeDestroy() {
             this.$wss.un("dtRev", this.appId);
