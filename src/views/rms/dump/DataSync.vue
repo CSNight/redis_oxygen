@@ -256,6 +256,11 @@
                     this.configs.sourceId = '';
                     return;
                 }
+                if (this.configs.sourceId === "") {
+                    this.configs.source.password_raw = '';
+                    this.configs.source.address = "";
+                    return;
+                }
                 let source = this.getInstanceById(this.configs.sourceId);
                 let conn = JSON.parse(source.conn);
                 if (source.type === "Standalone") {
@@ -273,6 +278,11 @@
             }, selectTarget() {
                 if (this.checkTargetSource()) {
                     this.configs.targetId = '';
+                    return;
+                }
+                if (this.configs.targetId === "") {
+                    this.configs.target.password_raw = '';
+                    this.configs.target.address = "";
                     return;
                 }
                 let target = this.getInstanceById(this.configs.targetId);
