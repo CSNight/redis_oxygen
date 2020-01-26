@@ -63,7 +63,7 @@
                         <el-row class="dump-info">
                             <el-col :span="8">操作:</el-col>
                             <el-col :span="16">
-                                <el-button type="text" size="mini">下载</el-button>
+                                <el-button type="text" size="mini" @click="downloadBack(backupInfo.id)">下载</el-button>
                                 <el-button type="text" size="mini" @click="deleteBackup(backupInfo.id)">删除</el-button>
                             </el-col>
                         </el-row>
@@ -230,6 +230,8 @@
                     });
                     this.backupInfo = null;
                 })
+            }, downloadBack(bid) {
+                window.open(this.$store.getters.baseUrl + "/backup/download/" + bid,"_blank");
             }, deleteBackup(id) {
                 this.$confirm('将永久删除该备份文件, 是否继续?', '警告', {
                     confirmButtonText: '确定',
