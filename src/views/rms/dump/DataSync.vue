@@ -151,7 +151,7 @@
                     {value: 'cluster', label: '集群模式'}, {value: 'proxy', label: '代理模式'}],
                 filterMode: ['db', 'key', 'slot', 'lua'],
                 opTarget: ['master', 'slave'],
-                opMode: [{value: 'dump', label: 'RDB模式备份'}, {value: 'rump', label: 'Scan模式备份'},
+                opMode: [{value: 'dump', label: 'RDB模式备份'}, {value: 'rump', label: 'Scan模式同步'},
                     {value: 'restore', label: '数据还原'}, {value: 'sync', label: '实例间数据同步'},
                     {value: 'decode', label: 'RDB解析'}],
                 configs: {
@@ -407,7 +407,11 @@
             }, loadBackupRecord() {
                 getBackupList().then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
-                        this.backups = resp.data.message;
+                        for (let i = 0; i < resp.data.message.length; i++) {
+                            if (resp.data.message[i].backup_type === 'dump') {
+                                this.backups.push(resp.data.message[i]);
+                            }
+                        }
                     } else {
                         this.backups = [];
                     }

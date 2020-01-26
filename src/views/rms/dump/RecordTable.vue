@@ -110,7 +110,7 @@
                     case"rump":
                         return "warning";
                     case"sync":
-                        return "error";
+                        return "danger";
                     case"restore":
                         return "info";
                     case"decode":
