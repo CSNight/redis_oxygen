@@ -74,15 +74,15 @@
                                 <el-button v-if="rights('USER_UPDATE')&&getShow(scope.row)" type="primary"
                                            icon="el-icon-edit"
                                            @click.native.prevent="editUser(scope.row)&&rights('ROLE_QUERY')"
-                                           size="small"/>
+                                           size="mini"/>
                                 <el-button v-if="getShow(scope.row)&&rights('USER_DEL')" type="danger"
                                            @click.native.prevent="deleteUser(scope.row)"
                                            icon="el-icon-delete"
-                                           size="small"/>
+                                           size="mini"/>
                                 <el-button v-if="getShow(scope.row)&&rights('USER_UPDATE')"
                                            :type="lockBtnType(scope.row)"
                                            :icon="lockBtnIcon(scope.row)"
-                                           @click.native.prevent="enabledChange(scope.row)" size="small">
+                                           @click.native.prevent="enabledChange(scope.row)" size="mini">
                                 </el-button>
                             </template>
                         </el-table-column>

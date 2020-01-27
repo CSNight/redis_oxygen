@@ -49,14 +49,14 @@
                             @click.native.prevent="editRow(scope.row)"
                             type="primary"
                             icon="el-icon-edit"
-                            size="small">
+                            size="mini">
                     </el-button>
                     <el-button
                             v-if="rights('RIGHTS_DEL')"
                             @click.native.prevent="deleteRow(scope.row)"
                             type="danger"
                             icon="el-icon-delete"
-                            size="small">
+                            size="mini">
                     </el-button>
                 </template>
             </el-table-column>

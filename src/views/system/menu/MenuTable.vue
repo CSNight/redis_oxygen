@@ -84,21 +84,21 @@
                                 @click.native.prevent="editRow(scope.row)"
                                 type="primary"
                                 icon="el-icon-edit"
-                                size="small">
+                                size="mini">
                         </el-button>
                         <el-button
                                 v-if="rights('MENU_DEL')"
                                 @click.native.prevent="deleteRow(scope.row) "
                                 type="danger"
                                 icon="el-icon-delete"
-                                size="small">
+                                size="mini">
                         </el-button>
                         <el-button
                                 v-if="rights('MENU_UPDATE')"
                                 @click.native.prevent="viewToggle(scope.row)"
                                 :type="visBtnType(scope.row)"
                                 :icon="visBtnIcon(scope.row)"
-                                size="small">
+                                size="mini">
                         </el-button>
                     </template>
                 </el-table-column>

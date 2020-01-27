@@ -56,21 +56,21 @@
                                     @click.native.prevent="editRow(scope.row)"
                                     type="primary"
                                     icon="el-icon-edit"
-                                    size="small">
+                                    size="mini">
                             </el-button>
                             <el-button
                                     v-if="getShow(scope.row)&&rights('ORG_DEL')"
                                     @click.native.prevent="deleteRow(scope.row)"
                                     type="danger"
                                     icon="el-icon-delete"
-                                    size="small">
+                                    size="mini">
                             </el-button>
                             <el-button
                                     v-if="getShow(scope.row)&&rights('ORG_UPDATE')"
                                     @click.native.prevent="lockToggle(scope.row)"
                                     :type="lockBtnType(scope.row)"
                                     :icon="lockBtnIcon(scope.row)"
-                                    size="small">
+                                    size="mini">
                             </el-button>
                         </template>
                     </el-table-column>

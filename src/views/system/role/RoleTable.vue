@@ -44,14 +44,14 @@
                         <el-button
                                 v-if="getShow(scope.row.level)&&rights('ROLE_UPDATE')"
                                 @click.native.prevent="editRow(scope.row)"
-                                type="primary" icon="el-icon-edit" size="small">
+                                type="primary" icon="el-icon-edit" size="mini">
                         </el-button>
                         <el-button
                                 v-if="getShow(scope.row.level)&&rights('ROLE_DEL')"
                                 @click.native.prevent="deleteRow(scope.row)"
                                 type="danger"
                                 icon="el-icon-delete"
-                                size="small">
+                                size="mini">
                         </el-button>
                     </template>
                 </el-table-column>
