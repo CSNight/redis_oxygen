@@ -1,5 +1,9 @@
 import REQ from '../../api/services'
 
+export function getBackupAll() {
+    return REQ.get('/backup/getAll');
+}
+
 export function getBackupList() {
     return REQ.get('/backup/getByUser');
 }
