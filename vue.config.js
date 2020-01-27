@@ -38,14 +38,15 @@ module.exports = {
         }
     },
     chainWebpack(config) {
-        config.plugins.delete('preload') // TODO: need test
-        config.plugins.delete('prefetch') // TODO: need test
+        config.plugins.delete('preload'); // TODO: need test
+        config.plugins.delete('prefetch'); // TODO: need test
 
         // set svg-sprite-loader
         config.module
             .rule('svg')
             .exclude.add(resolve('src/icons'))
-            .end()
+            .end();
+
         config.module
             .rule('icons')
             .test(/\.svg$/)
@@ -55,8 +56,7 @@ module.exports = {
             .loader('svg-sprite-loader')
             .options({
                 symbolId: 'icon-[name]'
-            })
-            .end()
+            });
 
         // set preserveWhitespace
         config.module
@@ -64,7 +64,7 @@ module.exports = {
             .use('vue-loader')
             .loader('vue-loader')
             .tap(options => {
-                options.compilerOptions.preserveWhitespace = true
+                options.compilerOptions.preserveWhitespace = true;
                 return options
             })
             .end();
@@ -82,7 +82,7 @@ module.exports = {
                         // `runtime` must same as runtimeChunk name. default is `runtime`
                         inline: /runtime\..*\.js$/
                     }])
-                    .end()
+                    .end();
                 config
                     .optimization.splitChunks({
                     chunks: 'all',
@@ -106,9 +106,9 @@ module.exports = {
                             reuseExistingChunk: true
                         }
                     }
-                })
+                });
                 config.optimization.runtimeChunk('single')
             }
         )
     }
-}
+};
