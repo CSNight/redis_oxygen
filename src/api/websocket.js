@@ -95,7 +95,9 @@ export default {
             this.WS.close();
         }
     }, async: function (args, handler) {
-        handler.method.apply(handler.method, [args])
+        setTimeout(() => {
+            handler.method.apply(handler.method, [args])
+        }, 10)
     }, on: function (eventName, listener, id) {
         let delay = 0;
         let identifier = "";
