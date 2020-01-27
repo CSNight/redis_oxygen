@@ -399,12 +399,11 @@
                     this.logs = '';
                 }
                 this.logs += e.body + "\r\n";
-
                 this.$refs.log.$el.children[1].scrollTop = this.$refs.log.$el.children[1].scrollHeight + 10;
-
             }, stopProcess() {
                 this.$wss.send("", 201, this.appId, "", 'dt_operation')
             }, loadBackupRecord() {
+                this.backups = [];
                 getBackupList().then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         for (let i = 0; i < resp.data.message.length; i++) {
