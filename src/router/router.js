@@ -8,8 +8,8 @@ import store from '../store/index'
 import {menu_routers} from "../api/system/menu_api";
 import {filterAsyncRouter} from "../store/modules/dynamic";
 import Index from "../layout/Index";
-import HelloWorld from "../views/dashboard/HelloWorld";
 import {MessageBox} from 'element-ui'
+import Dashboard from "../views/dashboard/Dashboard";
 
 const whiteList = ['/'];
 NProgress.configure({showSpinner: false});
@@ -28,10 +28,10 @@ export const constantRoutes = [
         children: [{
             path: 'dashboard',
             name: 'dashboard',
-            component: HelloWorld,
+            component: Dashboard,
             meta: {title: 'Dashboard', icon: 'fa-tachometer-alt-fast', ref: 'dashboard', affix: true}
         }]
-    },{
+    }, {
         path: '/redirect',
         component: Index,
         hidden: true,

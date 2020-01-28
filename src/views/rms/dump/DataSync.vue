@@ -1,5 +1,5 @@
 <template>
-    <el-row style="margin-top: 10px">
+    <el-row style="margin-top: 10px" :gutter="10">
         <el-col :span="9" class="el-card is-always-shadow" style="height:85vh;padding:0 0 0 10px;">
             <el-form inline size="mini" style="height:80vh;overflow-y:auto;" label-width="100px" v-model="configs">
                 <el-collapse style="height: auto" v-model="collaspes">
@@ -116,7 +116,7 @@
             </div>
         </el-col>
         <el-col :span="15" style="height:85vh;">
-            <el-card style="height: 50%;margin-left: 10px;" class="log-panel" ref="log">
+            <el-card style="height: 50%" class="log-panel" ref="log">
                 <div slot="header">
                     <span>操作日志</span>
                     <el-button style="float: right; padding: 3px 3px;margin-right: 10px" size="mini" type="primary"

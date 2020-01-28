@@ -1,5 +1,5 @@
 <template>
-    <el-row style="height: 100%">
+    <el-row style="height: 100%" :gutter="10">
         <el-col :span="5">
             <el-input class="filter-item" style="width:70%;height: 30px" v-if="rights('INS_SEARCH')" clearable
                       v-model="query.blurry" size="mini" placeholder="输入名称进行过滤" @change="loadQuery"/>
@@ -33,7 +33,7 @@
                     <el-button type="success" icon="el-icon-refresh" size="mini" @click="refresh()">重连</el-button>
                 </div>
             </div>
-            <div style="height:100%;box-shadow:0 2px 12px 0 rgba(0, 0, 0, 0.1);margin-left: 10px">
+            <div style="height:100%;box-shadow:0 2px 12px 0 rgba(0, 0, 0, 0.1)">
                 <el-tabs style="height:100%;padding:10px;"
                          closable v-model="currentTabName" @tab-remove="removeTab" :before-leave="changeTab">
                     <el-tab-pane style="width: 100%;background-color:#1f2d3d;color:#2fb"

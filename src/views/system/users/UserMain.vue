@@ -23,8 +23,7 @@
                     <!-- 新增 -->
                     <div style="display: inline-block;margin: 0 2px;">
                         <el-button v-if="rights('USER_ADD')&&rights('ROLE_QUERY')" class="filter-item" size="mini"
-                                   type="primary"
-                                   @click="addUser" icon="el-icon-plus">新增
+                                   type="primary" @click="addUser" icon="el-icon-plus">新增
                         </el-button>
                         <el-button v-if="rights('USER_QUERY')" type="danger" icon="el-icon-refresh" size="mini"
                                    @click="loadData"/>
@@ -44,50 +43,48 @@
                 </el-scrollbar>
             </el-col>
             <el-col :span="20" style="height:83vh;overflow: auto">
-                <div>
-                    <el-table :data="users.slice((currentPage-1)*pg_size,currentPage*pg_size)"
-                              style="width: auto;margin-top: 20px;" fixed row-key="username"
-                              v-loading="loading">
-                        <el-table-column prop="username" align="center" label="名称"/>
-                        <el-table-column prop="phone" label="电话" width="120px" align="center"/>
-                        <el-table-column prop="email" label="邮箱" align="center"/>
-                        <el-table-column prop="enabled" align="center" width="100px" label="状态">
-                            <template slot-scope="scope">
-                                <el-tag size="small" :type="scope.row.enabled ? 'success' : 'danger'">
-                                    {{scope.row.enabled?'启用':'禁用'}}
-                                </el-tag>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="create_time" width="170px" align="center" label="创建时间">
-                            <template slot-scope="scope">
-                                <span>{{ dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time)) }}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="roles" align="center" label="角色">
-                            <template slot-scope="scope">
-                                <span>{{ get_role_str(scope.row) }}</span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column prop="login_times" width="100px" align="center" label="登录次数"/>
-                        <el-table-column align="center" label="操作" width="200px">
-                            <template slot-scope="scope">
-                                <el-button v-if="rights('USER_UPDATE')&&getShow(scope.row)" type="primary"
-                                           icon="el-icon-edit"
-                                           @click.native.prevent="editUser(scope.row)&&rights('ROLE_QUERY')"
-                                           size="mini"/>
-                                <el-button v-if="getShow(scope.row)&&rights('USER_DEL')" type="danger"
-                                           @click.native.prevent="deleteUser(scope.row)"
-                                           icon="el-icon-delete"
-                                           size="mini"/>
-                                <el-button v-if="getShow(scope.row)&&rights('USER_UPDATE')"
-                                           :type="lockBtnType(scope.row)"
-                                           :icon="lockBtnIcon(scope.row)"
-                                           @click.native.prevent="enabledChange(scope.row)" size="mini">
-                                </el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </div>
+                <el-table :data="users.slice((currentPage-1)*pg_size,currentPage*pg_size)"
+                          style="width: auto;margin-top: 20px;" fixed row-key="username"
+                          v-loading="loading">
+                    <el-table-column prop="username" align="center" label="名称"/>
+                    <el-table-column prop="phone" label="电话" width="120px" align="center"/>
+                    <el-table-column prop="email" label="邮箱" align="center"/>
+                    <el-table-column prop="enabled" align="center" width="100px" label="状态">
+                        <template slot-scope="scope">
+                            <el-tag size="small" :type="scope.row.enabled ? 'success' : 'danger'">
+                                {{scope.row.enabled?'启用':'禁用'}}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="create_time" width="170px" align="center" label="创建时间">
+                        <template slot-scope="scope">
+                            <span>{{ dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time)) }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="roles" align="center" label="角色">
+                        <template slot-scope="scope">
+                            <span>{{ get_role_str(scope.row) }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="login_times" width="100px" align="center" label="登录次数"/>
+                    <el-table-column align="center" label="操作" width="200px">
+                        <template slot-scope="scope">
+                            <el-button v-if="rights('USER_UPDATE')&&getShow(scope.row)" type="primary"
+                                       icon="el-icon-edit"
+                                       @click.native.prevent="editUser(scope.row)&&rights('ROLE_QUERY')"
+                                       size="mini"/>
+                            <el-button v-if="getShow(scope.row)&&rights('USER_DEL')" type="danger"
+                                       @click.native.prevent="deleteUser(scope.row)"
+                                       icon="el-icon-delete"
+                                       size="mini"/>
+                            <el-button v-if="getShow(scope.row)&&rights('USER_UPDATE')"
+                                       :type="lockBtnType(scope.row)"
+                                       :icon="lockBtnIcon(scope.row)"
+                                       @click.native.prevent="enabledChange(scope.row)" size="mini">
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
                                :current-page="currentPage" :page-sizes="[5,10]" :page-size="pg_size"
                                layout="total, sizes, prev, pager, next, jumper" :total="users.length"

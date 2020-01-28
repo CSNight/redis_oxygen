@@ -296,9 +296,7 @@
         height: 0 !important;
     }
 
-    /deep/ .el-card__header {
-        padding: 5px 8px;
-    }
+
 
     /deep/.el-table .dt-change {
         background-color: rgba(50, 255, 240, 0.4);

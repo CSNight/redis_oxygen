@@ -1,5 +1,5 @@
 <template>
-    <el-row>
+    <el-row :gutter="10">
         <el-col :span="6">
             <div class="head-container">
                 <el-button class="filter-item" size="mini" type="primary" icon="el-icon-refresh"

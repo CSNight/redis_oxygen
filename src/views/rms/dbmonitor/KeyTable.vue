@@ -17,7 +17,7 @@
                        v-if="rights('KEYS_KEY_DELETE')" @click="deleteMultiKeys">批量删除键
             </el-button>
         </div>
-        <el-card style="height:83vh;margin-left: 10px">
+        <el-card style="height:83vh">
             <div slot="header">
                 <span>数据列表</span>
             </div>
