@@ -119,8 +119,14 @@
             <el-card style="height: 50%;margin-left: 10px;" class="log-panel" ref="log">
                 <div slot="header">
                     <span>操作日志</span>
-                    <el-button style="float: right; padding: 3px 3px" size="mini" type="primary" icon="el-icon-delete"
-                               @click="logs=''">清空日志
+                    <el-button style="float: right; padding: 3px 3px;margin-right: 10px" size="mini" type="primary"
+                               icon="el-icon-delete" @click="logs=''">清空日志
+                    </el-button>
+                    <el-button v-if="rights('DUMP_CLEAR')" style="float: right; padding: 3px 3px;margin-right: 10px"
+                               size="mini" type="danger" icon="el-icon-delete" @click="clearRecords">清空操作记录
+                    </el-button>
+                    <el-button v-if="rights('DUMP_MULTI_DEL')" style="float:right;padding:3px 3px;;margin-right:10px"
+                               size="mini" type="warning" icon="el-icon-delete" @click="deleteSelectRecords">批量删除记录
                     </el-button>
                 </div>
                 <el-input v-model="logs" readonly type="textarea" autosize :resize="'none'"/>
@@ -417,6 +423,10 @@
                 }).catch(() => {
                     this.backups = [];
                 })
+            }, clearRecords() {
+                this.$refs.records.clearShakes();
+            }, deleteSelectRecords() {
+                this.$refs.records.deleteMultiShakes();
             }
         }, beforeDestroy() {
             this.$wss.un("dtRev", this.appId);

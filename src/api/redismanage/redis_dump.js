@@ -15,3 +15,13 @@ export function getShakesByUser() {
 export function deleteShakeRecord(id) {
     return REQ.delete('/dump/shakeRecord/' + id);
 }
+
+export function deleteMultiShake(dto) {
+    return REQ.delete('/dump/deleteSelected', {
+        data: dto
+    });
+}
+
+export function clearShake() {
+    return REQ.delete('/dump/deleteAll');
+}

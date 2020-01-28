@@ -1,5 +1,7 @@
 <template>
-    <el-table :data="shakeRecords" height="50%" style="height:50%;margin-left: 10px;" size="mini">
+    <el-table :data="shakeRecords" height="50%" style="height:50%;margin-left: 10px;" size="mini"
+              @selection-change="handlerTableSelect">
+        <el-table-column align="center" type="selection" width="55"/>
         <el-table-column prop="source_name" align="center" label="源实例名"/>
         <el-table-column prop="target_name" align="center" label="目标实例名"/>
         <el-table-column align="center" width="80" label="类型">
@@ -79,7 +81,13 @@
 </template>
 
 <script>
-    import {deleteShakeRecord, getShakes, getShakesByUser} from "../../../api/redismanage/redis_dump";
+    import {
+        clearShake,
+        deleteMultiShake,
+        deleteShakeRecord,
+        getShakes,
+        getShakesByUser
+    } from "../../../api/redismanage/redis_dump";
     import {dateFormat} from "../../../utils/utils";
     import {deleteBackupRecord, getBackupInfo} from "../../../api/redismanage/redis_backup";
 
@@ -98,7 +106,7 @@
         },
         data() {
             return {
-                shakeRecords: [], backupInfo: null
+                shakeRecords: [], backupInfo: null, selection: []
             }
         }, methods: {
             dateFormat(fmt, dt) {
@@ -124,6 +132,7 @@
                 return false
             },
             loadShakeRec() {
+                this.selection = [];
                 if (!this.rights("DUMP_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
@@ -175,7 +184,7 @@
                     }
                 });
             }, deleteRecord(id) {
-                this.$confirm('将删除该条记录, 是否继续?', '警告', {
+                this.$confirm('将删除该条记录及关联备份文件, 是否继续?', '警告', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -231,7 +240,7 @@
                     this.backupInfo = null;
                 })
             }, downloadBack(bid) {
-                window.open(this.$store.getters.baseUrl + "/backup/download/" + bid,"_blank");
+                window.open(this.$store.getters.baseUrl + "/backup/download/" + bid, "_blank");
             }, deleteBackup(id) {
                 this.$confirm('将永久删除该备份文件, 是否继续?', '警告', {
                     confirmButtonText: '确定',
@@ -239,6 +248,77 @@
                     type: 'warning'
                 }).then(() => {
                     deleteBackupRecord(id).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.message === "success") {
+                            this.$message({
+                                message: "删除成功!",
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error({
+                                message: "删除失败!"
+                            });
+                        }
+                        this.loadShakeRec();
+                    }).catch(() => {
+                        this.$message.error({
+                            message: "删除失败!"
+                        });
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                })
+            }, handlerTableSelect(selects) {
+                this.selection = selects;
+            }, deleteMultiShakes() {
+                if (this.selection.length === 0) {
+                    this.$message({
+                        message: "请先选中数据",
+                        type: 'warning'
+                    });
+                    return;
+                }
+                let deletes = [];
+                for (let i = 0; i < this.selection.length; i++) {
+                    deletes.push(this.selection[i].id);
+                }
+                this.$confirm('将删除选中操作记录及关联备份, 是否继续?', '警告', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    deleteMultiShake({ids: deletes}).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.message === "success") {
+                            this.$message({
+                                message: "删除成功!" + resp.data.message,
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error({
+                                message: "删除失败!" + resp.data.message
+                            });
+                        }
+                        this.loadShakeRec();
+                    }).catch((resp) => {
+                        this.$message.error({
+                            message: "删除失败!" + resp.data.message
+                        });
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                })
+            }, clearShakes() {
+                this.$confirm('将清空数据操作记录及关联备份, 是否继续?', '警告', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    clearShake().then((resp) => {
                         if (resp.data.status === 200 && resp.data.message === "success") {
                             this.$message({
                                 message: "删除成功!",
