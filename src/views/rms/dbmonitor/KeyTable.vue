@@ -21,7 +21,7 @@
             <div slot="header">
                 <span>数据列表</span>
             </div>
-            <el-table :data="keyDt" height="40vh" style="width: 100%;margin-bottom: 20px;"
+            <el-table :data="keyDt" height="40vh" style="width: 100%;margin-bottom: 20px;" ref="keyList"
                       row-key="name" v-loading="loading" @selection-change="handlerTableSelect">
                 <el-table-column align="center" type="selection" width="55"/>
                 <el-table-column prop="id" width="80" align="center" label="id"/>
@@ -70,8 +70,8 @@
     import {deleteKeys, getKeyValue, insScanKey, refreshKey} from "../../../api/redismanage/redis_keys";
     import InfiniteLoading from 'vue-infinite-loading';
     import {insFlushDb} from "../../../api/redismanage/redis_dba";
-    import KeyNxForm from "../../../views/rms/dtmanage/KeyNxForm";
-    import ValueViewer from "../../../views/rms/dtmanage/ValueViewer";
+    import KeyNxForm from ".//KeyNxForm";
+    import ValueViewer from ".//ValueViewer";
 
     export default {
         name: "KeyTable",
@@ -339,6 +339,7 @@
                                     this.keyDt.splice(index, 1);
                                 }
                             }
+                            this.$refs.keyList.clearSelection();
                         } else {
                             this.$message.error({
                                 message: "删除失败!" + resp.data.message
