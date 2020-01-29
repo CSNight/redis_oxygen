@@ -32,11 +32,9 @@
                                        inactive-text="停止刷新" @click.stop.native @change="infoVis"/>
                         </template>
                         <div style="display: flex;flex-wrap: wrap">
-                            <el-card v-for="(item,index) in infos" :key="index"
-                                     style="height: 200px;width: 30%;margin: 10px">
+                            <el-card v-for="(item,index) in infos" :key="index" class="info-panel">
                                 <div slot="header">{{'#'+item.caption}}</div>
-                                <el-table :data="item.keys" size="mini" :show-header="false"
-                                          :row-class-name="rowClass"
+                                <el-table :data="item.keys" size="mini" :show-header="false" :row-class-name="rowClass"
                                           style="height: 160px;font-size: 11px;overflow-y: auto">
                                     <el-table-column prop="infK" width="auto"/>
                                     <el-table-column prop="infV" width="auto" align="center"/>
@@ -282,7 +280,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .custom-tree-node {
         flex: 1;
         display: flex;
@@ -296,9 +294,18 @@
         height: 0 !important;
     }
 
+    /deep/ .info-panel {
+        height: 220px;
+        width: 30%;
+        margin: 10px;
+
+        /deep/ .el-card__header {
+            padding: 5px 8px;
+        }
+    }
 
 
-    /deep/.el-table .dt-change {
+    /deep/ .el-table .dt-change {
         background-color: rgba(50, 255, 240, 0.4);
     }
 
