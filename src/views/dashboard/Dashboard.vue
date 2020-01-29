@@ -1,31 +1,6 @@
 <template>
     <div style="height: 100%;width:100%;padding: 10px">
-        <el-row :gutter="20" style="height: 35vh;margin-bottom:20px;margin-top: 10px">
-            <el-col :span="8" style="height: 100%">
-                <el-card class="chart-panel">
-                    <div slot="header">
-                        <i class="el-icon-cpu"></i>
-                        <h3>CPU</h3>
-                    </div>
-                </el-card>
-            </el-col>
-            <el-col :span="8" style="height: 100%">
-                <el-card class="chart-panel">
-                    <div slot="header">
-                        <i class="fa fa-microchip"></i>
-                        <h3>Memory</h3>
-                    </div>
-                </el-card>
-            </el-col>
-            <el-col :span="8" style="height: 100%">
-                <el-card class="chart-panel">
-                    <div slot="header">
-                        <i class="fa fa-network-wired"></i>
-                        <h3>Network I/O</h3>
-                    </div>
-                </el-card>
-            </el-col>
-        </el-row>
+        <physical-stat/>
         <el-row :gutter="20" style="height: 15vh;margin-bottom:20px">
             <el-col :span="6" style="height: 100%">
                 <el-card class="chart-panel"></el-card>
@@ -52,12 +27,22 @@
 </template>
 
 <script>
+    import PhysicalStat from "./PhysicalStat";
+    import {guid} from "../../utils/utils";
+
     export default {
         name: 'Dashboard',
+        components: {PhysicalStat},
         data() {
             return {
-                msg: "hello"
+                identify: this.$store.getters.identify, appId: guid()
             }
+        }, created() {
+            this.$nextTick(() => {
+                this.$wss.connect(this.identify);
+            })
+        }, beforeDestroy() {
+            this.$wss.close()
         }
     }
 </script>
@@ -66,8 +51,7 @@
         background: #27293d;
         height: 100%;
         border: 0;
-        box-shadow: 0 1px 20px 0 rgba(0, 0, 0, .6);
-
+        box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .6);
     }
 
     /deep/ .el-card__header {
