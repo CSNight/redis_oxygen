@@ -14,8 +14,8 @@
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button type="text" @click="cancel">取消</el-button>
-            <el-button :loading="loading" type="primary" @click="doSubmit">确认</el-button>
+            <el-button size="mini" type="text" @click="cancel">取消</el-button>
+            <el-button size="mini" :loading="loading" type="primary" @click="doSubmit">确认</el-button>
         </div>
     </el-dialog>
 </template>
@@ -54,7 +54,7 @@
             }
         }, methods: {
             normalizer(node) {
-                if (node.children &&node.children.length === 0) {
+                if (node.children && node.children.length === 0) {
                     delete node.children
                 }
                 return {

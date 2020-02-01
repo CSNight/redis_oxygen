@@ -28,17 +28,17 @@
             <el-table-column prop="instance_name" align="center" width="200px" label="名称"/>
             <el-table-column prop="mode" align="center" label="连接信息">
                 <template slot-scope="scope">
-                    <el-tag size="small" v-if="scope.row.type==='Standalone'">{{scope.row.ip+':'+scope.row.port}}
+                    <el-tag size="mini" v-if="scope.row.type==='Standalone'">{{scope.row.ip+':'+scope.row.port}}
                     </el-tag>
-                    <el-tag size="small" v-if="scope.row.mode===undefined">Unknown</el-tag>
+                    <el-tag size="mini" v-if="scope.row.mode===undefined">Unknown</el-tag>
                     <el-tooltip effect="light" :content="JSON.stringify(JSON.parse(scope.row.conn).sentinels)">
-                        <el-tag size="small" v-if="scope.row.type==='SentinelsCluster'">Sentinels</el-tag>
+                        <el-tag size="mini" v-if="scope.row.type==='SentinelsCluster'">Sentinels</el-tag>
                     </el-tooltip>
                 </template>
             </el-table-column>
             <el-table-column prop="state" width="70px" align="center" label="状态">
                 <template slot-scope="scope">
-                    <el-tag size="small" :type="scope.row.state ? 'success' : 'danger'">{{scope.row.state?'在线':'断开'}}
+                    <el-tag size="mini" :type="scope.row.state ? 'success' : 'danger'">{{scope.row.state?'在线':'断开'}}
                     </el-tag>
                 </template>
             </el-table-column>
@@ -63,19 +63,19 @@
             </el-table-column>
             <el-table-column align="center" label="操作" width="250px">
                 <template slot-scope="scope">
-                    <el-button v-if="rights('INS_UPDATE_STATE')" type="text" size="small"
+                    <el-button v-if="rights('INS_UPDATE_STATE')" type="text" size="mini"
                                @click="changeState(scope.row)">{{lockBtnTxt(scope.row)}}
                     </el-button>
-                    <el-button v-if="rights('INS_UPDATE_CONN')" type="text" size="small"
+                    <el-button v-if="rights('INS_UPDATE_CONN')" type="text" size="mini"
                                @click="editConn(scope.row)">连接设置
                     </el-button>
-                    <el-button v-if="rights('INS_UPDATE_INFO')" type="text" size="small"
+                    <el-button v-if="rights('INS_UPDATE_INFO')" type="text" size="mini"
                                @click="editName(scope.row)">修改名称
                     </el-button>
-                    <el-button v-if="rights('INS_REFRESH_META')" type="text" size="small" :disabled="!scope.row.state"
+                    <el-button v-if="rights('INS_REFRESH_META')" type="text" size="mini" :disabled="!scope.row.state"
                                @click="refreshInfo(scope.row)">刷新
                     </el-button>
-                    <el-button v-if="rights('INS_DEL')" type="text" size="small" @click="deleteInstance(scope.row)">删除
+                    <el-button v-if="rights('INS_DEL')" type="text" size="mini" @click="deleteInstance(scope.row)">删除
                     </el-button>
                 </template>
             </el-table-column>
