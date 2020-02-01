@@ -214,7 +214,7 @@
                         });
                     } else {
                         this.$message.error({
-                            message: '任务' + prefix + "失败!"
+                            message: '任务' + prefix + "失败! " + resp.data.message
                         });
                     }
                     this.loadById(row.id);
@@ -224,7 +224,7 @@
                     });
                     this.loadById(row.id);
                 });
-            },changeJobConf(){
+            }, changeJobConf() {
 
             }
         }
