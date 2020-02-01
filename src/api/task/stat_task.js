@@ -8,6 +8,10 @@ export function getStJobByUser() {
     return REQ.get('/statistic/statByUser');
 }
 
+export function getStJobById(jid) {
+    return REQ.get('/statistic/statById/' + jid);
+}
+
 export function addStJob(dto) {
     return REQ.post('/statistic/statAdd', dto);
 }
