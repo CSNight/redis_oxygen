@@ -110,7 +110,13 @@
             }, loadByUser() {
                 getByUser(this.identify).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
-                        this.instances = resp.data.message;
+                        let ins = resp.data.message;
+                        for (let i = 0; i < ins.length; i++) {
+                            if(ins[i].role==='sentinel'){
+                                continue;
+                            }
+                            this.instances.push(ins[i]);
+                        }
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -126,7 +132,13 @@
             }, loadAll(update) {
                 getAll(update).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
-                        this.instances = resp.data.message;
+                        let ins = resp.data.message;
+                        for (let i = 0; i < ins.length; i++) {
+                            if(ins[i].role==='sentinel'){
+                                continue;
+                            }
+                            this.instances.push(ins[i]);
+                        }
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
