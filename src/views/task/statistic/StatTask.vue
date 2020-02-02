@@ -10,7 +10,7 @@
         <el-scrollbar style="height: 100%">
             <el-table style="width: 100%;margin-bottom: 20px;" :data="stJobs"
                       v-loading="loading" ref="stJobList">
-                <el-table-column align="center" prop="job_name" width="300" label="任务名"/>
+                <el-table-column align="center" prop="instance.instance_name" width="250" label="关联实例"/>
                 <el-table-column align="center" prop="job_group" width="100" label="任务组"/>
                 <el-table-column align="center" prop="trigger_type" width="100" label="触发器">
                     <template slot-scope="scope">
@@ -18,6 +18,9 @@
                             {{getTriggerType(scope.row.trigger_type).label}}
                         </el-tag>
                     </template>
+                </el-table-column>
+                <el-table-column align="center" prop="job_name" width="180" label="触发器表达式">
+                    <template slot-scope="scope">{{getExpression(scope.row)}}</template>
                 </el-table-column>
                 <el-table-column align="center" prop="state" width="100" label="状态">
                     <template slot-scope="scope">
@@ -27,17 +30,16 @@
                     </template>
                 </el-table-column>
                 <el-table-column align="center" prop="job_describe" label="任务描述"/>
-                <el-table-column align="center" prop="instance.instance_name" width="250" label="关联实例"/>
                 <el-table-column align="center" prop="create_time" width="180" label="创建时间">
                     <template slot-scope="scope">
                         {{dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time))}}
                     </template>
                 </el-table-column>
                 <el-table-column align="center" prop="create_user" width="150" label="创建用户"/>
-                <el-table-column align="center" label="操作" width="250px">
+                <el-table-column align="center" label="操作" width="200px">
                     <template slot-scope="scope">
-                        <el-button v-if="rights('STTASK_DEL')" type="primary" icon="el-icon-edit"
-                                   @click="changeJobConf" size="mini"/>
+                        <el-button v-if="rights('STTASK_CONF_UPDATE')" type="primary" icon="el-icon-edit"
+                                   @click="changeJobConf(scope.row)" size="mini"/>
                         <el-button v-if="rights('STTASK_STATE_UPDATE')" :type="getBtnType(scope.row)"
                                    :icon="getBtnIcon(scope.row)"
                                    @click="changeJobState(scope.row)" size="mini"/>
@@ -87,6 +89,8 @@
                     return '';
                 }
                 return dateFormat(fmt, new Date(dt));
+            }, getExpression(row) {
+                return JSON.parse(JSON.parse(row.job_config).triggerConfig).expression;
             }, getTriggerType(t) {
                 for (let i = 0; i < this.triggerType.length; i++) {
                     if (t === this.triggerType[i].value) {
@@ -171,6 +175,7 @@
                     });
                 });
             }, newJob() {
+                this.$refs.stJobForm.isAdd = true;
                 this.$refs.stJobForm.dialog = true;
             }, deleteJob(row) {
                 this.$confirm('将删除此实例统计任务, 是否继续?', '警告', {
@@ -224,8 +229,29 @@
                     });
                     this.loadById(row.id);
                 });
-            }, changeJobConf() {
-
+            }, changeJobConf(row) {
+                let _this = this.$refs.stJobForm;
+                let conf = JSON.parse(row.job_config);
+                let trigger = JSON.parse(conf.triggerConfig);
+                _this.isAdd = false;
+                _this.form = {
+                    uid: conf.uid,
+                    jobName: conf.jobName,
+                    ins_id: conf.ins_id,
+                    triggerType: conf.triggerType,
+                    immediately: '1',
+                    expression: trigger.expression,
+                    startAt: null,
+                    jobGroup: conf.jobGroup,
+                    timeUnit: 'SECOND',
+                    interval: 1,
+                    description: conf.description
+                };
+                if (trigger.hasOwnProperty('startAt')) {
+                    _this.form.startAt = new Date(trigger.startAt);
+                    _this.form.immediately = "2";
+                }
+                _this.dialog = true;
             }
         }
     }

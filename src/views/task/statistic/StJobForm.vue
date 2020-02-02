@@ -1,28 +1,25 @@
 <template>
     <el-dialog :append-to-body="false" :close-on-click-modal="false" :before-close="cancel" :visible.sync="dialog"
-               :title="'新增统计任务'" width="440px" @close="resetForm">
+               :title="isAdd?'新增统计任务':'修改统计任务配置'" width="440px" @close="resetForm">
         <el-form ref="form" :model="form" :rules="rules" size="mini" label-width="100px">
             <el-form-item label="关联实例" prop="ins_id">
                 <el-select style="width: 270px;" v-model="form.ins_id" size="mini">
-                    <el-option v-for="(item,index) in instances" :key="index" :label="item.instance_name"
-                               :value="item.id"/>
+                    <el-option v-for="(item,i) in instances" :key="i" :label="item.instance_name" :value="item.id"/>
                 </el-select>
             </el-form-item>
             <el-form-item label="触发器类型">
-                <el-select disabled style="width: 270px;" v-model="form.trigger_type" size="mini">
-                    <el-option v-for="(item,index) in triggerType" :key="index" :label="item.label"
-                               :value="item.value"/>
+                <el-select disabled style="width: 270px;" v-model="form.triggerType" size="mini">
+                    <el-option v-for="(item,i) in triggerType" :key="i" :label="item.label" :value="item.value"/>
                 </el-select>
             </el-form-item>
-            <el-form-item v-if="form.trigger_type!==1" label="时间单位">
+            <el-form-item v-if="form.triggerType!==1" label="时间单位">
                 <el-select style="width: 80px;" v-model="form.timeUnit" size="mini">
-                    <el-option v-for="(item,index) in timeUnit" :key="index" :label="item.label"
-                               :value="item.value"/>
+                    <el-option v-for="(item,index) in timeUnit" :key="index" :label="item.label" :value="item.value"/>
                 </el-select>
                 时间间隔
                 <el-input-number :min="0" :max="100" v-model="form.interval"></el-input-number>
             </el-form-item>
-            <el-form-item v-if="form.trigger_type===1" label="Cron表达式" prop="expression">
+            <el-form-item v-if="form.triggerType===1" label="Cron表达式" prop="expression">
                 <cron-input style="width: 270px;" v-model="form.expression" @change="change" @reset="reset"/>
             </el-form-item>
             <el-form-item label="触发延迟" prop="name">
@@ -48,18 +45,20 @@
 <script>
     import CronInput from 'vue-cron-generator/src/components/cron-input'
     import {getAll, getByUser} from "../../../api/redismanage/redis_ins";
-    import {addStJob} from "../../../api/task/stat_task";
+    import {addStJob, modifyStJobConf} from "../../../api/task/stat_task";
 
     export default {
         name: "StJobForm",
         components: {CronInput},
         data() {
             return {
-                instances: [], identify: this.$store.getters.identify,
+                instances: [], identify: this.$store.getters.identify, isAdd: false,
                 dialog: false, loading: false,
                 form: {
+                    uid: this.identify,
+                    jobName: '',
                     ins_id: '',
-                    trigger_type: 1,
+                    triggerType: 1,
                     expression: '0/3 * * * * ?',
                     immediately: '1',
                     startAt: new Date(),
@@ -105,6 +104,7 @@
                     this.instances = [];
                     this.loadAll(update);
                 } else {
+                    this.instances = [];
                     this.loadByUser();
                 }
             }, loadByUser() {
@@ -144,8 +144,10 @@
                 this.dialog = false;
                 this.$refs['form'].resetFields();
                 this.form = {
+                    uid: this.identify,
+                    jobName: '',
                     ins_id: '',
-                    trigger_type: 1,
+                    triggerType: 1,
                     immediately: '1',
                     expression: '0/3 * * * * ?',
                     startAt: null,
@@ -159,7 +161,11 @@
             }, onsubmit() {
                 this.$refs['form'].validate((valid) => {
                     if (valid) {
-                        this.addJob();
+                        if (this.isAdd) {
+                            this.addJob();
+                        } else {
+                            this.modifyJob();
+                        }
                     }
                 })
             }, addJob() {
@@ -169,17 +175,17 @@
                     jobName: 'statistic',
                     jobGroup: this.form.jobGroup,
                     description: this.form.description,
-                    triggerType: this.form.trigger_type,
+                    triggerType: this.form.triggerType,
                     triggerConfig: null
                 };
                 let triggerConf = {
                     triggerGroup: this.form.jobGroup,
                     expression: this.form.expression,
                 };
-                param.triggerConfig = JSON.stringify(triggerConf);
                 if (this.form.immediately === '2') {
-                    triggerConf['startAt'] = this.form.startAt;
+                    triggerConf['startAt'] = this.form.startAt.getTime();
                 }
+                param.triggerConfig = JSON.stringify(triggerConf);
                 addStJob(param).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         this.$message({
@@ -191,19 +197,56 @@
                             message: "新增任务失败! " + resp.data.message
                         });
                     }
-                    this.$parent.loadStJobs();
                     this.dialog = false;
+                    this.$parent.loadStJobs();
                 }).catch((resp) => {
+                    this.dialog = false;
                     this.$message.error({
                         message: "新增任务失败! " + resp.data.message
                     });
+                });
+            }, modifyJob() {
+                let param = {
+                    ins_id: this.form.ins_id,
+                    uid: this.identify,
+                    jobName: this.form.jobName,
+                    jobGroup: this.form.jobGroup,
+                    description: this.form.description,
+                    triggerType: this.form.triggerType,
+                    triggerConfig: null
+                };
+                let triggerConf = {
+                    triggerGroup: this.form.jobGroup,
+                    expression: this.form.expression,
+                };
+                if (this.form.immediately === '2') {
+                    triggerConf['startAt'] = this.form.startAt.getTime();
+                }
+                param.triggerConfig = JSON.stringify(triggerConf);
+                modifyStJobConf(param).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.$message({
+                            message: "修改任务成功!",
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message.error({
+                            message: "修改任务失败! " + resp.data.message
+                        });
+                    }
+                    this.$parent.loadStJobs();
                     this.dialog = false;
+                }).catch((resp) => {
+                    this.dialog = false;
+                    this.$message.error({
+                        message: "修改任务失败! " + resp.data.message
+                    });
                 });
             }, change(cron) {
-                this.cron = cron
+                this.form.expression = cron
             },
             reset() {
-                this.cron = this.form.expression
+                this.form.expression = "0/3 * * * * ?"
             }
         }
     }
