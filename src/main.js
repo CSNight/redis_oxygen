@@ -12,7 +12,9 @@ import '@/icons'
 import axios from 'axios'
 import websocket from "./api/websocket";
 import i18n from './utils/lang' // Internationalization
+import charts from 'echarts'
 
+Vue.prototype.$echarts = charts;
 Vue.prototype.$axios = axios;
 Vue.prototype.$wss = websocket;
 axios.defaults.withCredentials = true;
