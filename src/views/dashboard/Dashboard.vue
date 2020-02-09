@@ -29,6 +29,7 @@
 <script>
     import PhysicalStat from "./PhysicalStat";
     import {guid} from "../../utils/utils";
+    import {getAll, getByUser} from "../../api/redismanage/redis_ins";
 
     export default {
         name: 'Dashboard',
@@ -38,10 +39,93 @@
                 identify: this.$store.getters.identify, appId: guid()
             }
         }, created() {
+            let _this = this;
+            this.loadIns("false");
             this.$nextTick(() => {
+                this.$wss.on("stRev", this.msgRev, this.appId);
+                this.$wss.on("wsOpen", () => {
+                    _this.start(_this.$wss.isConnected);
+                }, this.appId);
                 this.$wss.connect(this.identify);
             })
+        }, methods: {
+            rights(permit) {
+                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                    return this.$store.getters.permit[permit];
+                }
+                return false
+            },
+            loadIns(update) {
+                if (!this.rights("INS_QUERY_ALL") && !this.rights("INS_QUERY")) {
+                    this.$message.error({
+                        message: "禁止查询!"
+                    });
+                } else if (this.rights("INS_QUERY_ALL")) {
+                    this.loading = true;
+                    this.instances = [];
+                    this.loadAll(update);
+                } else {
+                    this.instances = [];
+                    this.loadByUser();
+                }
+            }, loadByUser() {
+                getByUser(this.identify).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        let ins = resp.data.message;
+                        for (let i = 0; i < ins.length; i++) {
+                            if (ins[i].role === 'sentinel') {
+                                continue;
+                            }
+                            this.instances.push(ins[i]);
+                        }
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                    this.loading = false;
+                }).catch((resp) => {
+                    this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!" + resp.data.message
+                    });
+                });
+            }, loadAll(update) {
+                getAll(update).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        let ins = resp.data.message;
+                        for (let i = 0; i < ins.length; i++) {
+                            if (ins[i].role === 'sentinel') {
+                                continue;
+                            }
+                            this.instances.push(ins[i]);
+                        }
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                    this.loading = false;
+                }).catch((resp) => {
+                    this.loading = false;
+                    this.$message.error({
+                        message: "查询出错!" + resp.data.message
+                    });
+                });
+            },
+            msgRev(e) {
+                console.log(e);
+            }, start(e) {
+                if (e) {
+                    this.$wss.send("", 100, this.appId, 'e0e53064-4e0b-449d-b1e6-f6f4dceed58b', 'statistic');
+                }
+            }, stop() {
+                this.$wss.send("", 101, this.appId, 'e0e53064-4e0b-449d-b1e6-f6f4dceed58b', 'statistic');
+            }
         }, beforeDestroy() {
+            this.stop();
+            this.$wss.un("stRev", this.appId);
+            this.$wss.un("wsOpen", this.appId);
             this.$wss.close()
         }
     }

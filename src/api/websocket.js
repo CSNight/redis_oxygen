@@ -64,9 +64,15 @@ export default {
                 case"SHAKEPROCESS":
                     thisCallback.emit("dtRev", msgObj, msgObj.appId);
                     break;
+                case"STAT_STARTED":
+                case"STAT_STOPPED":
+                case"RMS_STAT":
+                    thisCallback.emit("stRev", msgObj, msgObj.appId);
+                    break;
                 case "ERROR":
                     thisCallback.emit("msgRev", msgObj, msgObj.appId);
                     thisCallback.emit("dtRev", msgObj, msgObj.appId);
+                    thisCallback.emit("stRev", msgObj, msgObj.appId);
             }
         };
         this.WS.onclose = function () {
