@@ -35,10 +35,10 @@
 
 <style lang="scss" scoped>
     .chart-panel {
-        background: #27293d;
+        background: rgba(39, 41, 61, 0.4);
         height: 100%;
         border: 0;
-        box-shadow: 0 1px 20px 0 rgba(0, 0, 0, .6);
+        box-shadow: 0 5px 20px 0 rgba(0, 0, 0, .6);
     }
 
     /deep/ .el-card__header {
