@@ -1,6 +1,25 @@
 <template>
-    <div style="height: 100%;width:100%;padding: 10px">
-        <physical-stat/>
+    <div class="dash">
+        <el-row :gutter="20" style="height: 3vh;margin-bottom:20px;position: relative">
+            <h3 style="text-align: center;color:#00eaff;left:46%;margin: 0;padding: 0;position: absolute">Redis 实例监控</h3>
+            <div style="display: flex;justify-content: space-between;">
+                <el-select v-model="curIns" size="mini" @change="monitorTarget">
+                    <el-option v-for="item in instances" :key="item.id" :value="item.id" :label="item.instance_name"/>
+                </el-select>
+                <el-button-group>
+                    <el-button type="primary" size="mini" icon="el-icon-refresh"></el-button>
+                    <el-button type="primary" size="mini" icon="el-icon-refresh"></el-button>
+                    <el-button type="primary" size="mini" icon="el-icon-refresh"></el-button>
+                </el-button-group>
+            </div>
+        </el-row>
+        <el-row :gutter="20" style="height: 30vh;margin-bottom:20px">
+            <el-col :span="8" style="height: 100%"></el-col>
+            <el-col :span="8" style="height: 100%">
+                <instance-info ref="ins_info" :ins="curIns"/>
+            </el-col>
+            <el-col :span="8" style="height: 100%"></el-col>
+        </el-row>
         <el-row :gutter="20" style="height: 15vh;margin-bottom:20px">
             <el-col :span="6" style="height: 100%">
                 <el-card class="chart-panel"></el-card>
@@ -27,16 +46,16 @@
 </template>
 
 <script>
-    import PhysicalStat from "./PhysicalStat";
     import {guid} from "../../utils/utils";
     import {getAll, getByUser} from "../../api/redismanage/redis_ins";
+    import InstanceInfo from "@/views/dashboard/InstanceInfo";
 
     export default {
         name: 'Dashboard',
-        components: {PhysicalStat},
+        components: {InstanceInfo},
         data() {
             return {
-                identify: this.$store.getters.identify, appId: guid()
+                identify: this.$store.getters.identify, appId: guid(), instances: [], curIns: '', targetIns: {}
             }
         }, created() {
             let _this = this;
@@ -47,6 +66,7 @@
                     _this.start(_this.$wss.isConnected);
                 }, this.appId);
                 this.$wss.connect(this.identify);
+                _this.$parent.$el.style.padding = '85px 0 0 0'
             })
         }, methods: {
             rights(permit) {
@@ -78,6 +98,9 @@
                             }
                             this.instances.push(ins[i]);
                         }
+                        if (this.instances.length > 0) {
+                            this.curIns = this.instances[0].id;
+                        }
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -100,6 +123,9 @@
                             }
                             this.instances.push(ins[i]);
                         }
+                        if (this.instances.length > 0) {
+                            this.curIns = this.instances[0].id;
+                        }
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -112,6 +138,12 @@
                         message: "查询出错!" + resp.data.message
                     });
                 });
+            }, monitorTarget() {
+                for (let i = 0; i < this.instances.length; i++) {
+                    if (this.instances[i].id === this.curIns) {
+                        this.targetIns = this.instances[i]
+                    }
+                }
             },
             msgRev(e) {
                 console.log(e);
@@ -126,16 +158,33 @@
             this.stop();
             this.$wss.un("stRev", this.appId);
             this.$wss.un("wsOpen", this.appId);
-            this.$wss.close()
+            this.$wss.close();
+            this.$parent.$el.style.padding = ''
         }
     }
 </script>
 <style lang="scss" scoped>
+    .dash {
+        height: 100%;
+        width: 100%;
+        padding: 10px 20px;
+        background: #1e1e2f
+    }
+
     .chart-panel {
-        background: #27293d;
+        background: rgba(39, 41, 61, 0.4);
         height: 100%;
         border: 0;
-        box-shadow: 0 10px 20px 0 rgba(0, 0, 0, .6);
+        box-shadow: 0 5px 20px 0 rgba(0, 0, 0, .6);
+    }
+
+    /deep/ .el-select {
+
+        /deep/ input {
+            background: transparent;
+            color: #5e72e4;
+            border-color: #2b3553;
+        }
     }
 
     /deep/ .el-card__header {
@@ -160,6 +209,33 @@
             font-weight: 300;
             font-family: Poppins, sans-serif;
             margin: 5px 0;
+        }
+    }
+
+    .ins-info {
+        padding-left: 0;
+        list-style: none;
+
+        li {
+            border-bottom: 1px solid #2b3553;
+            border-top: 1px solid #2b3553;
+            padding: 11px 0;
+            font-size: 13px;
+            color: #6F85EF;
+
+            i {
+                text-align: center;
+                color: #6F85EF;
+            }
+        }
+
+        .user-right {
+            float: right;
+
+            a {
+                color: #317EF3;
+                margin-right: 5px;
+            }
         }
     }
 </style>
