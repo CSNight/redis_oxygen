@@ -45,8 +45,7 @@
                         <li>
                             <fa-icon icon-class="fa-clock"/>
                             创建日期
-                            <div class="user-right">{{ dateFormat("YYYY-mm-dd HH:MM:SS",new Date(user.create_time))
-                                }}
+                            <div class="user-right">{{dateFormat("YYYY-mm-dd HH:MM:SS",new Date(user.create_time))}}
                             </div>
                         </li>
                         <li>

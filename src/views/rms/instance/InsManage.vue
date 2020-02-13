@@ -58,7 +58,7 @@
             <el-table-column prop="ct" align="center" width="190px" label="创建时间">
                 <template slot-scope="scope">
                     <i class="el-icon-time"/>
-                    <span style="margin-left: 10px">{{  dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.ct)) }}</span>
+                    <span style="margin-left: 10px">{{dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.ct))}}</span>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="操作" width="250px">
