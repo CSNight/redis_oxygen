@@ -1,7 +1,8 @@
 <template>
     <div class="dash">
         <el-row :gutter="20" style="height: 3vh;margin-bottom:20px;position: relative">
-            <h3 style="text-align: center;color:#00eaff;left:46%;margin: 0;padding: 0;position: absolute">Redis 实例监控</h3>
+            <h3 style="text-align: center;color:#00eaff;left:46%;margin: 0;padding: 0;position: absolute">Redis
+                实例监控</h3>
             <div style="display: flex;justify-content: space-between;">
                 <el-select v-model="curIns" size="mini" @change="monitorTarget">
                     <el-option v-for="item in instances" :key="item.id" :value="item.id" :label="item.instance_name"/>
@@ -14,11 +15,16 @@
             </div>
         </el-row>
         <el-row :gutter="20" style="height: 30vh;margin-bottom:20px">
-            <el-col :span="8" style="height: 100%"></el-col>
+            <el-col :span="8"
+                    style="height: 100%;display: flex;justify-content:space-between;align-items:stretch;flex-wrap: wrap">
+                <CPU ref="cpuGuava"/>
+            </el-col>
             <el-col :span="8" style="height: 100%">
                 <instance-info ref="ins_info" :ins="curIns"/>
             </el-col>
-            <el-col :span="8" style="height: 100%"></el-col>
+            <el-col :span="8" style="height: 100%">
+                <Memory ref="memoryRose"/>
+            </el-col>
         </el-row>
         <el-row :gutter="20" style="height: 15vh;margin-bottom:20px">
             <el-col :span="6" style="height: 100%">
@@ -49,10 +55,12 @@
     import {guid} from "../../utils/utils";
     import {getAll, getByUser} from "../../api/redismanage/redis_ins";
     import InstanceInfo from "@/views/dashboard/InstanceInfo";
+    import CPU from "@/views/dashboard/sections/CPU";
+    import Memory from "@/views/dashboard/sections/Memory";
 
     export default {
         name: 'Dashboard',
-        components: {InstanceInfo},
+        components: {Memory, CPU, InstanceInfo},
         data() {
             return {
                 identify: this.$store.getters.identify, appId: guid(), instances: [], curIns: '', targetIns: {}
@@ -146,7 +154,9 @@
                 }
             },
             msgRev(e) {
-                console.log(e);
+                if (e.body.hasOwnProperty('Physical')) {
+                    this.$refs.cpuGuava.updateChart(e.body.Physical);
+                }
             }, start(e) {
                 if (e) {
                     this.$wss.send("", 100, this.appId, 'e0e53064-4e0b-449d-b1e6-f6f4dceed58b', 'statistic');
