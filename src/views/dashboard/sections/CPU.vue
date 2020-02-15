@@ -5,7 +5,14 @@
             <h3>CPU</h3>
         </div>
         <el-row>
-            <el-col :span="8" id="cpuGChart" style="height: 22vh"></el-col>
+            <el-col :span="8" style="height: 24vh">
+                <div id="cpuGChart" style="height: 70%;width: 100%"></div>
+                <div style="padding-left:20px;height: 30%;width: 100%;justify-content: left;text-align: left;display: flex;align-items: center;flex-wrap: wrap">
+                    <div style="color:#27b4c2;font-size:12px"><div>{{'CPU Core Time:'+cpu_su}}</div></div>
+                    <div style="color:#27b4c2;font-size:12px"><div>{{'CPU User Time:'+cpu_uu}}</div></div>
+                    <div style="color:#27b4c2;font-size:12px"><div>{{'CPU Percentage:'+cpu_per}}</div></div>
+                </div>
+            </el-col>
             <el-col :span="16" id="cpuLChart" style="height: 24vh"></el-col>
         </el-row>
     </el-card>
@@ -16,6 +23,9 @@
         name: "CPU",
         data() {
             return {
+                cpu_su: 0,
+                cpu_uu: 0,
+                cpu_per: 0,
                 guaChart: null,
                 lineChart: null,
                 guaLiner: new this.$echarts.graphic.LinearGradient(0, 0, 1, 0,
@@ -65,9 +75,9 @@
                     }]
                 },
                 lineOption: {
-                    grid: {left: '7%', right: '5%', top: '15%', bottom: '5%', containLabel: true},
+                    grid: {left: '7%', right: '2%', top: '15%', bottom: '5%', containLabel: true},
                     legend: {
-                        show: true, icon: 'stack', itemWidth: 10, itemHeight: 10,
+                        show: true, icon: 'stack', itemWidth: 10, itemHeight: 10,position:'center',
                         textStyle: {color: ['#1bb4f6', '#27b4c2', '#aecb56']}, data: ['用户态', '内核态', "使用率"]
                     },
                     xAxis: {
@@ -79,7 +89,7 @@
                         type: 'value', boundaryGap: [0, '100%'], axisLine: {lineStyle: {color: '#27b4c2'}},
                         splitLine: {show: 1, lineStyle: {color: '#172a55'}}
                     }, {
-                        name: "使用率", min: 0, max: 100,
+                        name: "使用率%", min: 0, max: 100,
                         type: 'value', boundaryGap: [0, '100%'], axisLine: {lineStyle: {color: '#aecb56'}},
                         splitLine: {show: 0}
                     }],
@@ -136,10 +146,22 @@
                     dtSu.shift();
                     dtCpu.shift();
                 }
+                this.cpu_per = cpuPer;
+                this.cpu_su = Number(phy.cpu_su).toFixed(3);
+                this.cpu_uu = Number(phy.cpu_uu).toFixed(3);
                 dtUu.push({name: "csu" + phy.tm, value: [phy.tm, phy.cpu_uu]});
                 dtSu.push({name: "csu" + phy.tm, value: [phy.tm, phy.cpu_su]});
-                console.log(cpuPer);
                 dtCpu.push({name: "cpu" + phy.tm, value: [phy.tm, cpuPer]});
+                this.lineChart.setOption(this.lineOption);
+            }, reset() {
+                this.lineOption.series[0].data = [];
+                this.lineOption.series[1].data = [];
+                this.lineOption.series[2].data = [];
+                this.cpu_per = 0;
+                this.cpu_su = 0;
+                this.cpu_uu = 0;
+                this.guaOption.series[1].data[0].value = 0;
+                this.guaChart.setOption(this.guaOption);
                 this.lineChart.setOption(this.lineOption);
             }
         }
