@@ -17,35 +17,22 @@
         <el-row :gutter="20" style="height: 30vh;margin-bottom:20px">
             <el-col :span="8"
                     style="height: 100%;display: flex;justify-content:space-between;align-items:stretch;flex-wrap: wrap">
-                <CPU ref="cpuGuava"/>
+                <CPU ref="cpuChart"/>
             </el-col>
             <el-col :span="8" style="height: 100%">
                 <instance-info ref="ins_info" :ins="curIns"/>
             </el-col>
             <el-col :span="8" style="height: 100%">
-                <Memory ref="memoryRose"/>
+                <Memory ref="memChart"/>
             </el-col>
         </el-row>
-        <el-row :gutter="20" style="height: 15vh;margin-bottom:20px">
-            <el-col :span="6" style="height: 100%">
-                <el-card class="chart-panel"></el-card>
-            </el-col>
-            <el-col :span="6" style="height: 100%">
-                <el-card class="chart-panel"></el-card>
-            </el-col>
-            <el-col :span="6" style="height: 100%">
-                <el-card class="chart-panel"></el-card>
-            </el-col>
-            <el-col :span="6" style="height: 100%">
-                <el-card class="chart-panel"></el-card>
-            </el-col>
-        </el-row>
+        <NetworkIO ref="nioChart"/>
         <el-row :gutter="20" style="height: 40vh;margin-bottom:40px">
             <el-col :span="12" style="height: 100%">
                 <el-card class="chart-panel"></el-card>
             </el-col>
             <el-col :span="12" style="height: 100%">
-                <el-card class="chart-panel"></el-card>
+                <CommandInfo ref="cmdChart"/>
             </el-col>
         </el-row>
     </div>
@@ -54,28 +41,39 @@
 <script>
     import {guid} from "../../utils/utils";
     import {getAll, getByUser} from "../../api/redismanage/redis_ins";
-    import InstanceInfo from "@/views/dashboard/InstanceInfo";
+    import InstanceInfo from "@/views/dashboard/sections/InstanceInfo";
     import CPU from "@/views/dashboard/sections/CPU";
     import Memory from "@/views/dashboard/sections/Memory";
+    import NetworkIO from "@/views/dashboard/sections/NetworkIO";
+    import CommandInfo from "@/views/dashboard/sections/CommandInfo";
 
     export default {
         name: 'Dashboard',
-        components: {Memory, CPU, InstanceInfo},
+        components: {CommandInfo, NetworkIO, Memory, CPU, InstanceInfo},
         data() {
             return {
                 identify: this.$store.getters.identify, appId: guid(), instances: [], curIns: '', targetIns: {}
             }
         }, created() {
             let _this = this;
-            this.loadIns("false");
             this.$nextTick(() => {
                 this.$wss.on("stRev", this.msgRev, this.appId);
                 this.$wss.on("wsOpen", () => {
-                    _this.start(_this.$wss.isConnected);
+                    this.loadIns("false");
                 }, this.appId);
                 this.$wss.connect(this.identify);
+
                 _this.$parent.$el.style.padding = '85px 0 0 0'
             })
+        }, watch: {
+            curIns: {
+                handler: function (n, o) {
+                    if (o) {
+                        this.stop(o);
+                    }
+                    this.start(n);
+                }
+            }
         }, methods: {
             rights(permit) {
                 if (this.$store.getters.permit.hasOwnProperty(permit)) {
@@ -155,14 +153,19 @@
             },
             msgRev(e) {
                 if (e.body.hasOwnProperty('Physical')) {
-                    this.$refs.cpuGuava.updateChart(e.body.Physical);
+                    this.$refs.cpuChart.updateChart(e.body.Physical);
+                    this.$refs.memChart.updateChart(e.body.Physical);
+                    this.$refs.nioChart.updateChart(e.body.Physical);
+                    this.$refs.cmdChart.updateChart(e.body.Commands);
                 }
-            }, start(e) {
-                if (e) {
-                    this.$wss.send("", 100, this.appId, 'e0e53064-4e0b-449d-b1e6-f6f4dceed58b', 'statistic');
+            }, start(t) {
+                if (this.$wss.isConnected) {
+                    this.$wss.send("", 100, this.appId, t, 'statistic');
                 }
-            }, stop() {
-                this.$wss.send("", 101, this.appId, 'e0e53064-4e0b-449d-b1e6-f6f4dceed58b', 'statistic');
+            }, stop(t) {
+                this.$refs.cpuChart.reset();
+                this.$refs.memChart.reset();
+                this.$wss.send("", 101, this.appId, t, 'statistic');
             }
         }, beforeDestroy() {
             this.stop();
