@@ -95,7 +95,11 @@ export default {
             appId: appId,
             ins: ins
         };
-        this.WS.send(JSON.stringify(request));
+        try {
+            this.WS.send(JSON.stringify(request));
+        } catch (e) {
+            console.error(e);
+        }
     }, close: function () {
         if (this.WS !== null) {
             this.WS.close();
