@@ -5,7 +5,7 @@
             <h3>CPU</h3>
         </div>
         <el-row>
-            <el-col :span="8" style="height: 24vh">
+            <el-col :span="8" style="height: 25vh">
                 <div id="cpuGChart" style="height: 70%;width: 100%"></div>
                 <div style="padding-left:20px;height: 30%;width: 100%;justify-content: left;text-align: left;display: flex;align-items: center;flex-wrap: wrap">
                     <div style="color:#27b4c2;font-size:12px"><div>{{'CPU Core Time:'+cpu_su}}</div></div>
@@ -77,7 +77,7 @@
                 lineOption: {
                     grid: {left: '7%', right: '2%', top: '15%', bottom: '5%', containLabel: true},
                     legend: {
-                        show: true, icon: 'stack', itemWidth: 10, itemHeight: 10,position:'center',
+                        show: true, icon: 'stack', itemWidth: 10, itemHeight: 10,
                         textStyle: {color: ['#1bb4f6', '#27b4c2', '#aecb56']}, data: ['用户态', '内核态', "使用率"]
                     },
                     xAxis: {

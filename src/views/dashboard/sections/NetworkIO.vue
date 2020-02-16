@@ -10,7 +10,7 @@
                     </div>
                 </div>
                 <el-divider></el-divider>
-                <div style="margin-top:5px">
+                <div style="margin-top:10px;display: flex;align-items: center">
                     <fa-icon style="color:#9C6BD3;padding: 0" icon-class="fa-heart-rate"/>
                     <a style="color:#9C6BD3;font-size: 14px">{{'Refresh On '+dateFormat("YYYY-mm-dd HH:MM:SS",tm)}}</a>
                 </div>
@@ -26,7 +26,7 @@
                     </div>
                 </div>
                 <el-divider></el-divider>
-                <div style="margin-top:5px">
+                <div style="margin-top:10px;display: flex;align-items: center">
                     <fa-icon style="color:#9C6BD3;padding: 0" icon-class="fa-atom"/>
                     <a style="color:#9C6BD3;font-size: 14px">
                         {{'Update in every '+interval+' second'}}
@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <el-divider></el-divider>
-                <div style="margin-top:5px">
+                <div style="margin-top:10px;display: flex;align-items: center">
                     <fa-icon style="color:#9C6BD3;padding: 0" icon-class="fa-battle-net"/>
                     <a style="color:#9C6BD3;font-size: 14px">Redis Instantaneous Input KBps</a>
                 </div>
@@ -60,7 +60,7 @@
                     </div>
                 </div>
                 <el-divider></el-divider>
-                <div style="margin-top:5px">
+                <div style="margin-top:10px;display: flex;align-items: center">
                     <fa-icon style="color:#9C6BD3;padding: 0" icon-class="fa-biohazard"/>
                     <a style="color:#9C6BD3;font-size: 14px">Redis Instantaneous Output KBps</a>
                 </div>
@@ -93,7 +93,7 @@
                 }
             },
             getUnit(val) {
-                if (val <= 1024) {
+                if (val < 1024) {
                     return 'B';
                 } else if (val >= 1024 && val < 1024 * 1024) {
                     return 'KB'
@@ -104,7 +104,7 @@
                 }
             },
             getVal(val) {
-                if (val <= 1024) {
+                if (val < 1024) {
                     return val;
                 } else if (val >= 1024 && val < 1024 * 1024) {
                     return Number(val / 1024).toFixed(3);
@@ -173,7 +173,6 @@
             .dt-reg {
                 top: -10px;
                 position: absolute;
-                max-width: 150px;
                 height: 100%;
                 right: 10px;
                 flex-wrap: wrap;

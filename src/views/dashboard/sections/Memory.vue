@@ -18,19 +18,15 @@
             return {
                 radarChart: null,
                 barChart: null,
-                usLiner: new this.$echarts.graphic.LinearGradient(
-                    0, 0, 0, 1,
-                    [
-                        {offset: 0, color: 'rgba(156,107,211,0.5)'},
-                        {offset: 0.2, color: 'rgba(156,107,211,0.3)'},
-                        {offset: 1, color: 'rgba(156,107,211,0)'}
-                    ]),
-                rsLiner: new this.$echarts.graphic.LinearGradient(
-                    0, 0, 0, 1,
-                    [
-                        {offset: 0, color: '#956FD4'},
-                        {offset: 1, color: '#3EACE5'}
-                    ]),
+                usLiner: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {offset: 0, color: 'rgba(156,107,211,0.5)'},
+                    {offset: 0.2, color: 'rgba(156,107,211,0.3)'},
+                    {offset: 1, color: 'rgba(156,107,211,0)'}
+                ]),
+                rsLiner: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {offset: 0, color: '#956FD4'},
+                    {offset: 1, color: '#3EACE5'}
+                ]),
                 areaStyle: {
                     normal: {
                         color: {
@@ -65,36 +61,40 @@
                     }]
                 }, barOption: {
                     grid: {left: '8%', right: '2%', top: '15%', bottom: '5%', containLabel: true},
-                    xAxis: {type: 'time', axisLine: {lineStyle: {color: '#397cbc'}}, axisTick: {show: false}},
+                    legend: {
+                        show: true,
+                        icon: 'stack',
+                        itemWidth: 10,
+                        itemHeight: 10,
+                        textStyle: {color: ['#4BFFFC', 'rgb(156,107,211)', '#956FD4']},
+                        data: [ 'mem_use', "mem_rss"]
+                    },
+                    xAxis: {
+                        type: 'time',
+                        axisLine: {lineStyle: {color: '#397cbc'}},
+                        axisTick: {show: false},
+                        splitLine: {show: 0}
+                    },
                     yAxis: [{
                         type: 'value',
                         name: '内存/MB',
-                        splitLine: {show: false},
+                        splitLine: {show: 1, lineStyle: {color: '#172a55'}},
                         axisLine: {lineStyle: {color: '#27b4c2'}}
-                    },
-                        {
-                            type: 'value',
-                            name: '碎片率/%',
-                            max: 100,
-                            min: 0,
-                            splitLine: {show: false},
-                            axisLine: {lineStyle: {color: '#27b4c2'}}
-                        }],
-                    series: [
-                        {
-                            name: '碎片率', type: 'line', smooth: true, showAllSymbol: true, symbol: 'circle',
-                            symbolSize: 8, yAxisIndex: 1,
-                            itemStyle: {normal: {color: '#4BFFFC'}}, data: []
-                        },
-                        {
-                            name: 'mem_us', type: 'bar', barWidth: 10,
-                            itemStyle: {normal: {barBorderRadius: 5, color: null}}, data: []
-                        },
-                        {
-                            name: 'mem_rss', type: 'bar', barGap: '-100%', barWidth: 10,
-                            itemStyle: {normal: {barBorderRadius: 5, color: null}}, data: []
-                        },
-                    ]
+                    }, {
+                        type: 'value', name: '碎片率/%', max: 100, min: 0, splitLine: {show: false},
+                        axisLine: {lineStyle: {color: '#27b4c2'}}
+                    }],
+                    series: [{
+                        name: '碎片率', type: 'line', smooth: true, showAllSymbol: true, symbol: 'circle',
+                        symbolSize: 8, yAxisIndex: 1,
+                        itemStyle: {normal: {color: '#4BFFFC'}}, data: []
+                    }, {
+                        name: 'mem_use', type: 'bar', barWidth: 10,
+                        itemStyle: {normal: {barBorderRadius: 5, color: null}}, data: []
+                    }, {
+                        name: 'mem_rss', type: 'bar', barGap: '-100%', barWidth: 10,
+                        itemStyle: {normal: {barBorderRadius: 5, color: null}}, data: []
+                    }]
                 }
             }
         }, mounted() {
