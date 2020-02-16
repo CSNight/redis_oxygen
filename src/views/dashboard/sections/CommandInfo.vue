@@ -5,12 +5,25 @@
         </div>
         <el-row style="height: 35vh">
             <el-col style="height: 100%" :span="10">
-                <div style="height: 30%">
+                <div style="height: 30%;display: flex;align-items: center;width: 100%">
                     <svg-icon style="width: 72px;height: 72px" :icon-class="'console'"/>
+                    <div class="dt-reg">
+                        <p class="des-title">{{'Command Process: '+command_process}}</p>
+                        <p class="des-title">{{'Command OPS: '+ops}}</p>
+                        <p class="des-title">{{'PubSub Channels: '+ps_chs}}</p>
+                        <p class="des-title">{{'PubSub Patterns: '+ps_pat}}</p>
+                    </div>
                 </div>
                 <div style="height: 70%" id="ringCmdChart"></div>
             </el-col>
-            <el-col style="height: 100%" :span="14"></el-col>
+            <el-col style="height: 100%" :span="14">
+                <el-table :data="command_calls" height="350">
+                    <el-table-column prop="cmd" align="center" label="命令"/>
+                    <el-table-column prop="calls" align="center" label="执行次数"/>
+                    <el-table-column prop="usec" align="center" label="CPU耗时"/>
+                    <el-table-column prop="usec_per_call" align="center" label="CPU单位耗时"/>
+                </el-table>
+            </el-col>
         </el-row>
     </el-card>
 </template>
@@ -21,6 +34,10 @@
         data() {
             return {
                 ringChart: null,
+                command_process: 0,
+                ops: 0,
+                ps_chs: 0,
+                ps_pat: 0,
                 command_calls: [],
                 placeHolderStyle: {
                     normal: {
@@ -37,20 +54,20 @@
                 }]),
                 pieOption: {
                     title: {
-                        text: 'Top Five Commands',left:50,
+                        text: 'Top Five Commands', left: 60,
                         textStyle: {fontSize: 15, fontWeight: 'normal', color: ['#7777eb']}
                     },
                     series: [{
                         name: '',
                         type: 'pie',
                         clockWise: false,
-                        center: ['40%', '50%'],
+                        center: ['45%', '50%'],
                         radius: [65, 70],
                         hoverAnimation: false,
                         itemStyle: {
                             normal: {
                                 label: {
-                                    show: true, position: 'outside',padding:[5,0],
+                                    show: true, position: 'outside', padding: [5, 0],
                                     color: '#ddd', rich: {white: {color: '#ddd', align: 'center'}}
                                 },
                                 labelLine: {show: false}
@@ -65,6 +82,10 @@
             this.ringChart.setOption(this.pieOption);
         }, methods: {
             updateChart(cmd_info) {
+                this.command_process = cmd_info.tcs;
+                this.ops = cmd_info.ops;
+                this.ps_chs = cmd_info.pub_ch;
+                this.ps_pat = cmd_info.pub_pat;
                 this.command_calls = [];
                 let cmd_stat = JSON.parse(cmd_info.cmd_stat);
                 for (let cmd in cmd_stat) {
@@ -102,6 +123,13 @@
                 }
                 this.pieOption.series[0].data = data;
                 this.ringChart.setOption(this.pieOption)
+            }, reset() {
+                this.command_calls = [];
+                this.pieOption.series[0].data = [];
+                this.command_process = 0;
+                this.ops = 0;
+                this.ps_chs = 0;
+                this.ps_pat = 0;
             }
         }
     }
@@ -120,7 +148,50 @@
             margin: 0;
         }
     }
-    /deep/.el-card__body{
+
+    .dt-reg {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        height: 70%;
+        margin-left: 20px;
+        align-items: center;
+
+        .des-title {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            color: #4BFFFC;
+            text-align: left;
+            font-size: 0.9em;
+        }
+    }
+
+    /deep/ .el-card__body {
         padding: 0 10px;
+    }
+
+    /deep/ .el-table::before {
+        background: transparent;
+    }
+
+    /deep/ .el-table {
+        background: transparent;
+
+
+        /deep/ tr, th, td {
+            background-color: inherit !important;
+            border-bottom: 1px solid #2b3553;
+        }
+
+        /deep/ .el-table__header {
+            background: transparent;
+            color: #956FD4
+        }
+
+        /deep/ .el-table__body-wrapper {
+            border-bottom: 1px solid #2b3553;
+            color: #956FD4
+        }
     }
 </style>
