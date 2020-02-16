@@ -8,9 +8,7 @@
                     <el-option v-for="item in instances" :key="item.id" :value="item.id" :label="item.instance_name"/>
                 </el-select>
                 <el-button-group>
-                    <el-button type="primary" size="mini" icon="el-icon-refresh"></el-button>
-                    <el-button type="primary" size="mini" icon="el-icon-refresh"></el-button>
-                    <el-button type="primary" size="mini" icon="el-icon-refresh"></el-button>
+                    <el-button type="primary" size="mini" icon="el-icon-refresh" @click="reset"></el-button>
                 </el-button-group>
             </div>
         </el-row>
@@ -28,8 +26,11 @@
         </el-row>
         <NetworkIO ref="nioChart"/>
         <el-row :gutter="20" style="height: 40vh;margin-bottom:40px">
-            <el-col :span="12" style="height: 100%">
-                <el-card class="chart-panel"></el-card>
+            <el-col :span="8" style="height: 100%">
+                <Clients ref="cliChart"/>
+            </el-col>
+            <el-col :span="4" style="height: 100%">
+                <Keyspace ref="keyChart"/>
             </el-col>
             <el-col :span="12" style="height: 100%">
                 <CommandInfo ref="cmdChart"/>
@@ -46,10 +47,12 @@
     import Memory from "@/views/dashboard/sections/Memory";
     import NetworkIO from "@/views/dashboard/sections/NetworkIO";
     import CommandInfo from "@/views/dashboard/sections/CommandInfo";
+    import Clients from "@/views/dashboard/sections/Clients";
+    import Keyspace from "@/views/dashboard/sections/Keyspace";
 
     export default {
         name: 'Dashboard',
-        components: {CommandInfo, NetworkIO, Memory, CPU, InstanceInfo},
+        components: {Keyspace, Clients, CommandInfo, NetworkIO, Memory, CPU, InstanceInfo},
         data() {
             return {
                 identify: this.$store.getters.identify, appId: guid(), instances: [], curIns: '', targetIns: {}
@@ -157,15 +160,23 @@
                     this.$refs.memChart.updateChart(e.body.Physical);
                     this.$refs.nioChart.updateChart(e.body.Physical);
                     this.$refs.cmdChart.updateChart(e.body.Commands);
+                    this.$refs.cliChart.updateChart(e.body.Clients);
+                    this.$refs.keyChart.updateChart(e.body.Keyspace);
                 }
             }, start(t) {
                 if (this.$wss.isConnected) {
                     this.$wss.send("", 100, this.appId, t, 'statistic');
                 }
             }, stop(t) {
+                this.$wss.send("", 101, this.appId, t, 'statistic');
+                this.reset();
+            }, reset() {
                 this.$refs.cpuChart.reset();
                 this.$refs.memChart.reset();
-                this.$wss.send("", 101, this.appId, t, 'statistic');
+                this.$refs.nioChart.reset();
+                this.$refs.cmdChart.reset();
+                this.$refs.cliChart.reset();
+                this.$refs.keyChart.reset();
             }
         }, beforeDestroy() {
             this.stop();
