@@ -160,7 +160,6 @@
         align-items: center;
         height: 105px;
         color: #dddddd;
-
         border: none !important;
 
         div {

@@ -1,5 +1,5 @@
 <template>
-    <div class="dash">
+    <div :class="clazz">
         <el-row :gutter="20" style="height: 3vh;margin-bottom:20px;position: relative">
             <h3 style="text-align: center;color:#00eaff;left:46%;margin: 0;padding: 0;position: absolute">Redis
                 实例监控</h3>
@@ -7,9 +7,7 @@
                 <el-select v-model="curIns" size="mini" @change="monitorTarget">
                     <el-option v-for="item in instances" :key="item.id" :value="item.id" :label="item.instance_name"/>
                 </el-select>
-                <el-button-group>
-                    <el-button type="primary" size="mini" icon="el-icon-refresh" @click="reset"></el-button>
-                </el-button-group>
+                <el-button type="primary" size="mini" icon="el-icon-refresh" @click="reset"></el-button>
             </div>
         </el-row>
         <el-row :gutter="20" style="height: 30vh;margin-bottom:20px">
@@ -55,7 +53,8 @@
         components: {Keyspace, Clients, CommandInfo, NetworkIO, Memory, CPU, InstanceInfo},
         data() {
             return {
-                identify: this.$store.getters.identify, appId: guid(), instances: [], curIns: '', targetIns: {}
+                identify: this.$store.getters.identify, appId: guid(), instances: [], curIns: '', targetIns: {},
+                clazz: 'dash'
             }
         }, created() {
             let _this = this;
@@ -192,47 +191,21 @@
         height: 100%;
         width: 100%;
         padding: 10px 20px;
-        background: #1e1e2f
-    }
+        background: #1e1e2f;
 
-    .chart-panel {
-        background: rgba(39, 41, 61, 0.4);
-        height: 100%;
-        border: 0;
-        box-shadow: 0 5px 20px 0 rgba(0, 0, 0, .6);
-    }
-
-    /deep/ .el-select {
-
-        /deep/ input {
-            background: transparent;
-            color: #5e72e4;
-            border-color: #2b3553;
+        .chart-panel {
+            background: rgba(39, 41, 61, 0.4);
+            height: 100%;
+            border: 0;
+            box-shadow: 0 5px 20px 0 rgba(0, 0, 0, .6);
         }
-    }
 
-    /deep/ .el-card__header {
-        padding: 5px 15px;
-        color: #dddddd;
-        border-color: #2b3553;
-        border-left: 5px solid #11cdef;
-
-        div {
-            display: flex;
-            align-items: center;
-
-            i {
-                font-weight: 100;
-                font-size: 1.17em;
-                padding-bottom: 1px;
-                margin-right: 5px;
+        /deep/ .el-select {
+            /deep/ input {
+                background: transparent;
+                color: #5e72e4;
+                border-color: #2b3553;
             }
-        }
-
-        /deep/ h3 {
-            font-weight: 300;
-            font-family: Poppins, sans-serif;
-            margin: 5px 0;
         }
     }
 
@@ -260,6 +233,31 @@
                 color: #317EF3;
                 margin-right: 5px;
             }
+        }
+    }
+
+    /deep/ .el-card__header {
+        padding: 5px 15px;
+        color: #dddddd;
+        border-color: #2b3553;
+        border-left: 5px solid #11cdef;
+
+        div {
+            display: flex;
+            align-items: center;
+
+            i {
+                font-weight: 100;
+                font-size: 1.17em;
+                padding-bottom: 1px;
+                margin-right: 5px;
+            }
+        }
+
+        /deep/ h3 {
+            font-weight: 300;
+            font-family: Poppins, sans-serif;
+            margin: 5px 0;
         }
     }
 </style>

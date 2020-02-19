@@ -8,9 +8,15 @@
             <el-col :span="8" style="height: 25vh">
                 <div id="cpuGChart" style="height: 70%;width: 100%"></div>
                 <div style="padding-left:20px;height: 30%;width: 100%;justify-content: left;text-align: left;display: flex;align-items: center;flex-wrap: wrap">
-                    <div style="color:#27b4c2;font-size:12px"><div>{{'CPU Core Time:'+cpu_su}}</div></div>
-                    <div style="color:#27b4c2;font-size:12px"><div>{{'CPU User Time:'+cpu_uu}}</div></div>
-                    <div style="color:#27b4c2;font-size:12px"><div>{{'CPU Percentage:'+cpu_per}}</div></div>
+                    <div style="color:#27b4c2;font-size:12px">
+                        <div>{{'CPU Core Time:'+cpu_su}}</div>
+                    </div>
+                    <div style="color:#27b4c2;font-size:12px">
+                        <div>{{'CPU User Time:'+cpu_uu}}</div>
+                    </div>
+                    <div style="color:#27b4c2;font-size:12px">
+                        <div>{{'CPU Percentage:'+cpu_per}}</div>
+                    </div>
                 </div>
             </el-col>
             <el-col :span="16" id="cpuLChart" style="height: 24vh"></el-col>
@@ -168,32 +174,7 @@
     }
 </script>
 
-<style scoped>
-    /deep/ .el-card__header {
-        padding: 5px 15px;
-        color: #dddddd;
-        border-color: #2b3553;
-        border-left: 5px solid #11cdef;
-
-        div {
-            display: flex;
-            align-items: center;
-
-            i {
-                font-weight: 100;
-                font-size: 1.17em;
-                padding-bottom: 1px;
-                margin-right: 5px;
-            }
-        }
-
-        /deep/ h3 {
-            font-weight: 300;
-            font-family: Poppins, sans-serif;
-            margin: 5px 0;
-        }
-    }
-
+<style lang="scss" scoped>
     /deep/ .el-card__body {
         padding: 0 10px;
     }

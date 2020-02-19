@@ -3,7 +3,8 @@
         <div slot="header" style="position: relative">
             <i class="fa fa-codepen"></i>
             <h3>Information</h3>
-            <el-button size="mini" style="background: transparent;right:10px;position: absolute;border: none" type="danger"
+            <el-button size="mini" style="background: transparent;right:10px;position: absolute;border: none"
+                       type="danger"
                        icon="el-icon-refresh" @click="refreshInfo"></el-button>
         </div>
         <ul class="ins-info">
@@ -99,7 +100,7 @@
         },
         data() {
             return {
-                 target: {
+                target: {
                     ct: null,
                     arch_bits: 64,
                     dbCount: 0,
@@ -168,12 +169,6 @@
 </script>
 
 <style lang="scss" scoped>
-    .chart-panel {
-        background: rgba(39, 41, 61, 0.4);
-        height: 100%;
-        border: 0;
-        box-shadow: 0 5px 20px 0 rgba(0, 0, 0, .6);
-    }
 
     /deep/ .el-card__body {
         padding: 0 10px;
@@ -183,30 +178,7 @@
         background: transparent;
     }
 
-    /deep/ .el-card__header {
-        padding: 5px 15px;
-        color: #dddddd;
-        border-color: #2b3553;
-        border-left: 5px solid #11cdef;
 
-        div {
-            display: flex;
-            align-items: center;
-
-            i {
-                font-weight: 100;
-                font-size: 1.17em;
-                padding-bottom: 1px;
-                margin-right: 5px;
-            }
-        }
-
-        /deep/ h3 {
-            font-weight: 300;
-            font-family: Poppins, sans-serif;
-            margin: 5px 0;
-        }
-    }
 
     .ins-info {
         padding-left: 0;

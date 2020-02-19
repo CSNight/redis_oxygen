@@ -67,7 +67,7 @@
                         itemWidth: 10,
                         itemHeight: 10,
                         textStyle: {color: ['#4BFFFC', 'rgb(156,107,211)', '#956FD4']},
-                        data: [ 'mem_use', "mem_rss"]
+                        data: ['mem_use', "mem_rss"]
                     },
                     xAxis: {
                         type: 'time',
@@ -141,32 +141,7 @@
     }
 </script>
 
-<style scoped>
-    /deep/ .el-card__header {
-        padding: 5px 15px;
-        color: #dddddd;
-        border-color: #2b3553;
-        border-left: 5px solid #11cdef;
-
-        div {
-            display: flex;
-            align-items: center;
-
-            i {
-                font-weight: 100;
-                font-size: 1.17em;
-                padding-bottom: 1px;
-                margin-right: 5px;
-            }
-        }
-
-        /deep/ h3 {
-            font-weight: 300;
-            font-family: Poppins, sans-serif;
-            margin: 5px 0;
-        }
-    }
-
+<style lang="scss" scoped>
     /deep/ .el-card__body {
         padding: 0 10px;
     }
