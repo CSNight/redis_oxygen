@@ -1,5 +1,5 @@
 <template>
-    <el-row style="margin-top: 10px" :gutter="10">
+    <el-row style="margin-top: 10px" :gutter="20">
         <el-col :span="9" class="el-card is-always-shadow" style="height:85vh;padding:0 0 0 10px;">
             <el-form inline size="mini" style="height:80vh;overflow-y:auto;" label-width="100px" v-model="configs">
                 <el-collapse style="height: auto" v-model="collaspes">

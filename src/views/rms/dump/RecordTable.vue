@@ -1,6 +1,5 @@
 <template>
-    <el-table :data="shakeRecords" height="50%" style="height:50%;margin-left: 10px;" size="mini"
-              @selection-change="handlerTableSelect">
+    <el-table :data="shakeRecords" height="50%" style="height:50%;" size="mini" @selection-change="handlerTableSelect">
         <el-table-column align="center" type="selection" width="55"/>
         <el-table-column prop="source_name" align="center" label="源实例名"/>
         <el-table-column prop="target_name" align="center" label="目标实例名"/>
