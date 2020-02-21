@@ -1,25 +1,28 @@
 <template>
     <el-card style="margin-top: 20px">
         <el-tabs style="width:100%;height:80vh;" v-model="tab">
-            <el-tab-pane label="发送邮件" name="second">
+            <el-tab-pane label="发送邮件" name="first">
                 <el-row :gutter="20" style="height: 73vh">
                     <el-col :span="6" style="height: 100%" v-if="rights('MAIL_CONF_QUERY')">
                         <el-form ref="form" :model="form" :rules="rules" size="mini" label-width="100px">
                             <el-form-item label="SMTP地址" prop="host">
-                                <el-input v-model="form.host" style="width: 220px;" placeholder="请输入服务器地址"/>
+                                <el-input v-model="form.host" style="width: 220px;" maxlength="100"
+                                          placeholder="请输入服务器地址"/>
                             </el-form-item>
                             <el-form-item label="SMTP端口" prop="port">
                                 <el-input v-model.number="form.port" style="width: 220px;" placeholder="请输入服务器端口号"/>
                             </el-form-item>
                             <el-form-item label="Email账号" prop="email">
-                                <el-input v-model="form.email" style="width: 220px;" placeholder="请输入邮箱账户"/>
+                                <el-input v-model="form.email" maxlength="100" style="width: 220px;"
+                                          placeholder="请输入邮箱账户"/>
                             </el-form-item>
                             <el-form-item label="用户名" prop="username">
-                                <el-input v-model="form.username" style="width: 220px;" placeholder="请输入用户名（选填）"/>
+                                <el-input v-model="form.username" style="width: 220px;" maxlength="100"
+                                          placeholder="请输入用户名（选填）"/>
                             </el-form-item>
                             <el-form-item label="密码/授权码" prop="pwd">
                                 <el-input type="password" v-model="form.pwd" style="width: 220px;"
-                                          placeholder="请输入授权码或邮箱密码"/>
+                                          placeholder="请输入授权码或邮箱密码" maxlength="100"/>
                             </el-form-item>
                             <el-form-item label="常用联系人(分号分隔)">
                                 <el-input v-model="form.contact" type="textarea" style="width: 220px;height: 200px"
@@ -27,7 +30,8 @@
                             </el-form-item>
                         </el-form>
                         <div class="dialog-footer" style="float: right;margin-right: 80px">
-                            <el-button size="mini" icon="el-icon-edit-outline" type="primary" @click="updateConf">保存
+                            <el-button v-if="rights('MAIL_CONF_UPDATE')" size="mini" icon="el-icon-edit-outline"
+                                       type="primary" @click="updateConf">保存
                             </el-button>
                         </div>
                     </el-col>
@@ -35,7 +39,7 @@
                         <el-form :rules="sendRules" ref="sender" label-position="left" label-width="80px" size="mini"
                                  :model="sendForm" style="width: 90%">
                             <el-form-item label="标题" prop="title">
-                                <el-input v-model="sendForm.title"/>
+                                <el-input v-model="sendForm.title" maxlength="100"/>
                             </el-form-item>
                             <el-form-item label="收件人" prop="emailTo">
                                 <el-select v-model="sendForm.emailTo" multiple filterable allow-create clearable
@@ -53,30 +57,34 @@
                         <div style="height: 45vh;">
                             <vue-editor style="height: 100%" v-model="content"/>
                         </div>
-                        <el-button style="margin-top: 70px" type="primary" size="mini" @click="send"
-                                   :loading="loading" :disabled="sending" icon="el-icon-message"> 发送邮件
+                        <el-button style="margin-top: 70px" type="primary" size="mini" @click="send" :loading="loading"
+                                   v-if="rights('MAIL_SEND')" :disabled="sending" icon="el-icon-message"> 发送邮件
                         </el-button>
                     </el-col>
                 </el-row>
             </el-tab-pane>
+            <el-tab-pane label="发送记录" name="second">
+                <mail-record ref="records"/>
+            </el-tab-pane>
             <el-tab-pane label="配置管理" name="third" v-if="rights('MAIL_CONF_ALL')">
-                <el-table></el-table>
+                <mail-confs ref="confs"/>
             </el-tab-pane>
         </el-tabs>
     </el-card>
-
 </template>
 
 <script>
     import {VueEditor} from "vue2-editor";
     import {getUserConf, sendMail, setConf} from "@/api/system/mail_api";
+    import MailRecord from "@/views/toolbox/email/MailRecord";
+    import MailConfs from "@/views/toolbox/email/MailConfs";
 
     export default {
         name: "EmailTool",
-        components: {VueEditor},
+        components: {MailConfs, MailRecord, VueEditor},
         data() {
             return {
-                tab: 'second', loading: false, sending: false,
+                tab: 'first', loading: false, sending: false,
                 content: '',
                 reg: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
                 form: {
@@ -102,6 +110,17 @@
                 this.loadUserConf();
             })
         }, watch: {
+            tab: {
+                handler(n) {
+                    if (n === 'second') {
+                        this.$refs.records.loadData();
+                    } else if (n === 'third') {
+                        this.$refs.confs.loadData();
+                    } else {
+                        this.loadUserConf();
+                    }
+                }
+            },
             "form.contact": {
                 handler: function (n, o) {
                     if (n) {
@@ -112,7 +131,23 @@
                     }
                 },
                 deep: true
-            }
+            },
+            "sendForm.emailTo": {
+                handler: function (n, o) {
+                    if (n && n.length > 10) {
+                        this.sendForm.emailTo = o;
+                    }
+                },
+                deep: true
+            },
+            "sendForm.ccTo": {
+                handler: function (n, o) {
+                    if (n && n.length > 10) {
+                        this.sendForm.ccTo = o;
+                    }
+                },
+                deep: true
+            },
         }, methods: {
             validateEmail(rule, value, callback) {
                 if (value === '') {
