@@ -108,17 +108,19 @@ div:focus {
 .hideSidebar .fixed-header {
   width: calc(100% - 54px)
 }
-.cell{
-  &-div{
+
+.cell {
+  &-div {
     margin-bottom: 8px;
   }
-  &-symbol{
+
+  &-symbol {
     color: #67C23A;
   }
 }
 
-.cron{
-  &-row{
+.cron {
+  &-row {
     margin-top: 8px;
     max-width: 550px;
   }

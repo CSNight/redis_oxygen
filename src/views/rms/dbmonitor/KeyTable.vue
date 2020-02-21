@@ -70,8 +70,8 @@
     import {deleteKeys, getKeyValue, insScanKey, refreshKey} from "../../../api/redismanage/redis_keys";
     import InfiniteLoading from 'vue-infinite-loading';
     import {insFlushDb} from "../../../api/redismanage/redis_dba";
-    import KeyNxForm from ".//KeyNxForm";
-    import ValueViewer from ".//ValueViewer";
+    import KeyNxForm from "./KeyNxForm";
+    import ValueViewer from "./ValueViewer";
 
     export default {
         name: "KeyTable",
@@ -390,7 +390,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     /deep/ .el-table td, /deep/ .el-table th {
         padding: 5px 0;
     }

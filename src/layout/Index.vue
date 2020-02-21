@@ -9,7 +9,7 @@
             </div>
             <app-main/>
             <el-footer class="el-main-footer">
-                <a href="" >@CSNight</a>
+                <a href="">@CSNight</a>
             </el-footer>
         </div>
     </div>
@@ -66,13 +66,14 @@
         bottom: 0;
         width: 100%;
         border-top: 1px solid #aaaaaa;
-        font-size:12px;
+        font-size: 12px;
         text-align: left;
         line-height: 20px;
         height: 20px !important;
         background: linear-gradient(#ffffff 0%, #eeeeee 100%, #ffffff 0%);
         color: #7a8b9a;
-        a{
+
+        a {
             position: relative;
             bottom: 0;
         }
