@@ -19,3 +19,31 @@ export function delConf() {
 export function sendMail(conf) {
     return REQ.post('/mail/sendMail', conf);
 }
+
+export function getAllRecords() {
+    return REQ.get('/mail/getAllRec');
+}
+
+export function getUserRecords() {
+    return REQ.get('/mail/getUserRec');
+}
+
+export function getRecordById(mid) {
+    return REQ.get('/mail/getRecByID/' + mid);
+}
+
+export function queryRecords(dto) {
+    return REQ.get('/mail/searchUserRec', {
+        params: dto
+    });
+}
+
+export function deleteRecordById(mid) {
+    return REQ.delete('/mail/deleteRecById/' + mid);
+}
+
+export function deleteMultiRecords(dto) {
+    return REQ.delete('/mail/deleteRecMulti', {
+        data: dto
+    });
+}
