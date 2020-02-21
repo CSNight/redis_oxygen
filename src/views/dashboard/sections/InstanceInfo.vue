@@ -179,7 +179,6 @@
     }
 
 
-
     .ins-info {
         padding-left: 0;
         list-style: none;

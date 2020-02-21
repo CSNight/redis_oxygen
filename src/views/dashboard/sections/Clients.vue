@@ -96,7 +96,7 @@
         font-size: 1em;
         margin-left: 15px;
         color: #11cdef;
-        font-family: Consolas,sans-serif;
+        font-family: Consolas, sans-serif;
     }
 
     /deep/ .el-card__body {

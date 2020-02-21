@@ -5,7 +5,9 @@
             <el-input clearable v-model="filter" placeholder="输入名称搜索" style="width: 200px;" size="mini"
                       @input.native="filterIcons" class="filter-item"/>
             <el-button type="text" @click="getByAlphabet('')">ALL</el-button>
-            <el-button type="text" v-for="item in alphabet" :key="item" @click="getByAlphabet(item)">{{item.toUpperCase()}}</el-button>
+            <el-button type="text" v-for="item in alphabet" :key="item" @click="getByAlphabet(item)">
+                {{item.toUpperCase()}}
+            </el-button>
         </div>
         <el-row class="row" v-loading.fullscreen.lock="loading" element-loading-text="拼命加载中"
                 element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.6)">

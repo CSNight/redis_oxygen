@@ -86,7 +86,8 @@
         deleteRecordById,
         getAllRecords,
         getRecordById,
-        getUserRecords, queryRecords
+        getUserRecords,
+        queryRecords
     } from "@/api/system/mail_api";
     import {dateFormat} from "@/utils/utils";
 

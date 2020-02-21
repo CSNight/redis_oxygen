@@ -112,7 +112,7 @@
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let ins = resp.data.message;
                         for (let i = 0; i < ins.length; i++) {
-                            if(ins[i].role==='sentinel'){
+                            if (ins[i].role === 'sentinel') {
                                 continue;
                             }
                             this.instances.push(ins[i]);
@@ -134,7 +134,7 @@
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let ins = resp.data.message;
                         for (let i = 0; i < ins.length; i++) {
-                            if(ins[i].role==='sentinel'){
+                            if (ins[i].role === 'sentinel') {
                                 continue;
                             }
                             this.instances.push(ins[i]);
