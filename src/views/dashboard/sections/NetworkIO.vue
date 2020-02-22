@@ -86,7 +86,7 @@
             }
         }, methods: {
             dateFormat(fmt, dt) {
-                if (dt === 0) {
+                if (dt === null) {
                     return '';
                 } else {
                     return dateFormat(fmt, new Date(dt));
