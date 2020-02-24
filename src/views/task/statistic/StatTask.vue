@@ -3,13 +3,14 @@
         <st-job-form ref="stJobForm"></st-job-form>
         <!--工具栏-->
         <div class="head-container">
-            <el-button type="primary" icon="el-icon-plus" size="mini" class="filter-item" @click="newJob">新增</el-button>
+            <el-button v-if="rights('STTASK_ADD')" type="primary" icon="el-icon-plus" size="mini" class="filter-item"
+                       @click="newJob">新增
+            </el-button>
             <el-button v-if="rights('STTASK_QUERY')||rights('STTASK_QUERY_ALL')" type="danger" icon="el-icon-refresh"
                        size="mini" @click="loadStJobs"/>
         </div>
         <el-scrollbar style="height: 100%">
-            <el-table style="width: 100%;margin-bottom: 20px;" :data="stJobs"
-                      v-loading="loading" ref="stJobList">
+            <el-table style="width: 100%;margin-bottom: 20px;" :data="stJobs" v-loading="loading" ref="stJobList">
                 <el-table-column align="center" prop="instance.instance_name" width="250" label="关联实例"/>
                 <el-table-column align="center" prop="job_group" width="100" label="任务组"/>
                 <el-table-column align="center" prop="trigger_type" width="100" label="触发器">
@@ -41,8 +42,7 @@
                         <el-button v-if="rights('STTASK_CONF_UPDATE')" type="primary" icon="el-icon-edit"
                                    @click="changeJobConf(scope.row)" size="mini"/>
                         <el-button v-if="rights('STTASK_STATE_UPDATE')" :type="getBtnType(scope.row)"
-                                   :icon="getBtnIcon(scope.row)"
-                                   @click="changeJobState(scope.row)" size="mini"/>
+                                   :icon="getBtnIcon(scope.row)" @click="changeJobState(scope.row)" size="mini"/>
                         <el-button v-if="rights('STTASK_DEL')" type="danger" icon="el-icon-delete"
                                    @click="deleteJob(scope.row)" size="mini"/>
                     </template>
@@ -225,7 +225,7 @@
                     this.loadById(row.id);
                 }).catch(() => {
                     this.$message.error({
-                        message: '已取消任务状态变更'
+                        message: '任务' + prefix + "失败!"
                     });
                     this.loadById(row.id);
                 });
@@ -237,7 +237,7 @@
                 _this.form = {
                     uid: conf.uid,
                     jobName: conf.jobName,
-                    ins_id: conf.ins_id,
+                    ins_id: conf.invokeParam.ins_id,
                     triggerType: conf.triggerType,
                     immediately: '1',
                     expression: trigger.expression,
