@@ -27,7 +27,7 @@
                 <el-radio v-model="form.immediately" label="2">延期执行</el-radio>
             </el-form-item>
             <el-form-item v-if="form.immediately!=='1'" label="开始时间">
-                <el-date-picker type="datetime" v-model="form.startAt"/>
+                <el-date-picker type="datetime" v-model="form.startAt" :picker-options="pickerOptions"/>
             </el-form-item>
             <el-form-item label="任务描述">
                 <el-input style="width: 270px" v-model="form.description" type="textarea" show-word-limit
@@ -81,7 +81,12 @@
                     {label: "月", value: "MONTH"},
                     {label: "年", value: "YEAR"}],
                 triggerType: [{label: "Simple", value: 0, type: "success"}, {label: "Cron", value: 1, type: "primary"},
-                    {label: "Calendar", value: 2, type: "warning"}, {label: "DailyTime", value: 3, type: "danger"}]
+                    {label: "Calendar", value: 2, type: "warning"}, {label: "DailyTime", value: 3, type: "danger"}],
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() < Date.now() + 60 * 1000 * 5;
+                    }
+                },
             }
         }, created() {
             this.$nextTick(() => {
