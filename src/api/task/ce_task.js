@@ -15,3 +15,15 @@ export function getCeJobById(jid) {
 export function addCeJob(dto) {
     return REQ.post('/execution/cetAdd', dto);
 }
+
+export function modifyCeJobConf(dto) {
+    return REQ.put('/execution/cetConfUpdate', dto);
+}
+
+export function modifyCeJobState(jobId, state) {
+    return REQ.put('/execution/cetStateUpdate/' + jobId + "/" + state);
+}
+
+export function delCeJob(jobId) {
+    return REQ.delete('/execution/cetDelete/' + jobId);
+}

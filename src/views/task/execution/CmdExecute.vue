@@ -1,7 +1,10 @@
 <template>
     <div>
+        <ce-job-form ref="ceJobForm"/>
         <div class="head-container">
-            <el-button type="primary" icon="el-icon-plus" size="mini" class="filter-item">新增</el-button>
+            <el-button v-if="rights('CETASK_ADD')" type="primary" icon="el-icon-plus" size="mini" class="filter-item"
+                       @click="newJob">新增
+            </el-button>
             <el-button v-if="rights('CETTASK_QUERY')||rights('CETASK_QUERY_ALL')" type="danger" icon="el-icon-refresh"
                        size="mini" @click="loadCeJobs"/>
         </div>
@@ -32,11 +35,12 @@
                 <el-table-column align="center" prop="create_user" width="150" label="创建用户"/>
                 <el-table-column align="center" label="操作" width="200px">
                     <template slot-scope="scope">
-                        <el-button type="primary" icon="el-icon-edit"
-                                   size="mini"/>
-                        <el-button :type="getBtnType(scope.row)" :icon="getBtnIcon(scope.row)" size="mini"/>
-                        <el-button type="danger" icon="el-icon-delete"
-                                   size="mini"/>
+                        <el-button v-if="rights('CETASK_CONF_UPDATE')" type="primary" icon="el-icon-edit" size="mini"
+                                   @click="changeJobConf(scope.row)"/>
+                        <el-button v-if="rights('CETASK_STATE_UPDATE')" :type="getBtnType(scope.row)" :icon="getBtnIcon(scope.row)" size="mini"
+                                   @click="changeJobState(scope.row)"/>
+                        <el-button v-if="rights('CETASK_DEL')" type="danger" icon="el-icon-delete" size="mini"
+                                   @click="deleteJob(scope.row)"/>
                     </template>
                 </el-table-column>
             </el-table>
@@ -46,10 +50,12 @@
 
 <script>
     import {dateFormat} from "@/utils/utils";
-    import {getCeJobAll, getCeJobById, getCeJobByUser} from "@/api/task/ce_task";
+    import {delCeJob, getCeJobAll, getCeJobById, getCeJobByUser, modifyCeJobState} from "@/api/task/ce_task";
+    import CeJobForm from "@/views/task/execution/CeJobForm";
 
     export default {
         name: "CmdExecute",
+        components: {CeJobForm},
         data() {
             return {
                 loading: false, ceJobs: [],
@@ -148,7 +154,7 @@
                 getCeJobById(jid).then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
                         let insNew = resp.data.message;
-                        for (let i = 0; i < this.stJobs.length; i++) {
+                        for (let i = 0; i < this.ceJobs.length; i++) {
                             if (this.ceJobs[i].id === insNew.id) {
                                 this.$set(this.ceJobs, i, insNew);
                                 break;
@@ -164,6 +170,85 @@
                         message: "刷新出错!"
                     });
                 });
+            }, newJob() {
+                this.$refs.ceJobForm.isAdd = true;
+                this.$refs.ceJobForm.dialog = true;
+            }, deleteJob(row) {
+                this.$confirm('将删除此命令执行任务, 是否继续?', '警告', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    delCeJob(row.id).then((resp) => {
+                        if (resp.data.status === 200 && resp.data.message === "success") {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'warning',
+                                message: '删除失败:' + resp.data.message
+                            });
+                        }
+                        this.loadCeJobs();
+                    }).catch(() => {
+                        this.loadCeJobs();
+                        this.$message.error({
+                            message: "删除错误"
+                        });
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                })
+            }, changeJobState(row) {
+                let st = !(row.state === "NORMAL");
+                let prefix = st ? "启动" : "停止";
+                modifyCeJobState(row.id, !(row.state === "NORMAL")).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.message === "success") {
+                        this.$message({
+                            type: 'success',
+                            message: '任务' + prefix + "成功!"
+                        });
+                    } else {
+                        this.$message.error({
+                            message: '任务' + prefix + "失败! " + resp.data.message
+                        });
+                    }
+                    this.loadById(row.id);
+                }).catch(() => {
+                    this.$message.error({
+                        message: '任务' + prefix + "失败!"
+                    });
+                    this.loadById(row.id);
+                });
+            }, changeJobConf(row) {
+                let _this = this.$refs.ceJobForm;
+                let conf = JSON.parse(row.job_config);
+                let trigger = JSON.parse(conf.triggerConfig);
+                _this.isAdd = false;
+                _this.form = {
+                    uid: conf.uid,
+                    jobName: conf.jobName,
+                    ins_id: conf.invokeParam.ins_id,
+                    invokeParam: conf.invokeParam.exe,
+                    triggerType: conf.triggerType,
+                    immediately: '1',
+                    expression: trigger.expression,
+                    startAt: null,
+                    jobGroup: conf.jobGroup,
+                    timeUnit: 'SECOND',
+                    interval: 1,
+                    description: conf.description
+                };
+                if (trigger.hasOwnProperty('startAt')) {
+                    _this.form.startAt = new Date(trigger.startAt);
+                    _this.form.immediately = "2";
+                }
+                _this.dialog = true;
             }
         }
     }
