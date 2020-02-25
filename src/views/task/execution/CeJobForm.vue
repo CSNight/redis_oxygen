@@ -10,14 +10,23 @@
             <el-form-item label="执行命令" prop="invokeParam">
                 <el-input style="width: 270px" v-model="form.invokeParam" maxlength="100"/>
             </el-form-item>
+            <el-form-item label="逻辑DB" prop="db">
+                <el-input-number style="width: 270px" v-model.number="form.db" :min="0" :max="100"/>
+            </el-form-item>
             <el-form-item label="触发器类型">
                 <el-select style="width: 270px;" v-model="form.triggerType" size="mini">
                     <el-option v-for="(item,i) in triggerType" :key="i" :label="item.label" :value="item.value"/>
                 </el-select>
             </el-form-item>
+            <el-form-item label="重复次数" v-if="form.triggerType===0">
+                <el-input-number v-model.number="form.repeatCount" :min="-1" :max="9999999"/>
+                (-1代表永久执行)
+            </el-form-item>
             <el-form-item v-if="form.triggerType!==1" label="时间单位">
                 <el-select style="width: 80px;" v-model="form.timeUnit" size="mini">
-                    <el-option v-for="(item,index) in timeUnit" :key="index" :label="item.label" :value="item.value"/>
+                    <el-option v-for="(item,index) in timeUnit"
+                               :disabled="['SECOND','MINUTE','HOUR'].indexOf(item.value)===-1&&form.triggerType===0"
+                               :key="index" :label="item.label" :value="item.value"/>
                 </el-select>
                 时间间隔
                 <el-input-number :min="0" :max="100" v-model="form.interval"></el-input-number>
@@ -61,6 +70,8 @@
                     uid: this.identify,
                     jobName: '',
                     ins_id: '',
+                    db: 0,
+                    repeatCount: -1,
                     triggerType: 1,
                     expression: '0/3 * * * * ?',
                     immediately: '1',
@@ -195,6 +206,7 @@
                 let param = {
                     ins_id: this.form.ins_id,
                     uid: this.identify,
+                    db: this.form.db,
                     jobName: 'execution',
                     invokeParam: this.form.invokeParam,
                     jobGroup: this.form.jobGroup,
@@ -204,8 +216,15 @@
                 };
                 let triggerConf = {
                     triggerGroup: this.form.jobGroup,
-                    expression: this.form.expression,
                 };
+                if (this.form.triggerType === 0) {
+                    triggerConf.interval = this.form.interval;
+                    triggerConf.repeatCount = this.form.repeatCount;
+                } else if (this.form.triggerType === 1) {
+                    triggerConf.expression = this.form.expression;
+                } else {
+                    triggerConf.interval = this.form.interval;
+                }
                 if (this.form.immediately === '2') {
                     triggerConf['startAt'] = this.form.startAt.getTime();
                 }
@@ -233,6 +252,7 @@
                 let param = {
                     ins_id: this.form.ins_id,
                     uid: this.identify,
+                    db: this.form.db,
                     jobName: this.form.jobName,
                     invokeParam: this.form.invokeParam,
                     jobGroup: this.form.jobGroup,
