@@ -26,6 +26,21 @@
                         </el-tag>
                     </template>
                 </el-table-column>
+                <el-table-column align="center" prop="id" width="100" label="命令">
+                    <template slot-scope="scope">
+                        {{JSON.parse(scope.row.job_config).invokeParam.exe}}
+                    </template>
+                </el-table-column>
+                <el-table-column align="center" prop="id" width="100" label="逻辑DB">
+                    <template slot-scope="scope">
+                        {{JSON.parse(scope.row.job_config).invokeParam.db}}
+                    </template>
+                </el-table-column>
+                <el-table-column align="center" prop="id" width="100" label="执行次数">
+                    <template slot-scope="scope">
+                        {{JSON.parse(scope.row.job_config).invokeParam.times}}
+                    </template>
+                </el-table-column>
                 <el-table-column align="center" prop="job_describe" label="任务描述"/>
                 <el-table-column align="center" prop="create_time" width="180" label="创建时间">
                     <template slot-scope="scope">
@@ -37,7 +52,8 @@
                     <template slot-scope="scope">
                         <el-button v-if="rights('CETASK_CONF_UPDATE')" type="primary" icon="el-icon-edit" size="mini"
                                    @click="changeJobConf(scope.row)"/>
-                        <el-button v-if="rights('CETASK_STATE_UPDATE')" :type="getBtnType(scope.row)" :icon="getBtnIcon(scope.row)" size="mini"
+                        <el-button v-if="rights('CETASK_STATE_UPDATE')" :type="getBtnType(scope.row)"
+                                   :icon="getBtnIcon(scope.row)" size="mini"
                                    @click="changeJobState(scope.row)"/>
                         <el-button v-if="rights('CETASK_DEL')" type="danger" icon="el-icon-delete" size="mini"
                                    @click="deleteJob(scope.row)"/>
@@ -234,6 +250,7 @@
                     uid: conf.uid,
                     jobName: conf.jobName,
                     ins_id: conf.invokeParam.ins_id,
+                    db: parseInt(conf.invokeParam.db),
                     invokeParam: conf.invokeParam.exe,
                     triggerType: conf.triggerType,
                     immediately: '1',
@@ -241,7 +258,8 @@
                     startAt: null,
                     jobGroup: conf.jobGroup,
                     timeUnit: 'SECOND',
-                    interval: 1,
+                    interval: trigger.hasOwnProperty('interval') ? conf.interval : 1,
+                    repeatCount: trigger.hasOwnProperty('repeatCount') ? conf.repeatCount : -1,
                     description: conf.description
                 };
                 if (trigger.hasOwnProperty('startAt')) {
