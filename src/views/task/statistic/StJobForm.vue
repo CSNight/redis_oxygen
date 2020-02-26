@@ -159,15 +159,14 @@
             },
             resetForm() {
                 this.dialog = false;
-                this.$refs['form'].resetFields();
                 this.form = {
                     uid: this.identify,
                     jobName: '',
                     ins_id: '',
                     triggerType: 1,
-                    immediately: '1',
                     expression: '0/3 * * * * ?',
-                    startAt: null,
+                    immediately: '1',
+                    startAt: new Date(),
                     jobGroup: 'STATISTIC',
                     timeUnit: 'SECOND',
                     interval: 1,
