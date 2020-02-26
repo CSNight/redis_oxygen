@@ -8,64 +8,74 @@
             <el-button v-if="rights('CETTASK_QUERY')||rights('CETASK_QUERY_ALL')" type="danger" icon="el-icon-refresh"
                        size="mini" @click="loadCeJobs"/>
         </div>
-        <el-scrollbar style="height: 100%">
-            <el-table style="width: 100%;margin-bottom: 20px;" :data="ceJobs" v-loading="loading" ref="ceJobList">
-                <el-table-column align="center" prop="instance.instance_name" width="250" label="关联实例"/>
-                <el-table-column align="center" prop="job_group" width="100" label="任务组"/>
-                <el-table-column align="center" prop="trigger_type" width="100" label="触发器">
-                    <template slot-scope="scope">
-                        <el-tag size="mini" :type="getTriggerType(scope.row.trigger_type).type">
-                            {{getTriggerType(scope.row.trigger_type).label}}
-                        </el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column align="center" prop="state" width="100" label="状态">
-                    <template slot-scope="scope">
-                        <el-tag size="mini" :type="scope.row.state==='NORMAL'?'success':'danger'">
-                            {{scope.row.state==='NORMAL'?'运行中':'已停止'}}
-                        </el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column align="center" prop="id" width="100" label="命令">
-                    <template slot-scope="scope">
-                        {{JSON.parse(scope.row.job_config).invokeParam.exe}}
-                    </template>
-                </el-table-column>
-                <el-table-column align="center" prop="id" width="100" label="逻辑DB">
-                    <template slot-scope="scope">
-                        {{JSON.parse(scope.row.job_config).invokeParam.db}}
-                    </template>
-                </el-table-column>
-                <el-table-column align="center" prop="id" width="100" label="执行次数">
-                    <template slot-scope="scope">
-                        {{JSON.parse(scope.row.job_config).invokeParam.times}}
-                    </template>
-                </el-table-column>
-                <el-table-column align="center" prop="job_describe" label="任务描述"/>
-                <el-table-column align="center" prop="create_time" width="180" label="创建时间">
-                    <template slot-scope="scope">
-                        {{dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time))}}
-                    </template>
-                </el-table-column>
-                <el-table-column align="center" prop="create_user" width="150" label="创建用户"/>
-                <el-table-column align="center" label="操作" width="200px">
-                    <template slot-scope="scope">
-                        <el-button v-if="rights('CETASK_CONF_UPDATE')" type="primary" icon="el-icon-edit" size="mini"
-                                   @click="changeJobConf(scope.row)"/>
-                        <el-button v-if="rights('CETASK_STATE_UPDATE')" :type="getBtnType(scope.row)"
-                                   :icon="getBtnIcon(scope.row)" size="mini"
-                                   @click="changeJobState(scope.row)"/>
-                        <el-button v-if="rights('CETASK_DEL')" type="danger" icon="el-icon-delete" size="mini"
-                                   @click="deleteJob(scope.row)"/>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </el-scrollbar>
+        <el-table style="width: 100%;margin-bottom: 20px;" height="400" :data="ceJobs" v-loading="loading"
+                  ref="ceJobList">
+            <el-table-column align="center" prop="instance.instance_name" width="250" label="关联实例"/>
+            <el-table-column align="center" prop="job_group" width="100" label="任务组"/>
+            <el-table-column align="center" prop="trigger_type" width="100" label="触发器">
+                <template slot-scope="scope">
+                    <el-tag size="mini" :type="getTriggerType(scope.row.trigger_type).type">
+                        {{getTriggerType(scope.row.trigger_type).label}}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" prop="state" width="100" label="状态">
+                <template slot-scope="scope">
+                    <el-tag size="mini" :type="scope.row.state==='NORMAL'?'success':'danger'">
+                        {{scope.row.state==='NORMAL'?'运行中':'已停止'}}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" prop="id" label="命令">
+                <template slot-scope="scope">
+                    {{JSON.parse(scope.row.job_config).invokeParam.exe}}
+                </template>
+            </el-table-column>
+            <el-table-column align="center" prop="id" width="100" label="逻辑DB">
+                <template slot-scope="scope">
+                    {{JSON.parse(scope.row.job_config).invokeParam.db}}
+                </template>
+            </el-table-column>
+            <el-table-column align="center" prop="job_describe" label="任务描述">
+                <template slot-scope="scope">
+                    <el-tooltip v-if="scope.row.job_describe" effect="light" placement="top">
+                        <div slot="content" style="word-wrap: break-word">
+                            {{scope.row.job_describe}}
+                        </div>
+                        <el-link type="danger">详情</el-link>
+                    </el-tooltip>
+                    <a v-if="scope.row.job_describe===''">无</a>
+                </template>
+            </el-table-column>
+            <el-table-column align="center" prop="create_time" width="180" label="创建时间">
+                <template slot-scope="scope">
+                    {{dateFormat("YYYY-mm-dd HH:MM:SS",new Date(scope.row.create_time))}}
+                </template>
+            </el-table-column>
+            <el-table-column align="center" prop="create_user" width="150" label="创建用户"/>
+            <el-table-column align="center" label="操作" width="200px">
+                <template slot-scope="scope">
+                    <el-button v-if="rights('CETASK_CONF_UPDATE')" type="primary" icon="el-icon-edit" size="mini"
+                               @click="changeJobConf(scope.row)"/>
+                    <el-button v-if="rights('CETASK_STATE_UPDATE')" :type="getBtnType(scope.row)"
+                               :icon="getBtnIcon(scope.row)" size="mini"
+                               @click="changeJobState(scope.row)"/>
+                    <el-button v-if="rights('CETASK_DEL')" type="danger" icon="el-icon-delete" size="mini"
+                               @click="deleteJob(scope.row)"/>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-tabs style="height:100%;padding:10px;"
+                 closable v-model="currentTabName" @tab-remove="removeTab">
+            <el-tab-pane style="width: 100%;background-color:#1f2d3d;color:#2fb" v-for="item in execTabs"
+                         :key="item.name" :label="item.title" :name="item.name">
+            </el-tab-pane>
+        </el-tabs>
     </div>
 </template>
 
 <script>
-    import {dateFormat} from "@/utils/utils";
+    import {dateFormat, guid} from "@/utils/utils";
     import {delCeJob, getCeJobAll, getCeJobById, getCeJobByUser, modifyCeJobState} from "@/api/task/ce_task";
     import CeJobForm from "@/views/task/execution/CeJobForm";
 
@@ -74,14 +84,21 @@
         components: {CeJobForm},
         data() {
             return {
-                loading: false, ceJobs: [],
+                loading: false,
+                ceJobs: [],
+                identify: this.$store.getters.identify,
+                appId: guid(),
+                execTabs: [],
+                currentTabName: '',
                 triggerType: [{label: "Cron", value: 1, type: "primary"},
-                    {label: "Simple", value: 1, type: "success"},
-                    {label: "Calendar", value: 1, type: "warning"},
-                    {label: "DailyTime", value: 1, type: "danger"}]
+                    {label: "Simple", value: 0, type: "success"},
+                    {label: "Calendar", value: 2, type: "warning"},
+                    {label: "DailyTime", value: 3, type: "danger"}]
             }
         }, created() {
             this.$nextTick(() => {
+                this.$wss.on("ceRev", this.msgRev, this.appId);
+                this.$wss.connect(this.identify);
                 this.loadCeJobs();
             })
         }, methods: {
@@ -225,6 +242,9 @@
                 let prefix = st ? "启动" : "停止";
                 modifyCeJobState(row.id, !(row.state === "NORMAL")).then((resp) => {
                     if (resp.data.status === 200 && resp.data.message === "success") {
+                        if (st) {
+                            this.addTab(row)
+                        }
                         this.$message({
                             type: 'success',
                             message: '任务' + prefix + "成功!"
@@ -258,8 +278,8 @@
                     startAt: null,
                     jobGroup: conf.jobGroup,
                     timeUnit: 'SECOND',
-                    interval: trigger.hasOwnProperty('interval') ? conf.interval : 1,
-                    repeatCount: trigger.hasOwnProperty('repeatCount') ? conf.repeatCount : -1,
+                    interval: trigger.hasOwnProperty('interval') ? trigger.interval : 1,
+                    repeatCount: trigger.hasOwnProperty('repeatCount') ? parseInt(trigger.repeatCount) : -1,
                     description: conf.description
                 };
                 if (trigger.hasOwnProperty('startAt')) {
@@ -267,7 +287,39 @@
                     _this.form.immediately = "2";
                 }
                 _this.dialog = true;
+            }, addTab(job) {
+                for (let i = 0; i < this.execTabs.length; i++) {
+                    if (this.execTabs[i].id === job.id) {
+                        return;
+                    }
+                }
+                let tab = {
+                    id: job.id,
+                    title: job.job_name,
+                    name: job.job_name
+                };
+                this.execTabs.push(tab);
+                this.currentTabName = tab.name;
+            }, removeTab(targetName) {
+                let tabs = this.execTabs;
+                let activeName = this.currentTabName;
+                if (activeName === targetName) {
+                    tabs.forEach((tab, index) => {
+                        if (tab.name === targetName) {
+                            let nextTab = tabs[index + 1] || tabs[index - 1];
+                            if (nextTab) {
+                                activeName = nextTab.name;
+                            }
+                        }
+                    });
+                }
+                this.currentTabName = activeName;
+                this.execTabs = tabs.filter(tab => tab.name !== targetName);
+                delete this.$refs[targetName]
             }
+        }, beforeDestroy() {
+            this.$wss.un("ceRev", this.appId);
+            this.$wss.close();
         }
     }
 </script>
