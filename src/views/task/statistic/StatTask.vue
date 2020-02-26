@@ -64,9 +64,9 @@
             return {
                 loading: false, stJobs: [],
                 triggerType: [{label: "Cron", value: 1, type: "primary"},
-                    {label: "Simple", value: 1, type: "success"},
-                    {label: "Calendar", value: 1, type: "warning"},
-                    {label: "DailyTime", value: 1, type: "danger"}]
+                    {label: "Simple", value: 0, type: "success"},
+                    {label: "Calendar", value: 2, type: "warning"},
+                    {label: "DailyTime", value: 3, type: "danger"}]
             }
         }, created() {
             this.$nextTick(() => {
