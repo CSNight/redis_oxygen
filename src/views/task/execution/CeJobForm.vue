@@ -11,7 +11,7 @@
                 <el-input style="width: 270px" v-model="form.invokeParam" maxlength="100"/>
             </el-form-item>
             <el-form-item label="逻辑DB" prop="db">
-                <el-input-number style="width: 270px" v-model.number="form.db" :min="0" :max="100"/>
+                <el-input-number style="width: 270px" v-model="form.db" :min="0" :max="100"/>
             </el-form-item>
             <el-form-item label="触发器类型">
                 <el-select style="width: 270px;" v-model="form.triggerType" size="mini">
@@ -19,7 +19,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="重复次数" v-if="form.triggerType===0">
-                <el-input-number v-model.number="form.repeatCount" :min="-1" :max="9999999"/>
+                <el-input-number v-model="form.repeatCount" :min="-1" :max="9999999"/>
                 (-1代表永久执行)
             </el-form-item>
             <el-form-item v-if="form.triggerType!==1" label="时间单位">
@@ -175,17 +175,18 @@
             },
             resetForm() {
                 this.dialog = false;
-                this.$refs['form'].resetFields();
                 this.form = {
                     uid: this.identify,
                     jobName: '',
                     ins_id: '',
+                    db: 0,
+                    repeatCount: -1,
                     triggerType: 1,
-                    immediately: '1',
-                    invokeParam: '',
                     expression: '0/3 * * * * ?',
-                    startAt: null,
+                    immediately: '1',
+                    startAt: new Date(),
                     jobGroup: 'EXECUTION',
+                    invokeParam: '',
                     timeUnit: 'SECOND',
                     interval: 1,
                     description: ''
@@ -219,6 +220,12 @@
                 };
                 if (this.form.triggerType === 0) {
                     triggerConf.interval = this.form.interval;
+                    if (this.form.repeatCount === 0) {
+                        this.$message.error({
+                            message: "任务执行次数不能为零!"
+                        });
+                        return;
+                    }
                     triggerConf.repeatCount = this.form.repeatCount;
                 } else if (this.form.triggerType === 1) {
                     triggerConf.expression = this.form.expression;
@@ -262,8 +269,21 @@
                 };
                 let triggerConf = {
                     triggerGroup: this.form.jobGroup,
-                    expression: this.form.expression,
                 };
+                if (this.form.triggerType === 0) {
+                    triggerConf.interval = this.form.interval;
+                    if (this.form.repeatCount === 0) {
+                        this.$message.error({
+                            message: "任务执行次数不能为零!"
+                        });
+                        return;
+                    }
+                    triggerConf.repeatCount = this.form.repeatCount;
+                } else if (this.form.triggerType === 1) {
+                    triggerConf.expression = this.form.expression;
+                } else {
+                    triggerConf.interval = this.form.interval;
+                }
                 if (this.form.immediately === '2') {
                     triggerConf['startAt'] = this.form.startAt.getTime();
                 }
