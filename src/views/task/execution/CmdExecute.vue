@@ -225,6 +225,11 @@
                                 type: 'success',
                                 message: '删除成功!'
                             });
+                            for (let i = 0; i < this.execTabs.length; i++) {
+                                if (this.execTabs[i].id === row.id) {
+                                    this.execTabs.splice(i, 1);
+                                }
+                            }
                         } else {
                             this.$message({
                                 type: 'warning',
