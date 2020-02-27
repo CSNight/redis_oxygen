@@ -47,7 +47,6 @@ export default {
                     thisCallback.channel = msgObj.body;
                     break;
                 case "RESP":
-                case "UNKNOWN":
                 case "MONITOR":
                 case "MONITORCON":
                 case "DEMONITOR":
@@ -69,6 +68,14 @@ export default {
                 case"RMS_STAT":
                     thisCallback.emit("stRev", msgObj, msgObj.appId);
                     break;
+                case"EXEC_STARTED":
+                case"EXEC_ADDED":
+                case"EXEC_REMOVED":
+                case"EXEC_STOPPED":
+                case"RMS_EXEC":
+                    thisCallback.emit("ceRev", msgObj, msgObj.appId);
+                    break;
+                case "UNKNOWN":
                 case "ERROR":
                     thisCallback.emit("msgRev", msgObj, msgObj.appId);
                     thisCallback.emit("dtRev", msgObj, msgObj.appId);
