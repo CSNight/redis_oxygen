@@ -10,8 +10,8 @@
         </div>
         <el-table style="width: 100%;margin-bottom: 20px;" height="400" :data="ceJobs" v-loading="loading"
                   ref="ceJobList">
+            <el-table-column align="center" prop="job_name" label="任务ID"/>
             <el-table-column align="center" prop="instance.instance_name" width="250" label="关联实例"/>
-            <el-table-column align="center" prop="job_group" width="100" label="任务组"/>
             <el-table-column align="center" prop="trigger_type" width="100" label="触发器">
                 <template slot-scope="scope">
                     <el-tag size="mini" :type="getTriggerType(scope.row.trigger_type).type">
@@ -53,22 +53,25 @@
                 </template>
             </el-table-column>
             <el-table-column align="center" prop="create_user" width="150" label="创建用户"/>
-            <el-table-column align="center" label="操作" width="200px">
+            <el-table-column align="center" label="操作" width="240px">
                 <template slot-scope="scope">
                     <el-button v-if="rights('CETASK_CONF_UPDATE')" type="primary" icon="el-icon-edit" size="mini"
                                @click="changeJobConf(scope.row)"/>
                     <el-button v-if="rights('CETASK_STATE_UPDATE')" :type="getBtnType(scope.row)"
-                               :icon="getBtnIcon(scope.row)" size="mini"
-                               @click="changeJobState(scope.row)"/>
+                               :icon="getBtnIcon(scope.row)" size="mini" @click="changeJobState(scope.row)"/>
+                    <el-button v-if="rights('CETASK_STATE_UPDATE')" type="primary" icon="el-icon-postcard" size="mini"
+                               @click="addTab(scope.row)"/>
                     <el-button v-if="rights('CETASK_DEL')" type="danger" icon="el-icon-delete" size="mini"
                                @click="deleteJob(scope.row)"/>
                 </template>
             </el-table-column>
         </el-table>
+        <el-divider content-position="left">执行日志</el-divider>
         <el-tabs style="height:100%;padding:10px;"
                  closable v-model="currentTabName" @tab-remove="removeTab">
-            <el-tab-pane style="width: 100%;background-color:#1f2d3d;color:#2fb" v-for="item in execTabs"
-                         :key="item.name" :label="item.title" :name="item.name">
+            <el-tab-pane style="width:100%;height: 30vh" v-for="item in execTabs" :key="item.name" :label="item.title"
+                         :name="item.name">
+                <exec-log :ref="item.name" :appId="appId" :jobId="item.id"/>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -78,10 +81,11 @@
     import {dateFormat, guid} from "@/utils/utils";
     import {delCeJob, getCeJobAll, getCeJobById, getCeJobByUser, modifyCeJobState} from "@/api/task/ce_task";
     import CeJobForm from "@/views/task/execution/CeJobForm";
+    import ExecLog from "@/views/task/execution/ExecLog";
 
     export default {
         name: "CmdExecute",
-        components: {CeJobForm},
+        components: {ExecLog, CeJobForm},
         data() {
             return {
                 loading: false,
@@ -98,6 +102,9 @@
         }, created() {
             this.$nextTick(() => {
                 this.$wss.on("ceRev", this.msgRev, this.appId);
+                this.$wss.on("wsOpen", () => {
+                    this.startTrans();
+                }, this.appId);
                 this.$wss.connect(this.identify);
                 this.loadCeJobs();
             })
@@ -293,6 +300,12 @@
                         return;
                     }
                 }
+                if (this.execTabs.length > 10) {
+                    this.$message.error({
+                        message: '新建日志框失败，最大支持10个日志框'
+                    });
+                    return;
+                }
                 let tab = {
                     id: job.id,
                     title: job.job_name,
@@ -316,14 +329,35 @@
                 this.currentTabName = activeName;
                 this.execTabs = tabs.filter(tab => tab.name !== targetName);
                 delete this.$refs[targetName]
+            }, msgRev(e) {
+                if (e.body.hasOwnProperty("jobId")) {
+                    for (let key in this.$refs) {
+                        if (key === e.body.jobId) {
+                            let res = e.body;
+                            res.cost = e.cost;
+                            res.time = e.time;
+                            this.$refs[key][0].updateLog(res);
+                        }
+                    }
+                }
+            }, startTrans() {
+                if (this.$wss.isConnected) {
+                    this.$wss.send("", 100, this.appId, '', 'execution');
+                }
+            }, stopTrans() {
+                this.$wss.send("", 101, this.appId, '', 'execution');
             }
         }, beforeDestroy() {
+            this.stopTrans();
             this.$wss.un("ceRev", this.appId);
+            this.$wss.un("wsOpen", this.appId);
             this.$wss.close();
         }
     }
 </script>
 
 <style scoped>
-
+    >>> .el-divider--horizontal {
+        margin: 0 !important;
+    }
 </style>
