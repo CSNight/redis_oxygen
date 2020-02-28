@@ -30,8 +30,7 @@
             </div>
             <el-form-item label="" prop="password">
                 <el-input type="password" v-model="form.password" name="password" prefix-icon="fa fa-key"
-                          placeholder="Password"
-                          style="width: 360px;height: 46px" show-password/>
+                          placeholder="Password" style="width: 360px;height: 46px" show-password/>
             </el-form-item>
             <div v-if="error_reg_show">
                 <p class="error_text" v-for="error in error_reg['password']" :key="error"
