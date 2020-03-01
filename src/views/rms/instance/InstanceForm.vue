@@ -52,7 +52,6 @@
                     <el-input type="password" v-model="form.password"/>
                 </el-form-item>
             </div>
-
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button size="mini" type="text" @click="cancel">取消</el-button>

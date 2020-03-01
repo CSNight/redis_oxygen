@@ -3,44 +3,44 @@
         <el-col :span="8">
             <el-card style="height:85vh">
                 <div slot="header"><span>监控规则配置</span></div>
-                <el-form ref="form" :model="form" :rules="rules" label-position="left" size="mini" label-width="100px">
+                <el-form ref="form" :model="form" :rules="rules" label-position="right" size="mini" label-width="110px">
                     <el-timeline style="padding: 5px">
-                        <el-timeline-item type="danger" timestamp="关联实例 (需设置统计任务并启动)" placement="top">
-                            <el-form-item label="关联Redis">
-                                <el-select v-model="form.ins_id" style="width: 320px">
-                                    <el-option v-for="(t,i) in instances" :key="i" :value="t.id"
-                                               :label="t.instance_name"/>
+                        <el-timeline-item type="danger" timestamp="关联统计任务 (需设置统计任务并启动)" placement="top">
+                            <el-form-item label="关联统计任务" prop="job_id">
+                                <el-select v-model="form.job_id" style="width: 320px">
+                                    <el-option v-for="(t,i) in stJobs" :key="i" :value="t.id"
+                                               :label="t.instance.instance_name"/>
                                 </el-select>
                             </el-form-item>
                         </el-timeline-item>
                         <el-timeline-item type="danger" timestamp="规则设置" placement="top">
-                            <el-form-item label="规则名称">
+                            <el-form-item label="规则名称" prop="rule_name">
                                 <el-input v-model="form.rule_name" style="width: 320px"/>
                             </el-form-item>
                             <el-form-item label="规则描述">
                                 <el-input v-model="form.describe" style="width: 320px"/>
                             </el-form-item>
-                            <el-form-item label="监控指标">
+                            <el-form-item label="监控指标" prop="indicator">
                                 <el-select v-model="form.indicator" style="width: 320px" @change="indicateChange">
-                                    <el-option v-for="(t,i) in indicators" :key="i" :value="t.value" :label="t.label"/>
+                                    <el-option v-for="(t,i) in indicators" :key="i" :value="t.name" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="指标周期">
+                            <el-form-item label="指标周期" prop="duration">
                                 <el-select v-model="form.duration" style="width: 320px">
                                     <el-option v-for="(t,i) in duration" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="持续时长">
+                            <el-form-item label="持续时长" prop="cycle">
                                 <el-select v-model="form.cycle" style="width: 320px">
                                     <el-option v-for="(t,i) in cycle" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="信号量">
+                            <el-form-item label="信号量" prop="sign">
                                 <el-select v-model="form.sign" style="width: 320px">
                                     <el-option v-for="(t,i) in signal" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="阈值">
+                            <el-form-item label="阈值" prop="expression">
                                 <el-select v-model="form.expression" style="width: 80px">
                                     <el-option v-for="(t,i) in expression" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
@@ -50,21 +50,22 @@
                             </el-form-item>
                         </el-timeline-item>
                         <el-timeline-item type="danger" timestamp="通知设置" placement="top">
-                            <el-form-item label="报警级别">
+                            <el-form-item label="报警级别" prop="clazz">
                                 <el-select v-model="form.clazz" style="width: 320px">
                                     <el-option v-for="(t,i) in warnLevel" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="通知联系人">
+                            <el-form-item label="通知联系人" prop="contact">
                                 <el-input v-model="form.contact" style="width: 320px"/>
                             </el-form-item>
-                            <el-form-item label="邮件主题">
+                            <el-form-item label="邮件主题" prop="subject">
                                 <el-input v-model="form.subject" style="width: 320px"/>
                             </el-form-item>
                         </el-timeline-item>
                     </el-timeline>
                 </el-form>
-                <el-button type="primary" style="float: right" size="mini">新建规则</el-button>
+                <el-button type="primary" :loading="loading" style="float:right" size="mini" @click="addRule">新建规则
+                </el-button>
             </el-card>
         </el-col>
         <el-col :span="16">
@@ -77,71 +78,130 @@
 </template>
 
 <script>
-    import {getAll, getByUser} from "@/api/redismanage/redis_ins";
+    import {getStJobAll, getStJobByUser} from "@/api/task/stat_task";
+    import {getIndicators} from "@/api/redismanage/redis_indicate";
 
     export default {
         name: "ReportTask",
         data() {
             return {
-                instances: [], form: {
-                    ins_id: '',
-                    rule_name: '',
-                    describe: '',
-                    duration: 60,
-                    cycle: 1,
-                    indicator: '',
-                    sign: 'mean',
-                    expression: '>=',
-                    valf: 0,
-                    vals: 0,
-                    clazz: 'info',
-                    subject: '',
-                    contact: '',
-                }, rules: {},
-                duration: [
-                    {label: "1分钟", value: 60}, {label: "5分钟", value: 60 * 5}, {label: "15分钟", value: 60 * 15},
+                stJobs: [],
+                form: {
+                    job_id: '', rule_name: '', describe: '', duration: 60, cycle: 1, indicator: '', sign: '',
+                    expression: '', valf: 0, vals: 0, clazz: 'info', subject: '', contact: ''
+                }, rules: {
+                    job_id: [{required: true, message: '请选择关联统计任务', trigger: 'change'}],
+                    rule_name: [{required: true, message: '请输入监控规则名称', trigger: 'change'}],
+                    duration: [{required: true, message: '请选择监控周期', trigger: 'change'}],
+                    cycle: [{required: true, message: '请选择监控持续时长', trigger: 'change'}],
+                    indicator: [{required: true, message: '请选择监控指标', trigger: 'change'}],
+                    sign: [{required: true, message: '请选择监控信号量', trigger: 'change'}],
+                    expression: [{required: true, message: '请选择监控表达式', trigger: 'change'}],
+                    clazz: [{required: true, message: '请选择报警级别', trigger: 'change'}],
+                    contact: [{required: true, trigger: 'blur', validator: this.validateEmail}],
+                    subject: [{required: true, message: '请输入邮件主题', trigger: 'blur'}],
+                },
+                duration: [{label: "1分钟", value: 60}, {label: "5分钟", value: 60 * 5}, {label: "15分钟", value: 60 * 15},
                     {label: "30分钟", value: 60 * 15}, {label: "1小时", value: 60 * 60}],
-                cycle: [
-                    {label: "持续1周期", value: 1}, {label: "持续3周期", value: 3}, {label: "持续5周期", value: 5},
+                cycle: [{label: "持续1周期", value: 1}, {label: "持续3周期", value: 3}, {label: "持续5周期", value: 5},
                     {label: "持续10周期", value: 10}, {label: "持续15周期", value: 15}],
-                signal: [{label: "平均值", value: 'mean'}, {label: "最大值", value: 'max'}, {label: "最小值", value: 'min'}],
-                expression: [{label: ">", value: '>'},
-                    {label: ">=", value: '>='}, {label: "<", value: '<'}, {label: "<=", value: '<='},
-                    {label: "!=", value: '!='}, {label: "=", value: '='}, {label: "区间", value: 'between'}],
                 warnLevel: [{label: "通知级 (INFO)", value: 'info'}, {label: "警告级 (WARNING)", value: 'warn'},
                     {label: "危险级 (DANGER)", value: 'danger'}],
-                indicators: [{label: "CPU使用率", value: 'cpu_per'}, {label: "内存使用率", value: 'mem_us'},
-                    {label: "内存碎片率", value: 'mem_fr'}, {label: "网络I/O输出KBps", value: 'io_iok'},
-                    {label: "网络I/O输入KBps", value: 'io_iik'}, {label: "客户端连接数", value: 'cli_con'},
-                    {label: "阻塞客户端数", value: 'cli_blo'}, {label: "拒绝连接数", value: 'reject_cons'},
-                    {label: "键总数量", value: 'key_size'}, {label: "键空间MISS", value: 'ksp_miss'}]
+                signalLabel: {'max': '最大值', 'min': '最小值', 'mean': '平均值'},
+                indicators: [], signal: [], expression: [], loading: false, curIndicator: null,
+                reg: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/
             }
         }, created() {
             this.$nextTick(() => {
-                this.loadData('false');
+                this.loadStJobs();
             })
         }, methods: {
+            validateEmail(rule, value, callback) {
+                if (value === '') {
+                    callback(new Error('请正确填写邮箱'));
+                } else {
+                    if (value !== '') {
+                        if (!this.reg.test(value)) {
+                            callback(new Error('请输入有效的邮箱'));
+                        }
+                    }
+                    callback();
+                }
+            },
             rights(permit) {
                 if (this.$store.getters.permit.hasOwnProperty(permit)) {
                     return this.$store.getters.permit[permit];
                 }
                 return false
-            }, loadData(update) {
-                if (!this.rights("INS_QUERY_ALL") && !this.rights("INS_QUERY")) {
+            }, loadStJobs() {
+                if (!this.rights("STTASK_QUERY")) {
                     this.$message.error({
                         message: "禁止查询!"
                     });
-                } else if (this.rights("INS_QUERY_ALL")) {
-                    this.loading = true;
-                    this.instances = [];
-                    this.loadAll(update);
+                } else if (this.rights("STTASK_QUERY_ALL")) {
+                    this.stJobs = [];
+                    this.loadAll();
                 } else {
                     this.loadByUser();
                 }
+                this.loadIndicators();
+            }, loadAll() {
+                this.loading = true;
+                getStJobAll().then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.stJobs = resp.data.message;
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        })
+                    }
+                    this.loading = false;
+                }).catch((resp) => {
+                    if (resp.hasOwnProperty("data")) {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.message
+                        });
+                    }
+                    this.loading = false;
+                });
             }, loadByUser() {
-                getByUser(this.identify).then((resp) => {
+                this.loading = true;
+                getStJobByUser().then((resp) => {
                     if (resp.data.status === 200 && resp.data.code === "OK") {
-                        this.instances = resp.data.message;
+                        this.stJobs = resp.data.message;
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    }
+                    this.loading = false;
+                }).catch((resp) => {
+                    if (resp.hasOwnProperty("data")) {
+                        this.$message.error({
+                            message: "查询出错!" + resp.data.message
+                        });
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.message
+                        });
+                    }
+                    this.loading = false;
+                });
+            }, loadIndicators() {
+                if (!this.rights("INDICATOR_QUERY")) {
+                    this.$message.error({
+                        message: "禁止查询监控指标!"
+                    });
+                    return;
+                }
+                this.loading = true;
+                getIndicators().then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.indicators = resp.data.message;
                     } else {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
@@ -150,28 +210,84 @@
                     this.loading = false;
                 }).catch((resp) => {
                     this.loading = false;
-                    this.$message.error({
-                        message: "查询出错!" + resp.data.message
-                    });
-                });
-            }, loadAll(update) {
-                getAll(update).then((resp) => {
-                    if (resp.data.status === 200 && resp.data.code === "OK") {
-                        this.instances = resp.data.message;
-                    } else {
+                    if (resp.hasOwnProperty("data")) {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
                         });
+                    } else {
+                        this.$message.error({
+                            message: "查询出错!" + resp.message
+                        });
                     }
-                    this.loading = false;
-                }).catch((resp) => {
-                    this.loading = false;
-                    this.$message.error({
-                        message: "查询出错!" + resp.data.message
-                    });
-                });
+                })
             }, indicateChange() {
-
+                for (let i = 0; i < this.indicators.length; i++) {
+                    if (this.indicators[i].name === this.form.indicator) {
+                        let signals = this.indicators[i].sign_support.split(";");
+                        let expressions = this.indicators[i].exp_support.split(";");
+                        this.curIndicator = this.indicators[i];
+                        this.signal = [];
+                        this.expression = [];
+                        for (let j = 0; j < signals.length; j++) {
+                            this.signal.push({label: this.signalLabel[signals[j]], value: signals[j]})
+                        }
+                        for (let h = 0; h < expressions.length; h++) {
+                            this.expression.push({label: expressions[h], value: expressions[h]})
+                        }
+                    }
+                }
+            }, addRule() {
+                this.$refs['form'].validate((valid) => {
+                    if (valid && this.checkExpression(this.curIndicator.unit)) {
+                        let expression = '';
+                        if (this.form.expression === 'between') {
+                            expression = this.form.valf + "|" + this.form.expression + "|" + this.form.vals
+                        } else {
+                            expression = this.form.expression + "|" + this.form.valf;
+                        }
+                        let params = {
+                            job_id: this.form.job_id,
+                            formula: [this.form.indicator, this.form.duration, this.form.cycle, this.form.sign, expression].join("|"),
+                            name: this.form.rule_name,
+                            describe: this.form.describe,
+                            clazz: this.form.clazz,
+                            subject: this.form.subject,
+                            contact: this.form.contact
+                        };
+                        console.log(params.formula)
+                    }
+                })
+            }, checkExpression(unit) {
+                if (this.form.expression === 'between') {
+                    if (this.checkNumber(this.form.valf, unit) && this.checkNumber(this.form.vals, unit)) {
+                        if (this.form.valf < this.form.vals) {
+                            return true;
+                        } else {
+                            this.$message.error({
+                                message: "区间值1应小于区间值2"
+                            });
+                        }
+                    } else {
+                        this.$message.error({
+                            message: "区间值填写错误"
+                        });
+                    }
+                } else {
+                    if (this.checkNumber(this.form.valf, unit)) {
+                        return true;
+                    } else {
+                        this.$message.error({
+                            message: "阈值填写错误"
+                        });
+                    }
+                }
+                return false
+            }, checkNumber(num, unit) {
+                if (unit === 'val') {
+                    return num === +num
+                } else {
+                    return num === +num && num <= 100 && num >= 0
+                }
             }
         }
     }
