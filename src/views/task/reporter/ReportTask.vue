@@ -41,7 +41,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="阈值" prop="expression">
-                                <el-select v-model="form.expression" style="width: 80px">
+                                <el-select v-model="form.expression" style="width: 90px">
                                     <el-option v-for="(t,i) in expression" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                                 <el-input-number v-model="form.valf" style="width: 120px;margin-left: 5px"/>
@@ -71,7 +71,7 @@
         <el-col :span="16">
             <el-card style="height:85vh">
                 <div slot="header">监控规则列表</div>
-                <el-table></el-table>
+                <rule-table ref="rules"/>
             </el-card>
         </el-col>
     </el-row>
@@ -80,9 +80,12 @@
 <script>
     import {getStJobAll, getStJobByUser} from "@/api/task/stat_task";
     import {getIndicators} from "@/api/redismanage/redis_indicate";
+    import RuleTable from "@/views/task/reporter/RuleTable";
+    import {addRule} from "@/api/task/monitor_task";
 
     export default {
         name: "ReportTask",
+        components: {RuleTable},
         data() {
             return {
                 stJobs: [],
@@ -247,14 +250,45 @@
                         }
                         let params = {
                             job_id: this.form.job_id,
-                            formula: [this.form.indicator, this.form.duration, this.form.cycle, this.form.sign, expression].join("|"),
                             name: this.form.rule_name,
-                            describe: this.form.describe,
+                            description: this.form.describe,
+                            indicator: this.form.indicator,
+                            cycle: this.form.cycle,
+                            duration: this.form.duration,
+                            sign: this.form.sign,
+                            expression: [this.form.indicator, this.form.duration, this.form.cycle, this.form.sign, expression].join("|"),
                             clazz: this.form.clazz,
                             subject: this.form.subject,
                             contact: this.form.contact
                         };
-                        console.log(params.formula)
+                        addRule(params).then((resp) => {
+                            if (resp.data.status === 200 && resp.data.code === "OK") {
+                                this.$message({
+                                    type: 'success',
+                                    message: '添加成功!'
+                                });
+                            } else {
+                                this.$message({
+                                    type: 'error',
+                                    message: resp.data.message
+                                });
+                            }
+                            this.loading = false;
+                            this.$refs.rules.loadRules();
+                            this.dialog = false;
+                        }).catch((resp) => {
+                            this.loading = false;
+                            this.dialog = false;
+                            if (resp.hasOwnProperty("data")) {
+                                this.$message.error({
+                                    message: "添加出错!" + resp.data.message
+                                });
+                            } else {
+                                this.$message.error({
+                                    message: "添加出错!" + resp.message
+                                });
+                            }
+                        })
                     }
                 })
             }, checkExpression(unit) {
