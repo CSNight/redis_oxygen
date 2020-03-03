@@ -8,7 +8,7 @@
                         <el-timeline-item type="danger" timestamp="关联统计任务 (需设置统计任务并启动)" placement="top">
                             <el-form-item label="关联统计任务" prop="job_id">
                                 <el-select v-model="form.job_id" style="width: 320px">
-                                    <el-option v-for="(t,i) in stJobs" :key="i" :value="t.id"
+                                    <el-option v-for="(t,i) in stJobs" :key="i" :value="t.job_name"
                                                :label="t.instance.instance_name"/>
                                 </el-select>
                             </el-form-item>
