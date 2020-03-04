@@ -84,7 +84,7 @@
         components: {MailConfs, MailRecord, VueEditor},
         data() {
             return {
-                tab: 'first', loading: false, sending: false,
+                tab: 'first', loading: false, sending: false, identify: this.$store.getters.identify,
                 content: '',
                 reg: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
                 form: {
@@ -242,12 +242,13 @@
                             subject: this.sendForm.title,
                             toList: this.sendForm.emailTo,
                             content: this.content,
-                            ccList: this.sendForm.ccTo
+                            ccList: this.sendForm.ccTo,
+                            uid: this.identify
                         };
                         this.loading = true;
                         this.sending = true;
                         sendMail(params).then((resp) => {
-                            if (resp.data.status === 200 && resp.data.message === 'success') {
+                            if (resp.data.status === 200 && resp.data.message.indexOf("-") !== -1) {
                                 this.$message({type: "success", message: "邮件发送中,请稍后在发送记录中查看发送状态"});
                             } else {
                                 this.$message({type: "error", message: "邮件发送失败 " + resp.data.message});
