@@ -256,7 +256,7 @@
                             cycle: this.form.cycle,
                             duration: this.form.duration,
                             sign: this.form.sign,
-                            expression: [this.form.indicator, this.form.duration, this.form.cycle, this.form.sign, expression].join("|"),
+                            expression: [this.form.indicator, this.form.duration, this.form.cycle, this.form.sign, expression, this.curIndicator.unit].join("|"),
                             clazz: this.form.clazz,
                             subject: this.form.subject,
                             contact: this.form.contact
