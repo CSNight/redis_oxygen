@@ -12,8 +12,8 @@ export function addRule(dto) {
     return REQ.post('/rules/monitorRule', dto);
 }
 
-export function updateRule(dto) {
-    return REQ.put('/rules/monitorRule', dto);
+export function updateRule(rid, state) {
+    return REQ.put('/rules/monitorRule/' + rid + "/" + state);
 }
 
 export function deleteRule(id) {

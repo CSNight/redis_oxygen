@@ -8,6 +8,10 @@
         <el-table-column align="center" label="联系人" prop="contact"/>
         <el-table-column align="center" label="操作">
             <template slot-scope="scope">
+                <el-button v-if="rights('RULES_UPDATE')" size="mini"
+                           :icon="scope.row.enabled?'el-icon-turn-off':'el-icon-open'"
+                           :type="scope.row.enabled?'primary':'success'"
+                           @click="toggleRule(scope.row)"/>
                 <el-button v-if="rights('RULES_DEL')" size="mini" icon="el-icon-delete" type="danger"
                            @click="deleteRule(scope.row)"/>
             </template>
@@ -16,7 +20,7 @@
 </template>
 
 <script>
-    import {deleteRule, getMonitorRuleAll, getMonitorRuleByUser} from "@/api/task/monitor_task";
+    import {deleteRule, getMonitorRuleAll, getMonitorRuleByUser, updateRule} from "@/api/task/monitor_task";
 
     export default {
         name: "RuleTable",
@@ -91,6 +95,17 @@
                     }
                     this.loading = false;
                 });
+            }, toggleRule(row) {
+                let state = !row.enabled;
+                updateRule(row.id, state).then((resp) => {
+                    if (resp.data.status === 200 && resp.data.code === "OK") {
+                        this.loadRules();
+                    } else {
+                        this.$message.error('修改状态失败!' + resp.data.message);
+                    }
+                }).catch(() => {
+                    this.$message.error('修改状态失败!');
+                })
             }, deleteRule(row) {
                 this.$confirm('将删除该监控规则是否继续?', '提示', {
                     confirmButtonText: '确定',
