@@ -1,16 +1,24 @@
 <template>
     <el-table :data="rules">
         <el-table-column align="center" label="规则名称" prop="name"/>
-        <el-table-column align="center" label="规则描述" prop="description"/>
-        <el-table-column align="center" label="监控指标" width="100px" prop="indicator"/>
+        <el-table-column align="center" label="状态" width="80px" prop="enabled">
+            <template slot-scope="scope">
+                <el-tag :type="scope.row.enabled?'success':'danger'">{{scope.row.enabled?'启用':'禁用'}}</el-tag>
+            </template>
+        </el-table-column>
+        <el-table-column align="center" label="监控指标" width="90px" prop="indicator"/>
         <el-table-column align="center" label="表达式" prop="expression"/>
-        <el-table-column align="center" label="通知级别" width="80px" prop="clazz"/>
+        <el-table-column align="center" label="通知级别" width="90px" prop="clazz">
+            <template slot-scope="scope">
+                <el-tag :type="scope.row.clazz">{{scope.row.clazz}}</el-tag>
+            </template>
+        </el-table-column>
         <el-table-column align="center" label="联系人" prop="contact"/>
-        <el-table-column align="center" label="操作">
+        <el-table-column align="center" label="操作" width="120px">
             <template slot-scope="scope">
                 <el-button v-if="rights('RULES_UPDATE')" size="mini"
                            :icon="scope.row.enabled?'el-icon-turn-off':'el-icon-open'"
-                           :type="scope.row.enabled?'primary':'success'"
+                           :type="scope.row.enabled?'primary':'success'" :title="'启用/禁用'"
                            @click="toggleRule(scope.row)"/>
                 <el-button v-if="rights('RULES_DEL')" size="mini" icon="el-icon-delete" type="danger"
                            @click="deleteRule(scope.row)"/>
@@ -28,7 +36,7 @@
             return {
                 rules: [],
             }
-        }, created() {
+        }, mounted() {
             this.$nextTick(() => {
                 this.loadRules();
             })
