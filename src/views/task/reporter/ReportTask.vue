@@ -1,13 +1,13 @@
 <template>
     <el-row :gutter="20" style="margin-top: 20px" type="flex" :align="'middle'">
-        <el-col :span="8">
+        <el-col :span="6">
             <el-card style="height:85vh">
                 <div slot="header"><span>监控规则配置</span></div>
                 <el-form ref="form" :model="form" :rules="rules" label-position="right" size="mini" label-width="110px">
                     <el-timeline style="padding: 5px">
                         <el-timeline-item type="danger" timestamp="关联统计任务 (需设置统计任务并启动)" placement="top">
                             <el-form-item label="关联统计任务" prop="job_id">
-                                <el-select v-model="form.job_id" style="width: 320px">
+                                <el-select v-model="form.job_id" style="width: 200px">
                                     <el-option v-for="(t,i) in stJobs" :key="i" :value="t.job_name"
                                                :label="t.instance.instance_name"/>
                                 </el-select>
@@ -15,51 +15,51 @@
                         </el-timeline-item>
                         <el-timeline-item type="danger" timestamp="规则设置" placement="top">
                             <el-form-item label="规则名称" prop="rule_name">
-                                <el-input v-model="form.rule_name" style="width: 320px"/>
+                                <el-input v-model="form.rule_name" style="width: 200px"/>
                             </el-form-item>
                             <el-form-item label="规则描述">
-                                <el-input v-model="form.describe" style="width: 320px"/>
+                                <el-input v-model="form.describe" style="width: 200px"/>
                             </el-form-item>
                             <el-form-item label="监控指标" prop="indicator">
-                                <el-select v-model="form.indicator" style="width: 320px" @change="indicateChange">
+                                <el-select v-model="form.indicator" style="width: 200px" @change="indicateChange">
                                     <el-option v-for="(t,i) in indicators" :key="i" :value="t.name" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="指标周期" prop="duration">
-                                <el-select v-model="form.duration" style="width: 320px">
+                                <el-select v-model="form.duration" style="width: 200px">
                                     <el-option v-for="(t,i) in duration" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="持续时长" prop="cycle">
-                                <el-select v-model="form.cycle" style="width: 320px">
+                                <el-select v-model="form.cycle" style="width: 200px">
                                     <el-option v-for="(t,i) in cycle" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="信号量" prop="sign">
-                                <el-select v-model="form.sign" style="width: 320px">
+                                <el-select v-model="form.sign" style="width: 200px">
                                     <el-option v-for="(t,i) in signal" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="阈值" prop="expression">
-                                <el-select v-model="form.expression" style="width: 90px">
+                                <el-select v-model="form.expression" style="width: 200px">
                                     <el-option v-for="(t,i) in expression" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
-                                <el-input-number v-model="form.valf" style="width: 120px;margin-left: 5px"/>
+                                <el-input-number v-model="form.valf" style="width: 80px;" controls-position="right"/>
                                 <el-input-number v-if="form.expression==='between'" v-model="form.vals"
-                                                 style="width: 120px;margin-left: 5px"/>
+                                                 controls-position="right" style="width: 80px;margin-left: 5px"/>
                             </el-form-item>
                         </el-timeline-item>
                         <el-timeline-item type="danger" timestamp="通知设置" placement="top">
                             <el-form-item label="报警级别" prop="clazz">
-                                <el-select v-model="form.clazz" style="width: 320px">
+                                <el-select v-model="form.clazz" style="width: 200px">
                                     <el-option v-for="(t,i) in warnLevel" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="通知联系人" prop="contact">
-                                <el-input v-model="form.contact" style="width: 320px"/>
+                                <el-input v-model="form.contact" style="width: 200px"/>
                             </el-form-item>
                             <el-form-item label="邮件主题" prop="subject">
-                                <el-input v-model="form.subject" style="width: 320px"/>
+                                <el-input v-model="form.subject" style="width: 200px"/>
                             </el-form-item>
                         </el-timeline-item>
                     </el-timeline>
@@ -68,7 +68,7 @@
                 </el-button>
             </el-card>
         </el-col>
-        <el-col :span="16">
+        <el-col :span="18">
             <el-card style="height:85vh">
                 <div slot="header">监控规则列表</div>
                 <rule-table ref="rules"/>
@@ -108,7 +108,7 @@
                     {label: "30分钟", value: 60 * 15}, {label: "1小时", value: 60 * 60}],
                 cycle: [{label: "持续1周期", value: 1}, {label: "持续3周期", value: 3}, {label: "持续5周期", value: 5},
                     {label: "持续10周期", value: 10}, {label: "持续15周期", value: 15}],
-                warnLevel: [{label: "通知级 (INFO)", value: 'info'}, {label: "警告级 (WARNING)", value: 'warn'},
+                warnLevel: [{label: "通知级 (INFO)", value: 'info'}, {label: "警告级 (WARNING)", value: 'warning'},
                     {label: "危险级 (DANGER)", value: 'danger'}],
                 signalLabel: {'max': '最大值', 'min': '最小值', 'mean': '平均值'},
                 indicators: [], signal: [], expression: [], loading: false, curIndicator: null,
