@@ -1,7 +1,7 @@
 <template>
     <el-row :gutter="20" style="margin-top: 20px" type="flex" :align="'middle'">
         <el-col :span="6">
-            <el-card style="height:85vh">
+            <el-card style="height:85vh;overflow-y: auto">
                 <div slot="header"><span>监控规则配置</span></div>
                 <el-form ref="form" :model="form" :rules="rules" label-position="right" size="mini" label-width="110px">
                     <el-timeline style="padding: 5px">
@@ -44,9 +44,11 @@
                                 <el-select v-model="form.expression" style="width: 200px">
                                     <el-option v-for="(t,i) in expression" :key="i" :value="t.value" :label="t.label"/>
                                 </el-select>
-                                <el-input-number v-model="form.valf" style="width: 80px;" controls-position="right"/>
+                                <el-input-number v-model="form.valf" style="width:100px;margin-top: 5px"
+                                                 controls-position="right"/>
                                 <el-input-number v-if="form.expression==='between'" v-model="form.vals"
-                                                 controls-position="right" style="width: 80px;margin-left: 5px"/>
+                                                 controls-position="right"
+                                                 style="width:100px;margin-top: 5px;margin-left: 5px"/>
                             </el-form-item>
                         </el-timeline-item>
                         <el-timeline-item type="danger" timestamp="通知设置" placement="top">
@@ -60,6 +62,11 @@
                             </el-form-item>
                             <el-form-item label="邮件主题" prop="subject">
                                 <el-input v-model="form.subject" style="width: 200px"/>
+                            </el-form-item>
+                            <el-form-item label="重复告警延迟">
+                                <el-select v-model="form.delay" style="width: 200px">
+                                    <el-option v-for="(t,i) in delays" :key="i" :value="t.value" :label="t.label"/>
+                                </el-select>
                             </el-form-item>
                         </el-timeline-item>
                     </el-timeline>
@@ -91,7 +98,7 @@
                 stJobs: [],
                 form: {
                     job_id: '', rule_name: '', describe: '', duration: 60, cycle: 1, indicator: '', sign: '',
-                    expression: '', valf: 0, vals: 0, clazz: 'info', subject: '', contact: ''
+                    expression: '', valf: 0, vals: 0, clazz: 'info', subject: '', contact: '', delay: -1
                 }, rules: {
                     job_id: [{required: true, message: '请选择关联统计任务', trigger: 'change'}],
                     rule_name: [{required: true, message: '请输入监控规则名称', trigger: 'change'}],
@@ -105,9 +112,12 @@
                     subject: [{required: true, message: '请输入邮件主题', trigger: 'blur'}],
                 },
                 duration: [{label: "1分钟", value: 60}, {label: "5分钟", value: 60 * 5}, {label: "15分钟", value: 60 * 15},
-                    {label: "30分钟", value: 60 * 15}, {label: "1小时", value: 60 * 60}],
+                    {label: "30分钟", value: 60 * 30}, {label: "1小时", value: 60 * 60}],
                 cycle: [{label: "持续1周期", value: 1}, {label: "持续3周期", value: 3}, {label: "持续5周期", value: 5},
                     {label: "持续10周期", value: 10}, {label: "持续15周期", value: 15}],
+                delays: [{label: "无延迟", value: -1}, {label: "5分钟", value: 60 * 5}, {label: "15分钟", value: 60 * 15},
+                    {label: "30分钟", value: 60 * 15}, {label: "1小时", value: 60 * 60},
+                    {label: "12小时", value: 60 * 60 * 12}, {label: "24小时", value: 60 * 60 * 24}],
                 warnLevel: [{label: "通知级 (INFO)", value: 'info'}, {label: "警告级 (WARNING)", value: 'warning'},
                     {label: "危险级 (DANGER)", value: 'danger'}],
                 signalLabel: {'max': '最大值', 'min': '最小值', 'mean': '平均值'},
@@ -253,8 +263,7 @@
                             name: this.form.rule_name,
                             description: this.form.describe,
                             indicator: this.form.indicator,
-                            cycle: this.form.cycle,
-                            duration: this.form.duration,
+                            delay: this.form.delay,
                             sign: this.form.sign,
                             expression: [this.form.indicator, this.form.duration, this.form.cycle, this.form.sign, expression, this.curIndicator.unit].join("|"),
                             clazz: this.form.clazz,
@@ -327,7 +336,7 @@
     }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
     .custom-tree-node {
         flex: 1;
         display: flex;
@@ -335,5 +344,13 @@
         justify-content: space-between;
         font-size: 14px;
         padding-right: 8px;
+    }
+
+    >>> .el-timeline-item {
+        padding-bottom: 0;
+    }
+
+    >>> .el-timeline-item__tail {
+        margin-top: 14px;
     }
 </style>
