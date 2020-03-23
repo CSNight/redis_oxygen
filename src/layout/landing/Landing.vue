@@ -15,6 +15,9 @@
                         <router-link to="/home">Dashboard</router-link>
                     </el-menu-item>
                     <el-menu-item index="3" v-if="name!==''">
+                        <a target="_blank" :href="'https://csnight.github.io/oxygen_vue/'">Docs</a>
+                    </el-menu-item>
+                    <el-menu-item index="3" v-if="name!==''">
                         <a target="_blank" :href="baseUrl+'/swagger-ui.html'">SeverAPI</a>
                     </el-menu-item>
                 </el-menu>
@@ -299,7 +302,7 @@
         height: 100%;
     }
 
-     .my-md {
+    .my-md {
         margin-top: 4rem !important;
     }
 
@@ -713,7 +716,7 @@
         box-shadow: 0 4px 6px rgba(50, 50, 93, .11), 0 1px 3px rgba(0, 0, 0, .08);
     }
 
-    .col, .col-lg-4, .col-lg-6,  .col-lg-10, .col-lg-12,  .col-md-6 {
+    .col, .col-lg-4, .col-lg-6, .col-lg-10, .col-lg-12, .col-md-6 {
         position: relative;
         width: 100%;
         min-height: 1px;
