@@ -14,11 +14,11 @@
                     <el-menu-item index="2">
                         <router-link to="/home">Dashboard</router-link>
                     </el-menu-item>
-                    <el-menu-item index="3" v-if="name!==''">
+                    <el-menu-item index="3">
                         <a target="_blank" :href="'https://csnight.github.io/oxygen_vue/'">Docs</a>
                     </el-menu-item>
-                    <el-menu-item index="3" v-if="name!==''">
-                        <a target="_blank" :href="baseUrl+'/swagger-ui.html'">SeverAPI</a>
+                    <el-menu-item index="4" v-if="name!==''">
+                        <a target="_blank" :href="baseUrl+'/swagger-ui.html'">ServerAPI</a>
                     </el-menu-item>
                 </el-menu>
                 <div style="margin: auto">
