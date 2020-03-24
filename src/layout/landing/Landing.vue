@@ -155,7 +155,8 @@
                     <div class="col-md-6">
                         <ul class="nav nav-footer justify-content-end">
                             <li class="nav-item">
-                                <a href="https://github.com/CSNight" class="nav-link" target="_blank">CSNight</a>
+                                <a class="nav-link" href="http://www.beian.miit.gov.cn"
+                                   target="_blank">RMS开源小站 - 京ICP备20008725号</a>.
                             </li>
                             <li class="nav-item">
                                 <a href="https://github.com/CSNight/RedisMonitorServices/blob/master/LICENSE"
@@ -240,7 +241,6 @@
         margin-top: -420px;
         position: relative;
         background: transparent;
-        pointer-events: none;
     }
 
     .footer {

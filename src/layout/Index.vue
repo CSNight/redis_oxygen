@@ -9,7 +9,11 @@
             </div>
             <app-main/>
             <el-footer class="el-main-footer">
-                <a href="">@CSNight</a>
+                <a href="https://www.csnight.xyz">@CSNight - </a>
+                <a class="nav-link" href="http://www.beian.miit.gov.cn"
+                   target="_blank">RMS开源小站 - 京ICP备20008725号 - </a>
+                <a href="https://github.com/CSNight/RedisMonitorServices/blob/master/LICENSE"
+                   class="nav-link" target="_blank">MIT License</a>
             </el-footer>
         </div>
     </div>
