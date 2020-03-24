@@ -8,5 +8,5 @@
 - Efficient non-blocks and support customize
 - Multiple admin tools
 
-[GitHub](https://github.com/docsifyjs/docsify/)
+[GitHub](https://github.com/CSNight/oxygen_vue)
 [Getting Started](#oxygen)
