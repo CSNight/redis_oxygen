@@ -7,6 +7,6 @@
 - Complete with Monitoring indicators (By INFO command)
 - Efficient non-blocks and support customize
 - Multiple admin tools
-
+<img/>
 [GitHub](https://github.com/docsifyjs/docsify/)
 [Getting Started](#oxygen_vue)
