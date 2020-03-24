@@ -9,4 +9,4 @@
 - Multiple admin tools
 
 [GitHub](https://github.com/docsifyjs/docsify/)
-[Getting Started](#oxygen_vue)
+[Getting Started](#oxygen)

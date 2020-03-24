@@ -1,4 +1,4 @@
-# oxygen_vue
+# oxygen
 
 ## Project setup
 ```
