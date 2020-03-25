@@ -1,28 +1,38 @@
-- Getting started
+- Getting Start
 
-  - [Quick start](quickstart.md)
-  - [Writing more pages](more-pages.md)
-  - [Custom navbar](custom-navbar.md)
-  - [Cover page](cover.md)
+  - [Download Package](download.md)
+  - [Installation and Configuration](installation.md)
+  - [Start Server](start-server.md)
 
-- Customization
+- Operating Manual
 
-  - [Configuration](configuration.md)
-  - [Themes](themes.md)
-  - [List of Plugins](plugins.md)
-  - [Write a Plugin](write-a-plugin.md)
-  - [Markdown configuration](markdown.md)
-  - [Language highlighting](language-highlight.md)
+  - System Manage
+    - [Permission Manage](rights.md)
+    - [Department Manage](department.md)
+    - [Role Manage](roles.md)
+    - [User Manage](users.md)
+    - [Menu Manage](menus.md)
+    - [SQL Monitor](sqls.md)
+  - Redis Manage
+    - [Instance Manage](sqls.md)
+    - [Remote Redis Client](sqls.md)
+    - [Data Monitor](sqls.md)
+    - [Data Backup and Recovery](sqls.md)
+    - [Instance Config Manage](sqls.md)
+    - [Backups Manage](sqls.md)
+    - [Monitor Indicators Manage](sqls.md)
+  - Task Manage
+    - [Statistic Task Manage](sqls.md)
+    - [Command Task Manage](sqls.md)
+    - [Monitor Task Manage](sqls.md)
+  - Tools
+    - [Coding Tool](sqls.md)
+    - [Icon Database](sqls.md)
+    - [Markdown Tool](sqls.md)
+    - [Mail Tool](sqls.md)
+  - User Center
+    - [Change Password](sqls.md)
+    - [Change Avatar](sqls.md)
+    - [Operation Logs Manage](sqls.md)
 
-- Guide
-
-  - [Deploy](deploy.md)
-  - [Helpers](helpers.md)
-  - [Vue compatibility](vue.md)
-  - [CDN](cdn.md)
-  - [Offline Mode(PWA)](pwa.md)
-  - [Server-Side Rendering(SSR)](ssr.md)
-  - [Embed Files](embed-files.md)
-
-- [Awesome docsify](awesome.md)
 - [Changelog](changelog.md)

@@ -6,27 +6,33 @@
 
 - 功能介绍
 
-  - [系统管理](user-manager.md)
-     + [权限管理](rights.md)
-     + [部门管理](department.md)
-     + [角色管理](roles.md)
-     + [用户管理](users.md)
-     + [菜单管理](menus.md)
-     + [SQL监控](sqls.md)
-  - [Themes](themes.md)
-  - [List of Plugins](plugins.md)
-  - [Write a Plugin](write-a-plugin.md)
-  - [Markdown configuration](markdown.md)
-  - [Language highlighting](language-highlight.md)
-
-- 
-
-  - [Deploy](deploy.md)
-  - [Helpers](helpers.md)
-  - [Vue compatibility](vue.md)
-  - [CDN](cdn.md)
-  - [Offline Mode(PWA)](pwa.md)
-  - [Server-Side Rendering(SSR)](ssr.md)
-  - [Embed Files](embed-files.md)
+  - 系统管理
+    - [权限管理](rights.md)
+    - [部门管理](department.md)
+    - [角色管理](roles.md)
+    - [用户管理](users.md)
+    - [菜单管理](menus.md)
+    - [SQL监控](sqls.md)
+  - Redis管理
+    - [实例管理](sqls.md)
+    - [远程VNC](sqls.md)
+    - [数据查询监控](sqls.md)
+    - [数据备份同步](sqls.md)
+    - [实例配置管理](sqls.md)
+    - [备份文件管理](sqls.md)
+    - [监控指标管理](sqls.md)
+  - 任务管理
+    - [统计任务管理](sqls.md)
+    - [命令任务管理](sqls.md)
+    - [监控任务管理](sqls.md)
+  - 系统工具
+    - [代码工具](sqls.md)
+    - [图标库](sqls.md)
+    - [Markdown](sqls.md)
+    - [邮件工具](sqls.md)
+  - 个人中心
+    - [修改密码](sqls.md)
+    - [修改头像](sqls.md)
+    - [日志管理](sqls.md)
 
 - [Changelog](changelog.md)
