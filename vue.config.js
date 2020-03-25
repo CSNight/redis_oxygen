@@ -4,7 +4,11 @@ const path = require('path');
 function resolve(dir) {
     return path.join(__dirname, dir)
 }
-
+// 导入compression-webpack-plugin
+// eslint-disable-next-line no-undef
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
+// 定义压缩文件类型
+const productionGzipExtensions = ['js', 'css']
 const name = 'Oxygen';// page title
 
 // If your port is set to 80,
@@ -35,7 +39,16 @@ module.exports = {
             alias: {
                 '@': resolve('src')
             }
-        }
+        },
+        plugins: [
+            new CompressionWebpackPlugin({
+                filename: '[path].gz[query]',
+                algorithm: 'gzip',
+                test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+                threshold: 1024,
+                minRatio: 0.8
+            })
+        ]
     },
     chainWebpack(config) {
         config.plugins.delete('preload'); // TODO: need test
