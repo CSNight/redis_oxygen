@@ -7,12 +7,12 @@
 - 功能介绍
 
   - [系统管理](user-manager.md)
-    - [权限管理](rights.md)
-    - [部门管理](department.md)
-    - [角色管理](roles.md)
-    - [用户管理](users.md)
-    - [菜单管理](menus.md)
-    - [SQL监控](sqls.md)
+     + [权限管理](rights.md)
+     + [部门管理](department.md)
+     + [角色管理](roles.md)
+     + [用户管理](users.md)
+     + [菜单管理](menus.md)
+     + [SQL监控](sqls.md)
   - [Themes](themes.md)
   - [List of Plugins](plugins.md)
   - [Write a Plugin](write-a-plugin.md)
