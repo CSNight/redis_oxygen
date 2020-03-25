@@ -10,15 +10,15 @@
                         background-color="#748EF4"
                         text-color="#fff"
                         active-text-color="#fff">
-                    <el-menu-item index="1">Home</el-menu-item>
-                    <el-menu-item index="2">
+                    <el-menu-item index="1">首页</el-menu-item>
+                    <el-menu-item index="2" v-if="name!==''">
                         <router-link to="/home">Dashboard</router-link>
                     </el-menu-item>
                     <el-menu-item index="3">
-                        <a target="_blank" :href="'https://csnight.github.io/oxygen_vue/'">Docs</a>
+                        <a target="_blank" :href="'https://csnight.github.io/oxygen_vue/'">帮助文档</a>
                     </el-menu-item>
                     <el-menu-item index="4" v-if="name!==''">
-                        <a target="_blank" :href="baseUrl+'/swagger-ui.html'">ServerAPI</a>
+                        <a target="_blank" :href="baseUrl+'/swagger-ui.html'">服务接口</a>
                     </el-menu-item>
                 </el-menu>
                 <div style="margin: auto">
@@ -39,18 +39,22 @@
                 <div class="container shape-container d-flex">
                     <div class="col px-0">
                         <div class="row">
-                            <div class="col-lg-10"><h1 class="display-3  text-white">An Easy-to-Use Redis Monitoring
-                                Platform<span>complete with Monitoring indicators</span></h1>
-                                <p class="lead  text-white">This monitoring platform provides many function, including
-                                    monitoring
-                                    indicators, monitoring tools,
-                                    instruction execution, data backup, multi-server support, etc. You can easily add
-                                    redis
-                                    instances and monitor them.</p>
+                            <div class="col-lg-10"><h1 class="display-3  text-white">RMS开源小站 一个易用Redis数据库管理平台
+                                <span>具有全面的性能监控指标及管理工具</span></h1>
+                                <p class="lead  text-white">
+                                    本系统提供了丰富功能，包括数据库性能指标监控，自定义命令监控，
+                                </p>
+                                <p class="lead  text-white">
+                                    远程命令行工具，数据备份恢复，多实例支持等。
+                                </p>
+                                <p class="lead  text-white">
+                                    只需注册添加Redis实例并简单配置，即可体验全套功能。
+                                </p>
                                 <div class="btn-wrapper">
                                     <el-button class="started">
                                         <span><i class="fa fa-code"/></span>
-                                        <span class="btn_txt">GET STARTED</span>
+                                        <span class="btn_txt"
+                                              @click="download">开始体验</span>
                                     </el-button>
                                 </div>
                             </div>
@@ -69,17 +73,18 @@
                                             <div class="icon icon-shape icon-shape-primary rounded-circle mb-4">
                                                 <i class="fa fa-check"/>
                                             </div>
-                                            <h6 class="text-primary text-uppercase">Info Command Based</h6>
-                                            <p class="description mt-3">Oxygen is a redis monitor platform based on
-                                                Spring 5 &
-                                                Quartz
-                                                that includes the most important components and features.</p>
+                                            <h6 class="text-primary text-uppercase">基于INFO命令</h6>
+                                            <p class="description mt-3">
+                                                Oxygen基于Redis数据库INFO命令的开源监控工具，性能指标采集均来自INFO命令的结果
+                                                更高效，非阻塞，不会给数据库带来额外负担，监控指标涵盖物理性能、数据变化、客户端连接、命令统计等多个方面。
+                                            </p>
                                             <div>
-                                                <span class="badge badge-pill badge-primary">efficient</span>
-                                                <span class="badge badge-pill badge-primary">nonblock</span>
-                                                <span class="badge badge-pill badge-primary">faster</span>
+                                                <span class="badge badge-pill badge-primary">高效的</span>
+                                                <span class="badge badge-pill badge-primary">非阻塞</span>
+                                                <span class="badge badge-pill badge-primary">全方位</span>
                                             </div>
-                                            <a href="#" class="btn btn-primary mt-4">Learn more</a>
+                                            <a href="https://csnight.github.io/oxygen_vue/" target="_blank"
+                                               class="btn btn-primary mt-4">了解更多</a>
                                         </div>
                                     </div>
                                 </div>
@@ -89,17 +94,17 @@
                                             <div class="icon icon-shape icon-shape-success rounded-circle mb-4">
                                                 <i class="fa fa-cube"/>
                                             </div>
-                                            <h6 class="text-success text-uppercase">Custom Design Monitor</h6>
-                                            <p class="description mt-3">Oxygen is a redis monitor platform based on
-                                                Spring 5 &
-                                                Quartz
-                                                that includes the most important components and features.</p>
+                                            <h6 class="text-success text-uppercase">自定义监控</h6>
+                                            <p class="description mt-3">Oxygen提供了可配置指令执行定时任务、性能监控统计任务、毫秒级的数据监控定时任务，
+                                                保证了多样化的监控管理需求，使用户能够实时的监控Redis数据库的各项变化。
+                                            </p>
                                             <div>
-                                                <span class="badge badge-pill badge-success">Indicators</span>
-                                                <span class="badge badge-pill badge-success">Statistic</span>
-                                                <span class="badge badge-pill badge-success">FLEXIBLE</span>
+                                                <span class="badge badge-pill badge-success">时效性</span>
+                                                <span class="badge badge-pill badge-success">可配置</span>
+                                                <span class="badge badge-pill badge-success">灵活的</span>
                                             </div>
-                                            <a href="#" class="btn btn-success mt-4">Learn more</a>
+                                            <a href="https://csnight.github.io/oxygen_vue/" target="_blank"
+                                               class="btn btn-primary mt-4">了解更多</a>
                                         </div>
                                     </div>
                                 </div>
@@ -110,16 +115,16 @@
                                                 <i class="fa fa-rocket"/>
                                             </div>
                                             <h6 class="text-warning text-uppercase">Online Operation</h6>
-                                            <p class="description mt-3">Oxygen is a redis monitor platform based on
-                                                Spring 5 &
-                                                Quartz
-                                                that includes the most important components and features.</p>
+                                            <p class="description mt-3">Oxygen系统提供了完善的Redis管理工具，能够实现对数据库的配置管理实时修改，
+                                                数据备份恢复同步等工作。并提供了浏览器端的Redis远程命令行客户端，告别shell小黑窗。
+                                            </p>
                                             <div>
-                                                <span class="badge badge-pill badge-warning">VNC</span>
-                                                <span class="badge badge-pill badge-warning">Logs</span>
-                                                <span class="badge badge-pill badge-warning">Backup</span>
+                                                <span class="badge badge-pill badge-warning">命令行</span>
+                                                <span class="badge badge-pill badge-warning">日志库</span>
+                                                <span class="badge badge-pill badge-warning">热管理</span>
                                             </div>
-                                            <a href="#" class="btn btn-warning mt-4">Learn more</a>
+                                            <a href="https://csnight.github.io/oxygen_vue/" target="_blank"
+                                               class="btn btn-primary mt-4">了解更多</a>
                                         </div>
                                     </div>
                                 </div>
@@ -134,8 +139,8 @@
             <div class="container">
                 <div class="row row-grid align-items-center my-md">
                     <div class="col-lg-6">
-                        <h3 class="text-primary font-weight-light mb-2">Thank you for supporting us!</h3>
-                        <h4 class="mb-0 font-weight-light">Let's get in touch on any of these platforms.</h4>
+                        <h3 class="text-primary font-weight-light mb-2">感谢您的支持！</h3>
+                        <h4 class="mb-0 font-weight-light">如需联系我们，请前往我们的Github。</h4>
                     </div>
                     <div class="col-lg-6 text-lg-center btn-wrapper">
                         <a target="_blank" href="https://github.com/CSNight/RedisMonitorServices"
@@ -186,8 +191,8 @@
                 ],
                 // eslint-disable-next-line no-undef
                 src: require('../../assets/white.png'),
-                sign_in: 'SIGN IN',
-                sign_up: 'SIGN UP'
+                sign_in: '登录',
+                sign_up: '注册'
             }
         }, computed: {
             ...mapGetters([
@@ -225,6 +230,8 @@
                         message: data.message.username + " logout!"
                     })
                 });
+            }, download() {
+                window.open('https://github.com/CSNight/oxygen_vue/releases', '_blank');
             }
         }
     }
@@ -237,8 +244,6 @@
 
     .footer.has-cards {
         overflow: hidden;
-        padding-top: 500px;
-        margin-top: -420px;
         position: relative;
         background: transparent;
     }
@@ -820,7 +825,7 @@
 
     .lead {
         font-size: 1.25rem;
-        margin-top: 1.5rem;
+        margin-top: 1.0rem;
         font-family: Open Sans, sans-serif;
     }
 
