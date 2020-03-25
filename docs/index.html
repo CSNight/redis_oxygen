@@ -7,8 +7,8 @@
     <meta name="description" content="Description">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css" title="vue">
-<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">-->
+    <!--    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css" title="vue">-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
     <style>
         nav.app-nav li ul {
             min-width: 100px;
@@ -28,73 +28,59 @@
         loadSidebar: true,
         copyCode: {
             buttonText: {
+                '/en-us/': 'Copy to clipboard',
                 '/': '点击复制',
                 '/ru/': 'Скопировать в буфер обмена',
                 '/de-de/': 'Klicken Sie zum Kopieren',
                 '/es/': 'Haga clic para copiar',
-                '/en-us/': 'Copy to clipboard'
+
             },
             errorText: {
-                '/': '错误',
                 '/ru/': 'ошибка',
-                '/en-us/': 'Error'
+                '/en-us/': 'Error',
+                '/': '错误'
             },
             successText: {
-                '/': '复制',
                 '/ru/': 'Скопировано',
                 '/de-de/': 'Kopiert',
                 '/es/': 'Copiado',
-                '/en-us/': 'Copied'
+                '/en-us/': 'Copied',
+                '/': '复制'
             }
         },
-        search: 'auto', // default
-
-        search: [
-            '/en-us/',            // => /README.md
-            '/guide',       // => /guide.md
-            '/get-started', // => /get-started.md
-            '/',      // => /zh-cn/README.md
-        ],
-
         // complete configuration parameters
         search: {
             maxAge: 86400000, // Expiration time, the default one day
-            paths: [], // or 'auto'
+            paths: [
+                '/en-us/',
+                '/'
+            ],
             // Localization
             placeholder: {
+                '/en-us/': 'Type to search',
                 '/': '搜索',
-                '/en-us/': 'Type to search'
             },
-
-            noData: 'No Results!',
-
             // Localization
             noData: {
                 '/': '找不到结果',
                 '/en-us/': 'No Results'
             },
-
             // Headline depth, 1 - 6
             depth: 2,
-
             hideOtherSidebarContent: false, // whether or not to hide other sidebar content
-
-            // To avoid search index collision
-            // between multiple websites under the same domain
-            namespace: 'website-1',
-            plugins: [
-                function (hook, vm) {
-                    hook.beforeEach(function (html) {
-                        return html
-                            + '\n\n----\n\n'
-                            + '<a href="https://docsify.js.org" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by docsify</a>'
-                    })
-                },
-            ],
-            themeable: {
-                readyTransition: true, // default
-                responsiveTables: true  // default
-            }
+        },
+        plugins: [
+            function (hook, vm) {
+                hook.beforeEach(function (html) {
+                    return html
+                        + '\n\n----\n\n'
+                        + '<a href="https://docsify.js.org" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">Powered by csnight</a>'
+                })
+            },
+        ],
+        themeable: {
+            readyTransition: true, // default
+            responsiveTables: true  // default
         }
     }
 </script>
