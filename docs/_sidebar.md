@@ -1,20 +1,25 @@
-- Getting started
+- 开始体验
 
-  - [Quick start](quickstart.md)
-  - [Writing more pages](more-pages.md)
-  - [Custom navbar](custom-navbar.md)
-  - [Cover page](cover.md)
+  - [下载包](download.md)
+  - [安装配置](installation.md)
+  - [启动服务](start-server.md)
 
-- Customization
+- 功能介绍
 
-  - [Configuration](configuration.md)
+  - [系统管理](user-manager.md)
+    - [权限管理](rights.md)
+    - [部门管理](department.md)
+    - [角色管理](roles.md)
+    - [用户管理](users.md)
+    - [菜单管理](menus.md)
+    - [SQL监控](sqls.md)
   - [Themes](themes.md)
   - [List of Plugins](plugins.md)
   - [Write a Plugin](write-a-plugin.md)
   - [Markdown configuration](markdown.md)
   - [Language highlighting](language-highlight.md)
 
-- Guide
+- 
 
   - [Deploy](deploy.md)
   - [Helpers](helpers.md)
@@ -24,5 +29,4 @@
   - [Server-Side Rendering(SSR)](ssr.md)
   - [Embed Files](embed-files.md)
 
-- [Awesome docsify](awesome.md)
 - [Changelog](changelog.md)
