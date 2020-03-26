@@ -15,7 +15,7 @@
                         <router-link to="/home">Dashboard</router-link>
                     </el-menu-item>
                     <el-menu-item index="3">
-                        <a target="_blank" :href="'https://csnight.github.io/oxygen_vue/'">帮助文档</a>
+                        <a target="_blank" href="https://docs.csnight.xyz">帮助文档</a>
                     </el-menu-item>
                     <el-menu-item index="4" v-if="name!==''">
                         <a target="_blank" :href="baseUrl+'/swagger-ui.html'">服务接口</a>
@@ -83,7 +83,7 @@
                                                 <span class="badge badge-pill badge-primary">非阻塞</span>
                                                 <span class="badge badge-pill badge-primary">全方位</span>
                                             </div>
-                                            <a href="https://csnight.github.io/oxygen_vue/" target="_blank"
+                                            <a href="https://docs.csnight.xyz" target="_blank"
                                                class="btn btn-primary mt-4">了解更多</a>
                                         </div>
                                     </div>
@@ -103,7 +103,7 @@
                                                 <span class="badge badge-pill badge-success">可配置</span>
                                                 <span class="badge badge-pill badge-success">灵活的</span>
                                             </div>
-                                            <a href="https://csnight.github.io/oxygen_vue/" target="_blank"
+                                            <a href="https://docs.csnight.xyz" target="_blank"
                                                class="btn btn-primary mt-4">了解更多</a>
                                         </div>
                                     </div>
@@ -123,7 +123,7 @@
                                                 <span class="badge badge-pill badge-warning">日志库</span>
                                                 <span class="badge badge-pill badge-warning">热管理</span>
                                             </div>
-                                            <a href="https://csnight.github.io/oxygen_vue/" target="_blank"
+                                            <a href="https://docs.csnight.xyz" target="_blank"
                                                class="btn btn-primary mt-4">了解更多</a>
                                         </div>
                                     </div>
@@ -153,22 +153,22 @@
                 <hr>
                 <div class="row align-items-center justify-content-md-between">
                     <div class="col-md-2">
-                        <div class="copyright">
-                            &copy; 2019 <a href="https://github.com/CSNight" target="_blank">CSNight</a>.
+                        <div class="copyright" style="display: flex;align-items: center">
+                            &copy; 2019 <a href="https://github.com/CSNight" target="_blank">CSNight</a>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <ul class="nav nav-footer justify-content-end">
-                            <li class="nav-item">
+                            <li class="nav-item" style="display: flex;align-items: center">
                                 <a class="nav-link" href="http://www.beian.miit.gov.cn"
-                                   target="_blank">RMS开源小站 - 京ICP备20008725号</a>.
+                                   target="_blank">RMS开源小站 - 京ICP备20008725号</a>
                             </li>
-                            <li class="nav-item">
-                                <a target="_blank" class="nav-link"
+                            <li class="nav-item" style="display: flex;align-items: center">
+                                <a target="_blank" class="nav-link" style="display: flex;align-items: center"
                                    href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502040454">
-                                    <img :src="ba"  alt=""/>京公网安备 11010502040454号</a>
+                                    <img :src="ba" alt=""/> 京公网安备 11010502040454号</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item" style="display: flex;align-items: center">
                                 <a href="https://github.com/CSNight/RedisMonitorServices/blob/master/LICENSE"
                                    class="nav-link" target="_blank">MIT License</a>
                             </li>
