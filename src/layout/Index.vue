@@ -8,12 +8,16 @@
                 <tags-view v-if="needTagsView"/>
             </div>
             <app-main/>
-            <el-footer class="el-main-footer">
+            <el-footer class="el-main-footer" style="display: flex;align-items: center;">
                 <a href="https://www.csnight.xyz">@CSNight - </a>
-                <a class="nav-link" href="http://www.beian.miit.gov.cn"
+                <a  href="http://www.beian.miit.gov.cn"
                    target="_blank">RMS开源小站 - 京ICP备20008725号 - </a>
+                <img :src="ba"  alt=""/>
+                <a target="_blank"
+                   href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502040454">
+                    京公网安备 11010502040454号 - </a>
                 <a href="https://github.com/CSNight/RedisMonitorServices/blob/master/LICENSE"
-                   class="nav-link" target="_blank">MIT License</a>
+                   target="_blank"> MIT License</a>
             </el-footer>
         </div>
     </div>
@@ -28,6 +32,12 @@
 
     export default {
         name: "Index",
+        data() {
+            return {
+                // eslint-disable-next-line no-undef
+                ba: require('../assets/ba.png'),
+            }
+        },
         components: {
             AppMain,
             Navbar,

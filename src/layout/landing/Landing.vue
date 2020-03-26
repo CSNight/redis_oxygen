@@ -152,16 +152,21 @@
                 </div>
                 <hr>
                 <div class="row align-items-center justify-content-md-between">
-                    <div class="col-md-6">
+                    <div class="col-md-2">
                         <div class="copyright">
                             &copy; 2019 <a href="https://github.com/CSNight" target="_blank">CSNight</a>.
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-2">
                         <ul class="nav nav-footer justify-content-end">
                             <li class="nav-item">
                                 <a class="nav-link" href="http://www.beian.miit.gov.cn"
                                    target="_blank">RMS开源小站 - 京ICP备20008725号</a>.
+                            </li>
+                            <li class="nav-item">
+                                <a target="_blank" class="nav-link"
+                                   href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502040454">
+                                    <img :src="ba"  alt=""/>京公网安备 11010502040454号</a>
                             </li>
                             <li class="nav-item">
                                 <a href="https://github.com/CSNight/RedisMonitorServices/blob/master/LICENSE"
@@ -191,6 +196,8 @@
                 ],
                 // eslint-disable-next-line no-undef
                 src: require('../../assets/white.png'),
+                // eslint-disable-next-line no-undef
+                ba: require('../../assets/ba.png'),
                 sign_in: '登录',
                 sign_up: '注册'
             }
