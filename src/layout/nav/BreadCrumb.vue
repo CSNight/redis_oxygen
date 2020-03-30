@@ -10,7 +10,7 @@
 </template>
 
 <script>
-    import pathToRegexp from 'path-to-regexp'
+    import {compile} from 'path-to-regexp'
 
     export default {
         name: "breadcrumb",
@@ -37,7 +37,7 @@
             },
             pathCompile(path) {
                 const {params} = this.$route;
-                let toPath = pathToRegexp.compile(path);
+                let toPath = compile(path);
                 return toPath(params)
             },
             handleLink(item) {
