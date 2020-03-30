@@ -147,7 +147,7 @@
             });
         }, methods: {
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false
@@ -316,10 +316,10 @@
 
             }, checkPermitChk(data, chk) {
                 let menus_chk = this.$refs.menus.getCheckedKeys();
-                if (data.hasOwnProperty('menu') && chk && menus_chk.indexOf(data.menu.id) === -1) {
+                if (Object.prototype.hasOwnProperty.call(data,['menu']) && chk && menus_chk.indexOf(data.menu.id) === -1) {
                     this.$refs.permits.setChecked(data, false, true)
                 }
-                if (!data.hasOwnProperty("menu") && chk && menus_chk.indexOf(data.id) === -1) {
+                if (!Object.prototype.hasOwnProperty.call(data,["menu"]) && chk && menus_chk.indexOf(data.id) === -1) {
                     this.$refs.permits.setChecked(data, false, true)
                 }
             }, getChkNode() {

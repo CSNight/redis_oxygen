@@ -96,7 +96,7 @@
                 }
             }, displayNode(msg, needCost) {
                 let content = this.bodyToNode(msg.body, 0);
-                if (msg.hasOwnProperty("cost") && needCost) {
+                if (Object.prototype.hasOwnProperty.call(msg, ["cost"]) && needCost) {
                     content += "(" + msg.cost + "ms)"
                 }
                 this.generateNode(content, msg.rmt);

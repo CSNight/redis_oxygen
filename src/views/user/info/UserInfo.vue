@@ -15,7 +15,7 @@
                                 class="upload-demo"
                                 :disabled="!rights('USER_INFO_EDIT')"
                                 :action="up_url"
-                                accept="image/*"
+                                accept="image/png, image/jpeg ,image/gif"
                                 :on-success="handleSuccess"
                                 :on-error="handleError"
                                 :before-upload="handleAvatarBefore"
@@ -104,15 +104,21 @@
                 return dateFormat(fmt, dt);
             },
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false
             },
             handleAvatarBefore(file) {
+                const isImage = ['image/jpeg', "image/gif", "image/png"].indexOf(file.type) !== -1;
+                if (!isImage) {
+                    this.$message.error('上传文件不是图片!');
+                    return false;
+                }
                 const isLt1M = file.size / 1024 / 1024.0;
                 if (isLt1M > 0.5) {
                     this.$message.error('上传头像图片大小不能超过 512KB!');
+                    return false;
                 }
                 return isLt1M <= 1;
             },

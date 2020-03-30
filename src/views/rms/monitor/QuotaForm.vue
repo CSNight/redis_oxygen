@@ -98,7 +98,7 @@
                 }).catch((resp) => {
                     this.loading = false;
                     this.dialog = false;
-                    if (resp.hasOwnProperty("data")) {
+                    if (Object.prototype.hasOwnProperty.call(resp,["data"])) {
                         this.$message.error({
                             message: "添加出错!" + resp.data.message
                         });
@@ -136,7 +136,7 @@
                 }).catch((resp) => {
                     this.loading = false;
                     this.dialog = false;
-                    if (resp.hasOwnProperty("data")) {
+                    if (Object.prototype.hasOwnProperty.call(resp,["data"])) {
                         this.$message.error({
                             message: "修改出错!" + resp.data.message
                         });

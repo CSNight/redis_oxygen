@@ -71,7 +71,7 @@
                 }
             },
             getTagText(item) {
-                if (item.hasOwnProperty('reachable') && item.node_type === 'ins') {
+                if (Object.prototype.hasOwnProperty.call(item,['reachable']) && item.node_type === 'ins') {
                     if (item.reachable) {
                         return 'db:' + item.dbCount
                     } else {
@@ -82,7 +82,7 @@
                 }
             },
             getTagType(item) {
-                if (item.hasOwnProperty('reachable') && item.node_type === 'ins') {
+                if (Object.prototype.hasOwnProperty.call(item,['reachable']) && item.node_type === 'ins') {
                     if (item.reachable) {
                         return 'success'
                     } else {
@@ -93,7 +93,7 @@
                 }
             },
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false

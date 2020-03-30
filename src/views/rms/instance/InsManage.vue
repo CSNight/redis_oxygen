@@ -119,7 +119,7 @@
                 return dateFormat(fmt, dt);
             },
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false

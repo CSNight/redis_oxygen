@@ -116,7 +116,7 @@
                 return row.state === "NORMAL" ? 'warning' : 'success'
             },
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false
@@ -156,7 +156,7 @@
                     }
                     this.loading = false;
                 }).catch((resp) => {
-                    if (resp.hasOwnProperty("data")) {
+                    if (Object.prototype.hasOwnProperty.call(resp, ["data"])) {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
                         });
@@ -179,7 +179,7 @@
                     }
                     this.loading = false;
                 }).catch((resp) => {
-                    if (resp.hasOwnProperty("data")) {
+                    if (Object.prototype.hasOwnProperty.call(resp, ["data"])) {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
                         });
@@ -290,11 +290,11 @@
                     startAt: null,
                     jobGroup: conf.jobGroup,
                     timeUnit: 'SECOND',
-                    interval: trigger.hasOwnProperty('interval') ? trigger.interval : 1,
-                    repeatCount: trigger.hasOwnProperty('repeatCount') ? parseInt(trigger.repeatCount) : -1,
+                    interval: Object.prototype.hasOwnProperty.call(trigger, ['interval']) ? trigger.interval : 1,
+                    repeatCount: Object.prototype.hasOwnProperty.call(trigger, ['repeatCount']) ? parseInt(trigger.repeatCount) : -1,
                     description: conf.description
                 };
-                if (trigger.hasOwnProperty('startAt')) {
+                if (Object.prototype.hasOwnProperty.call(trigger, ['startAt'])) {
                     _this.form.startAt = new Date(trigger.startAt);
                     _this.form.immediately = "2";
                 }
@@ -335,7 +335,7 @@
                 this.execTabs = tabs.filter(tab => tab.name !== targetName);
                 delete this.$refs[targetName]
             }, msgRev(e) {
-                if (e.body.hasOwnProperty("jobId")) {
+                if (Object.prototype.hasOwnProperty.call(e.body, ["jobId"])) {
                     for (let key in this.$refs) {
                         if (key === e.body.jobId) {
                             let res = e.body;

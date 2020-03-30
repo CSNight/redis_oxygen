@@ -17,7 +17,7 @@
                     <el-menu-item index="3">
                         <a target="_blank" href="https://docs.csnight.xyz">帮助文档</a>
                     </el-menu-item>
-                    <el-menu-item index="4" v-if="name!==''">
+                    <el-menu-item index="4" v-if="hasRole('ROLE_DEV')">
                         <a target="_blank" :href="baseUrl+'/swagger-ui.html'">服务接口</a>
                     </el-menu-item>
                 </el-menu>
@@ -212,6 +212,9 @@
                 this.recover_login();
             });
         }, methods: {
+            hasRole(role) {
+                return this.$store.getters.roles.indexOf(role) !== -1;
+            },
             recover_login() {
                 if (this.token) {
                     this.$store.dispatch('user/user_info', '').then((resp) => {

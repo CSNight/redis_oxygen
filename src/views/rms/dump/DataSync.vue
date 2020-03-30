@@ -192,7 +192,7 @@
         },
         methods: {
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false
@@ -278,7 +278,7 @@
                     this.configs.source.address = conn.master + ":slave@" + conn.sentinels.join(';');
                     this.configs.source.type = "sentinel";
                 }
-                if (conn.hasOwnProperty('password')) {
+                if (Object.prototype.hasOwnProperty.call(conn,['password'])) {
                     this.configs.source.password_raw = conn.password;
                 } else {
                     this.configs.source.password_raw = '';
@@ -302,7 +302,7 @@
                     this.configs.target.address = conn.master + ":" + this.configs.target.role + "@" + conn.sentinels.join(';');
                     this.configs.target.type = "sentinel";
                 }
-                if (conn.hasOwnProperty('password')) {
+                if (Object.prototype.hasOwnProperty.call(conn,['password'])) {
                     this.configs.target.password_raw = conn.password;
                 } else {
                     this.configs.target.password_raw = '';

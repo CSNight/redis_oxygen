@@ -78,7 +78,7 @@
             }
         }, methods: {
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false
@@ -154,7 +154,7 @@
                 }
             },
             msgRev(e) {
-                if (e.body.hasOwnProperty('Physical')) {
+                if (Object.prototype.hasOwnProperty.call(e.body, 'Physical')) {
                     this.$refs.cpuChart.updateChart(e.body.Physical);
                     this.$refs.memChart.updateChart(e.body.Physical);
                     this.$refs.nioChart.updateChart(e.body.Physical);

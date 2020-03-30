@@ -96,7 +96,7 @@
         },
         methods: {
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false
@@ -139,7 +139,7 @@
                     }
                     this.loading = false;
                 }).catch((resp) => {
-                    if (resp.hasOwnProperty("data")) {
+                    if (Object.prototype.hasOwnProperty.call(resp, ["data"])) {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
                         });
@@ -162,7 +162,7 @@
                     }
                     this.loading = false;
                 }).catch((resp) => {
-                    if (resp.hasOwnProperty("data")) {
+                    if (Object.prototype.hasOwnProperty.call(resp, ["data"])) {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
                         });
@@ -192,7 +192,7 @@
                     }
                     this.loading = false;
                 }).catch((resp) => {
-                    if (resp.hasOwnProperty("data")) {
+                    if (Object.prototype.hasOwnProperty.call(resp, ["data"])) {
                         this.$message.error({
                             message: "查询出错!" + resp.data.message
                         });

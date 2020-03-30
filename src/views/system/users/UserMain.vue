@@ -127,7 +127,7 @@
             });
         }, methods: {
             rights(permit) {
-                if (this.$store.getters.permit.hasOwnProperty(permit)) {
+                if (Object.prototype.hasOwnProperty.call(this.$store.getters.permit, [permit])) {
                     return this.$store.getters.permit[permit];
                 }
                 return false
@@ -224,7 +224,7 @@
                 }).then(() => {
                     this.lockLoading();
                     edit_user(user_ent).then((resp) => {
-                        if (resp.data.status === 200 && resp.data.hasOwnProperty('message')) {
+                        if (resp.data.status === 200 && Object.prototype.hasOwnProperty.call(resp.data,['message'])) {
                             this.$message({
                                 type: 'success',
                                 message: msg_prefix + '成功!'
