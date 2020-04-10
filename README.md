@@ -17,7 +17,7 @@
 
 #### 项目源码
 
-|     |   后端源码  |   前端源码  |
+|     |   后端源码 Service Code (not open source yet) |   前端源码 Client Code  |
 |---  |--- | --- |
 |  github   |  https://github.com/CSNight/RedisMonitorServices   |  https://github.com/CSNight/oxygen_vue   |
 |  码云   |  https://gitee.com/CSNight/RedisMonitorServices   |  https://gitee.com/CSNight/oxygen_vue   |
