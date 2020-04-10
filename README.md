@@ -8,3 +8,16 @@
 
 [GitHub](https://github.com/CSNight/oxygen_vue)
 [开始尝试](#oxygen)
+
+**开发文档：**  [https://docs.csnight.xyz/](https://docs.csnight.xyz)
+
+**体验地址：**  [https://csnight.net/](https://csnight.net/)
+
+**账号密码：** `admin/123456` (默认密码都是123456)
+
+#### 项目源码
+
+|     |   后端源码  |   前端源码  |
+|---  |--- | --- |
+|  github   |  https://github.com/CSNight/RedisMonitorServices   |  https://github.com/CSNight/oxygen_vue   |
+|  码云   |  https://gitee.com/CSNight/RedisMonitorServices   |  https://gitee.com/CSNight/oxygen_vue   |
