@@ -19,29 +19,29 @@
 
 |     |   后端源码 Service Code (not open source yet) |   前端源码 Client Code  |
 |---  |--- | --- |
-|  github   |  https://github.com/CSNight/RedisMonitorServices   |  https://github.com/CSNight/oxygen_vue   |
-|  码云   |  https://gitee.com/CSNight/RedisMonitorServices   |  https://gitee.com/CSNight/oxygen_vue   |
-
+|  github   |  https://github.com/CSNight/RedisMonitorServices   |  https://github.com/CSNight/redis_oxygen   |
+|  码云   |  https://gitee.com/CSNight/RedisMonitorServices   |  https://gitee.com/CSNight/redis_oxygen   |
+#### 系统功能
 #### 系统预览
 <table>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/home.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/dashboard.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/home.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/dashboard.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/instance.png"/></td>
-       <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/databackup.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/instance.png"/></td>
+       <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/databackup.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/rolemanage.png"/></td>
-       <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/permission.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/rolemanage.png"/></td>
+       <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/permission.png"/></td>
     </tr>
     <tr>   
-         <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/vnc.png"/></td>
-         <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/monitorTask.png"/></td>
+         <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/vnc.png"/></td>
+         <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/monitorTask.png"/></td>
     </tr>
     <tr>   
-        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/codeEditor.png"/></td>
-        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/mail.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/codeEditor.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/redis_oxygen/master/docs/_image/screenshot/mail.png"/></td>
      </tr>
 </table>
