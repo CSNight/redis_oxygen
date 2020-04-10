@@ -25,7 +25,7 @@
 #### 系统预览
 <table>
     <tr>
-        <td><img src="https://github.com/CSNight/oxygen_vue/blob/master/docs/_image/screenshot/home.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/home.png"/></td>
         <td><img src="https://i.loli.net/2019/05/18/5cdf7763993e361778.png"/></td>
     </tr>
     <tr>
