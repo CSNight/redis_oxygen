@@ -26,17 +26,22 @@
 <table>
     <tr>
         <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/home.png"/></td>
-        <td><img src="https://i.loli.net/2019/05/18/5cdf7763993e361778.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/dashboard.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://i.loli.net/2019/05/18/5cdf7763971d453615.png"/></td>
-        <td><img src="https://i.loli.net/2019/05/18/5cdf77632e85a60423.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/instance.png"/></td>
+       <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/databackup.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://i.loli.net/2019/05/18/5cdf77632b4b090165.png"/></td>
-        <td><img src="https://i.loli.net/2019/05/18/5cdf77639929277783.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/rolemanage.png"/></td>
+       <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/permission.png"/></td>
     </tr>
     <tr>   
- <td><img src="https://i.loli.net/2019/05/18/5cdf78969adc389599.png"/></td>
+         <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/vnc.png"/></td>
+         <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/monitorTask.png"/></td>
     </tr>
+    <tr>   
+        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/codeEditor.png"/></td>
+        <td><img src="https://raw.githubusercontent.com/CSNight/oxygen_vue/master/docs/_image/screenshot/mail.png"/></td>
+     </tr>
 </table>
