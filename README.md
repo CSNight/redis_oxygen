@@ -9,7 +9,7 @@
 [GitHub](https://github.com/CSNight/oxygen_vue)
 [开始尝试](https://csnight.xyz/)
 
-**开发文档：**  [https://docs.csnight.xyz/](https://docs.csnight.xyz)
+**使用文档：**  [https://docs.csnight.xyz/](https://docs.csnight.xyz)
 
 **体验地址：**  [https://csnight.xyz/](https://csnight.xyz/)
 
