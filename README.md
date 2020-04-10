@@ -1,4 +1,4 @@
-# Oxygen <small>1.0.0</small>
+# Oxygen <small>v1.0.0</small>
 
 > 高效的Redis数据库监控管理平台.
 
@@ -7,7 +7,7 @@
 - 提供了完善的Redis管理工具，能够实现对数据库的配置管理实时修改，数据备份恢复同步等工作。并提供了浏览器端的Redis远程命令行客户端，告别shell小黑窗
 
 [GitHub](https://github.com/CSNight/oxygen_vue)
-[开始尝试](#oxygen)
+[开始尝试](https://csnight.xyz/)
 
 **开发文档：**  [https://docs.csnight.xyz/](https://docs.csnight.xyz)
 
