@@ -23,5 +23,5 @@
 |  码云   |  https://gitee.com/CSNight/RedisMonitorServices   |  https://gitee.com/CSNight/oxygen_vue   |
 
 #### 系统预览
-![image{height="20%" width="20%"}](docs/_image/screenshot/home.png){:height="100" width="100"}
+![image  =400x300](docs/_image/screenshot/home.png)
 ![](docs/_image/screenshot/home.png)
