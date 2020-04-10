@@ -11,7 +11,7 @@
 
 **开发文档：**  [https://docs.csnight.xyz/](https://docs.csnight.xyz)
 
-**体验地址：**  [https://csnight.net/](https://csnight.net/)
+**体验地址：**  [https://csnight.xyz/](https://csnight.xyz/)
 
 **账号密码：** `admin/123456` (默认密码都是123456)
 
