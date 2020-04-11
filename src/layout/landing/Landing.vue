@@ -241,7 +241,7 @@
                     })
                 });
             }, download() {
-                window.open('https://github.com/CSNight/oxygen_vue/releases', '_blank');
+                window.open('https://github.com/CSNight/redis_oxygen/releases', '_blank');
             }
         }
     }

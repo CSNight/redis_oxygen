@@ -5,7 +5,7 @@
         <div class="right-menu">
             <template>
                 <el-tooltip content="源码地址" effect="dark" placement="bottom">
-                    <a target="_blank" href="https://github.com/CSNight/oxygen_vue/" style="margin-right: 30px">
+                    <a target="_blank" href="https://github.com/CSNight/redis_oxygen/" style="margin-right: 30px">
                         <fa-icon style="margin-bottom: 30px;color:#777777" icon-class="fa-github "/>
                     </a>
                 </el-tooltip>
@@ -42,7 +42,7 @@
                             Profile
                         </el-dropdown-item>
                     </router-link>
-                    <a target="_blank" href="https://github.com/CSNight/oxygen_vue">
+                    <a target="_blank" href="https://github.com/CSNight/redis_oxygen">
                         <el-dropdown-item>Docs</el-dropdown-item>
                     </a>
                     <el-dropdown-item divided>

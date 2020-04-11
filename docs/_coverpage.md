@@ -8,5 +8,5 @@
 - 高效可控 非阻塞 支持自定义 
 - 多种多样的监控管理工具
 
-[GitHub](https://github.com/CSNight/oxygen_vue)
+[GitHub](https://github.com/CSNight/redis_oxygen)
 [开始尝试](#oxygen)

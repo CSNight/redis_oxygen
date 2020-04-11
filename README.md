@@ -6,7 +6,7 @@
 - 提供了可配置指令执行定时任务、性能监控统计任务、毫秒级的数据监控定时任务，保证了多样化的监控管理需求，使用户能够实时的监控Redis数据库的各项变化
 - 提供了完善的Redis管理工具，能够实现对数据库的配置管理实时修改，数据备份恢复同步等工作。并提供了浏览器端的Redis远程命令行客户端，告别shell小黑窗
 
-[GitHub](https://github.com/CSNight/oxygen_vue)
+[GitHub](https://github.com/CSNight/redis_oxygen)
 [开始尝试](https://csnight.xyz/)
 
 **使用文档：**  [https://docs.csnight.xyz/](https://docs.csnight.xyz)
